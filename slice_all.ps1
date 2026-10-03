@@ -29,7 +29,8 @@ $common = @{ }
 # printed deck: the skin is 2 layers (0.20 first + 0.28) and every rib is two
 # 0.45 lines, so 2 walls makes everything solid perimeters.  No brim: it
 # would wrap the jigsaw tabs, and textured PEI holds a flat plate anyway.
-$deck = @{ wall_loops = "2"; sparse_infill_density = "15%"; brim_type = "no_brim"; initial_layer_print_height = "0.2" }
+# Thick bridges: the socket floors are bridges, up to 53 mm under the bin.
+$deck = @{ wall_loops = "2"; sparse_infill_density = "15%"; brim_type = "no_brim"; initial_layer_print_height = "0.2"; thick_bridges = "1" }
 $parts = [ordered]@{
     # part            = @{ stl = <path under stl\>;  copies; overrides }
     fan_tube       = @{ stl = "fan_tube.stl";        copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%"; brim_type = "outer_only"; brim_width = "4" } }
@@ -46,7 +47,9 @@ $parts = [ordered]@{
     stick_stand    = @{ stl = "stick_stand.stl";     copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "20%" } }
     switch_bracket = @{ stl = "switch_bracket.stl";  copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%" } }
     templates      = @{ stl = "templates.stl";       copies = 1; o = @{ wall_loops = "2"; sparse_infill_density = "15%" } }
-    # printed deck quarters (optional, replaces the foam board)
+    # printed deck quarters (optional, replaces the foam board).  Print the
+    # fit test first and press the real parts into it.
+    deck_fit_test  = @{ stl = "deck_fit_test.stl"; copies = 1; o = $deck }
     deck_fl        = @{ stl = "deck_fl.stl";      copies = 1; o = $deck }
     deck_fr        = @{ stl = "deck_fr.stl";      copies = 1; o = $deck }
     deck_bl        = @{ stl = "deck_bl.stl";      copies = 1; o = $deck }

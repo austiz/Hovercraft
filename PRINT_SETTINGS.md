@@ -30,7 +30,8 @@ at normal speeds; a fast printer halves them.
 | templates | 1 | 2 | 15 % | none | flat | 144 × 194 × 2 | 12 | ¾ h | Optional. Trace the inside edges. |
 
 | **Printed deck** (optional, replaces the foam board; ENGINEERING_CHECK §9) | | | | | | | | | |
-| deck_fl, deck_fr, deck_bl, deck_br | 1 each | **2** | 15 % (none is used) | none | **top face down** (as exported) | 165 × 171 / 176 × 160, 7.5 tall | 23.6 / 23.6 / 22.1 / 22.1 (sliced) | 40 min each (P1S, 0.28) | **0.20 mm first layer**: the skin is that plus one 0.28 layer. Every rib is two 0.45 lines, so 2 walls makes the whole part perimeters. **No brim**: it would wrap the jigsaw tabs. The first layer is the deck's top face with the engraved outlines, so a clean bed matters. Hold each quarter up to a light: no pinholes. |
+| deck_fit_test | 1 | 2 | 15 % | none | top face down (as exported) | 180 × 40 × 5.5 | 6 | 18 min | **Print this first.** Three coupons of the deck's pockets: press the real fan tube, a nickel tray and the nozzle into them. If a part will not go in, raise `SOCK_FIT` by 0.05 and reprint the coupons; if it rattles, lower it. Then print the quarters. |
+| deck_fl, deck_fr, deck_bl, deck_br | 1 each | **2** | 15 % (none is used) | none | **top face down** (as exported) | 165 × 171 / 176 × 160, 10 tall | 25.2 / 24.5 / 23.5 / 23.4 (sliced) | 43 min each (P1S, 0.28) | **0.20 mm first layer**: the skin is that plus one 0.28 layer, and the pocket walls, the tray pegs and the slot lip are first-layer features, so the bed must be clean and the elephant's-foot compensation left on (0.15). Every rib is two 0.45 lines, so 2 walls makes the whole part perimeters. **No brim**: it would wrap the jigsaw tabs and fill the pockets. **Thick bridges on**: every pocket floor is a bridge (ENGINEERING_CHECK §9.1). Hold each quarter up to a light: no pinholes. |
 
 **Do not print** `mockup_assembly.stl`: it is the whole craft as one view-only
 model.
@@ -41,8 +42,9 @@ model.
   card ≈ **330 g** printed.
 - Whole set with 13 cards, test cards, rack and templates ≈ **500 g**, so
   budget most of a 1 kg spool.
-- Printed deck, if you use it: four quarters, **91 g** sliced, ~2 h 40 min
-  in all on the P1S.  Hardware: 7 × M3 × 8 + nuts and packing tape.
+- Printed deck, if you use it: four quarters, **97 g** sliced, ~2 h 50 min in
+  all on the P1S, plus the 18-minute fit test.  Hardware: 7 × M3 × 8 + nuts
+  and packing tape.  Every other part presses into it.
 - Bed: everything fits 220 × 220 except the deck quarters (176 mm long side:
   fine on the P1S's 256).  The 164 mm fan parts need at least 180.
 

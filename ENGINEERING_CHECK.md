@@ -203,8 +203,9 @@ batch, a cold gym), so tie goes to v2.
 | Nickels, all of them | 1 000 | rule 5d |
 | **Craft, loaded** | **2 050 g = 20.1 N** | |
 
-With the printed deck (§9) instead of foam: +13 g of deck and +7 g of seam
-bolts, so **~2.07 kg** loaded.  That costs about 1 % of lift margin.
+With the printed deck (§9) instead of foam: +26 g of deck (sockets
+included) and +7 g of seam bolts, so **~2.08 kg** loaded.  That costs
+about 1.5 % of lift margin.
 
 The printed parts are a third of the empty craft.  The fan tube (~85 g) and
 nozzle (~70 g) are the heavy ones; both are already at 2–2.4 mm walls.
@@ -554,23 +555,56 @@ calibration (holes ~1.2× A's for the same time).
 ## 9. Printed deck (optional, PART 11)
 
 Four printed quarters replace the 5 mm foam board.  Same outline
-(330 × 320 mm), same fan hole and nozzle slot, so every other part and every
-rule check is unchanged.  What it buys: the holes are already in the right
-places (no cutting with templates), the outline of every part is engraved
-in the top face, and it is flat and doesn't dent.  What it costs: ~13 g more
-than foam, four prints, and seven bolts.
+(330 × 320 mm), same fan hole, so every other part and every rule check is
+unchanged.  What it buys: **every printed part presses into a pocket in the
+deck**, so nothing is marked out, nothing can go on crooked, and the parts
+are located by plastic rather than by a bead of glue.  What it costs: ~25 g
+more than foam, four prints, and seven bolts.
 
 | Piece | Where | Print size (mm) | Solid g |
 |---|---|---|---|
-| `deck_fl` | front left | 165 × 171 × 7.5 | 24 |
-| `deck_fr` | front right | 176 × 160 × 7.5 | 24 |
-| `deck_bl` | back left | 176 × 160 × 7.5 | 23 |
-| `deck_br` | back right | 165 × 171 × 7.5 | 23 |
+| `deck_fit_test` | – | 180 × 40 × 5.5 | 7 |
+| `deck_fl` | front left | 165 × 171 × 10 | 27 |
+| `deck_fr` | front right | 176 × 160 × 10 | 27 |
+| `deck_bl` | back left | 165 × 160 × 10 | 26 |
+| `deck_br` | back right | 165 × 171 × 10 | 26 |
 
-Each one fits the P1S bed (256 × 256) and prints **top face down**: the
-first layer is the deck's top surface, with the outlines engraved into it.
+Each quarter fits the P1S bed (256 × 256) and prints **top face down**: the
+first layer is the deck's top surface, with the pockets open to the bed.
 
-### 9.1 How it is built
+### 9.1 The sockets
+
+The deck prints top face down, so **every pocket floor is a bridge**: in the
+print, the pocket is a void on the bed and its floor is laid across it in
+mid-air.  That one fact shaped every pocket:
+
+| Part | Pocket | How the floor bridges |
+|---|---|---|
+| fan tube | ring, r 67.5 → 82.2, 1.5 deep; the flange (r 68–82, 3 mm) sits in it with 1.5 mm proud | lips at deck-top height either side: 14.7 mm, lip to lip |
+| fan guard | ring r 65 → 75.2 **underneath**, 1.5 deep, below a 0.76 mm floor shared with the tube pocket | on the print's top side: no bridge |
+| nozzle | its 128 × 64 flange outline, 1.5 deep, down to the slot; the flange (2.4 mm) sits 0.9 proud | a 1.35 mm **lip** stands round the slot at deck-top height, 0.3 inside the nozzle's own slot edge, so the 14–17 mm frame bridges wall to lip.  The deck slot becomes 96.7 × 26.7 mm (2 580 mm², still 1.5× the 46 mm exit); the speed cards are calibrated with it in place, so nothing changes |
+| nickel trays (2) | 53 × 91, 1.5 deep | six **pegs** (Ø 11.2, flush with the deck top) stand up through the trays' 12 mm floor holes; longest span 15 mm |
+| coin bin | 53 × 55, 1.5 deep | a plain 53 mm bridge (thick bridges on) |
+| stick stand | 46 × 36, open at the front edge | 46 mm, wall to wall |
+| switch bracket | 34 × 33 with the panel's square corners, 1.5 deep | 33 mm |
+
+- **Fit**: `SOCK_FIT` = 0.2 mm per side.  Pocket walls are first-layer
+  features, so elephant's foot tightens them and the slicer's compensation
+  (0.15) loosens them back; the printed parts are 0.1–0.2 oversize.  The
+  coupons decide: 0.1 is a tap-in press fit, 0.35 a drop-in.
+- **Rim**: 2.4 mm of solid at deck-top height round every pocket; under
+  each pocket the skin is the normal 0.48.
+- **Airtightness**: the tube and nozzle pockets locate the parts but a press
+  fit is not a seal.  Run a bead of hot glue or silicone round the inside of
+  those two pockets before pressing the part in; the pocket keeps the bead
+  where it belongs.  The guard pocket is inside the bag, so it only needs
+  to hold: a few dots of glue.
+- The seam bolts moved down to 6.4 mm below the skin (seam ribs 9.5 tall)
+  so their heads clear the pocket pads that straddle the joints.
+- What a pocket pad adds is only its rim and pegs; the fan ring is the
+  heavy one (+15 g: two lips, a floor and the guard wall).
+
+### 9.2 How it is built
 
 ```
   section through a joint (deck upside down, as printed)
@@ -580,51 +614,55 @@ first layer is the deck's top surface, with the outlines engraved into it.
        ┃     ┃    ││    ┃     ┃                    across the joint
        ┃grid ┃    ││    ┃     ┃  grid ribs 0.9 × 5, 55 mm triangles
        ┃     ┃   ═╪╪═ M3 × 8 + nut through both seam ribs
-                  ││  seam ribs 1.6 × 7, back to back
+                  ││  seam ribs 1.6 × 9.5, back to back
 ```
 
 - **Skin**: 0.48 mm (0.20 first layer + one 0.28 layer).  A 40 mm band
   round the edge is 0.76 mm and has no ribs: the skirt plastic and its tape
   go there.
 - **Ribs**: 0.9 × 5 mm triangle grid (two 0.45 lines), closed by a rim
-  round every edge of the rib zone.  No ribs inside r = 77 (the fan guard's
-  glue ring is r 65–75) or round the nozzle slot.
-- **Joints**: jigsaw tabs in the edge band (0.15 mm clearance) hold the skin
-  in line.  A 1.6 × 7 mm seam rib runs along each inner edge, and
+  round every edge of the rib zone.  No ribs inside r = 77 (the fan ring
+  lives there) or round the nozzle slot.
+- **Joints**: a 1.6 × 9.5 mm seam rib runs along each inner edge, and
   neighbouring quarters' seam ribs sit back to back with **7 × M3 × 8 + nut**
   through them: 3 on the front-back joint (y = −82, 82, 112), 4 on the
-  left-right joint (x = ±90, ±118).
-- **Splices on top**: the fan tube flange covers the centre where all four
-  meet, the nozzle flange the back joint, the stick stand the front joint,
-  and the nickel trays the side joints.  Gluing those parts on is what
-  makes the deck one rigid piece.
+  left-right joint (x = ±90, ±118).  Jigsaw tabs in the skin (0.15 mm
+  clearance) hold it in line: one on the front half of the centre joint,
+  one at each end of the side joint, out past the trays.
+- **Splices**: the pockets that straddle the joints (nozzle, stand, both
+  trays, and the fan ring over the centre) lock them once the parts are in.
 
 **Why the bolts are where they are.**  The grid ribs meet the seams at
 regular spacings (every 95.3 mm along the front-back joint, every 55 mm
 along the left-right one).  A bolt next to one of those junctions has a rib
-running through the spot where its head or nut must sit.  The first layout
-had four of the seven bolts blocked that way.  The current positions were
-checked by intersecting the rib grid with a 6.5 × 3.5 mm head/nut seat on
-both sides of every bolt: no overlap.
+running through the spot where its head or nut must sit.  The positions
+were checked by intersecting the rib grid with a 6.5 × 3.5 mm head/nut seat
+on both sides of every bolt: no overlap.  The parts-in-pockets fit was
+checked the same way: the deck intersected with every part seated in its
+pocket is empty.
 
-### 9.2 Build order
+### 9.3 Build order
 
-1. **Print** the four quarters (PRINT_SETTINGS).  Dry-fit: the tabs should
-   push together by hand, flat on a table.
-2. **Bolt** them together upside down on a flat table: 7 × M3 × 8, head on
+1. **Print `deck_fit_test`** (18 min).  Press the fan tube, a tray and the
+   nozzle into the coupons.  Tune `SOCK_FIT` until they go in with a firm
+   push and stay.  Reprint the coupons, not the quarters.
+2. **Print** the four quarters.  Hold each up to a bright light: no
+   pinholes in the skin.
+3. **Bolt** them together upside down on a flat table: 7 × M3 × 8, head on
    one rib, nut on the other.  Snug, not tight: PLA ribs crush.
-3. **Tape every joint underneath** with clear packing tape.  The underside
+4. **Tape every joint underneath** with clear packing tape.  The underside
    is the lid of the air cushion: a leak here is lift lost.
-4. **Glue the fan guard** under the hole (rib-free ring) and **tape the
-   skirt** on in the 40 mm band, as with foam.
-5. Flip it.  **Glue the parts on their engraved outlines**: fan tube first
-   (airtight all the way round), then nozzle, stick stand, trays, coin bin,
-   switch bracket.  Tape any joint on top that no part covers.
+5. **Guard** into its pocket under the hole (nubs down), a few dots of glue.
+   **Tape the skirt** on in the 40 mm band, as with foam.
+6. Flip it.  **Bead of glue in the tube pocket, press the tube in.**  Same
+   for the nozzle.  Trays, bin, stand and bracket just press in; a dot of
+   glue on each if you want them permanent.
 
-### 9.3 Checks
+### 9.4 Checks
 
 | Check | How | If it fails |
 |---|---|---|
+| Parts fit | the coupons, before the quarters | `SOCK_FIT` ± 0.05 |
 | Skin airtight | hold each quarter up to a bright light before assembly: no pinholes | set `DECK_SKIN = 0.76` (3 layers, +30 g) and reprint that quarter |
 | Joints airtight | float the craft and run a damp finger along the seams; the fan note changes if a joint is open | more tape underneath |
 | Flat | the assembled deck lies flat on a table with no rocking | loosen the seam bolts, press flat, retighten |

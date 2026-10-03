@@ -37,6 +37,10 @@
                     OPTIONAL printed deck in four quarters (front-left,
                     front-right, back-left, back-right) that replaces the
                     foam board.  "deck" shows all four put together.
+                    Every part presses into a pocket in it (DECK_SOCKETS).
+     "deck_fit_test" three coupons of those pockets.  Print this first and
+                    press the real parts in; adjust SOCK_FIT, then print
+                    the quarters.
 
    Hardware to buy (none of it comes with the motor)
    ------------------------------------------------------------------------
@@ -140,7 +144,7 @@ SLOT_BACK   = 42;     // slot centre, this far forward of the back edge
 // Optional replacement for the foam board: four quarters, each fits the P1S
 // bed.  A thin skin (the deck's top face, printed on the bed) with a
 // triangle grid of ribs underneath, like an aircraft panel.  See PART 11.
-DECK_PRINTED = false; // assembly preview: show the printed deck, not foam
+DECK_PRINTED = true;  // assembly preview: show the printed deck, not foam
 DECK_SKIN   = 0.48;   // 2 layers at 0.28 (0.20 first layer + 0.28).  If the
                       // deck leaks air, use 0.76 (3 layers), +30 g.
 DECK_RIB_H  = 5;      // grid ribs, below the skin
@@ -151,12 +155,38 @@ DECK_BAND   = 40;     // flat band round the edge, no ribs: the skirt plastic
 DECK_BAND_SKIN = 0.76;// the band is 3 layers: with no ribs, 2 would be floppy
                       // when you pick the craft up by its edge
 DECK_SEAM_W = 1.6;    // seam ribs, one each side of every joint, bolted
-DECK_SEAM_H = 7;
+DECK_SEAM_H = 9.5;    // tall enough that the bolt heads sit below the
+                      // socket pads (the bolt axis is 3.6 above the rib foot)
 DECK_TAB_D  = 9;      // jigsaw tabs that lock the skin across the joints
 DECK_TAB_CLR= 0.15;
 DECK_MARKS  = true;   // engraved outlines showing where each part glues on
 DECK_MARK_D = 0.2;    // (the first layer only)
 DECK_MARK_W = 0.8;
+
+// ---------------------------------------------------------------- deck sockets
+// Every printed part presses into a pocket in the deck's top face (the fan
+// guard into one underneath), so nothing is marked out or held by glue
+// alone, and the parts cannot be put on crooked.  Pockets are cut to the
+// parts as drawn in this file.  Print "deck_fit_test" first: it is three
+// small coupons to press the real parts into before printing the quarters.
+// Printing rule behind all of this: the deck prints top face down, so a
+// pocket floor is a bridge.  Every pocket is either narrow (the fan ring,
+// the nozzle frame) or has something at deck-top height inside it for the
+// bridge to land on (the pegs through the trays' floor holes, the lip round
+// the nozzle slot).  The bin, stand and bracket pockets are plain bridges
+// of 33 to 53 mm, which the P1S does without help.
+DECK_SOCKETS = true;
+SOCK_D      = 1.5;    // pocket depth: half the thinnest flange (nozzle, 2.4)
+SOCK_FIT    = 0.2;    // per side.  The pocket walls are first-layer features,
+                      // so elephant's foot makes them tighter; the slicer's
+                      // compensation (0.15 in the Bambu profiles) puts most
+                      // of that back.  Tight: 0.1.  Drop-in: 0.35.
+SOCK_RIM    = 2.4;    // solid rim round each pocket, flush with the deck top
+SOCK_FLOOR  = 0.76;   // fan ring: floor between the tube flange above and the
+                      // guard below (3 layers)
+SOCK_LIP    = 1.35;   // lip round the nozzle slot that the frame bridges to.
+                      // It makes the slot 96.7 x 26.7; the cards absorb that.
+SOCK_PEG_D  = 11.2;   // pegs through the trays' 12 mm floor holes (print ~11.7)
 
 // where things sit on the deck: shared by the assembly preview and the
 // engraved marks on the printed deck
@@ -916,19 +946,25 @@ module templates() {
    - A strip of clear packing tape along each joint on top and underneath
      makes it airtight.  The deck is the lid of the air cushion.
 
-   Build order (ENGINEERING_CHECK §9): bolt the quarters upside down on a
-   flat table (7x M3 x 8 + nut, snug), tape the joints underneath, glue the
-   guard and tape the skirt on, flip it, glue the parts on their engraved
-   outlines, tape any joint on top that no part covers.
+   Build order (ENGINEERING_CHECK §9): print deck_fit_test and tune
+   SOCK_FIT on the real parts; print the quarters; bolt them upside down on
+   a flat table (7x M3 x 8 + nut, snug); tape the joints underneath; guard
+   into its pocket, skirt taped on; flip it; a bead of glue in the tube and
+   nozzle pockets, then press every part into its pocket.
    ========================================================================== */
 function tray_size()  = [2 * SLOT_ROLL_W + 3 * TRAY_WALL, SLOT_ROLL_L + 2 * TRAY_WALL];
 function bin_size()   = [2 * SLOT_ROLL_W + 3 * TRAY_WALL, SLOT_HALF_L + 2 * TRAY_WALL];
 function deck_fan_clear() = GUARD_OD / 2 + 2;      // rib-free: guard glue ring
 function slot_centre() = [0, -DECK_Y / 2 + SLOT_BACK];
 
-// jigsaw tabs: position along the joint, and which side (+1 / -1) owns it
-DECK_TABS_V = [[-(DECK_Y / 2 - DECK_BAND / 2), -1], [DECK_Y / 2 - DECK_BAND / 2, 1]];   // joint x = 0
-DECK_TABS_H = [[-(DECK_X / 2 - DECK_BAND / 2), 1], [DECK_X / 2 - DECK_BAND / 2, -1]];   // joint y = 0
+// jigsaw tabs: position along the joint, and which side (+1 / -1) owns it.
+// With sockets, the pockets that straddle a joint (nozzle, stand, trays, the
+// fan ring) lock it once the part is in, so the tabs move out of their way:
+// one on the front half of x = 0, and the y = 0 pair out past the trays.
+DECK_TABS_V = DECK_SOCKETS ? [[105, 1]]
+            : [[-(DECK_Y / 2 - DECK_BAND / 2), -1], [DECK_Y / 2 - DECK_BAND / 2, 1]];   // joint x = 0
+DECK_TABS_H = DECK_SOCKETS ? [[-(DECK_X / 2 - 10), 1], [DECK_X / 2 - 10, -1]]
+            : [[-(DECK_X / 2 - DECK_BAND / 2), 1], [DECK_X / 2 - DECK_BAND / 2, -1]];   // joint y = 0
 // bolt holes through the seam ribs, along each joint.  Each one sits where
 // no grid rib meets the seam, so the head and the nut both seat flat on it
 // (grid ribs reach the joints at multiples of 47.6 / 55 / 95.3 mm).
@@ -939,7 +975,10 @@ module deck_outline_2d() {
     difference() {
         rrect([DECK_X, DECK_Y], 10, center = true);
         circle(d = DECK_HOLE_D);
-        translate(slot_centre()) rrect([SLOT_X, SLOT_Y], 2, center = true);
+        // with sockets the slot is smaller by the lip (see sock_lip_2d)
+        translate(slot_centre())
+            offset(delta = DECK_SOCKETS ? -(0.3 + SOCK_LIP) : 0)
+                rrect([SLOT_X, SLOT_Y], 2, center = true);
     }
 }
 
@@ -1005,21 +1044,105 @@ module deck_mark_box_2d(c, size) {
 }
 
 module deck_marks_2d() {
-    for (s = [-1, 1]) deck_mark_box_2d([s * TRAY_X, 0], tray_size());
-    deck_mark_box_2d(BIN_POS, bin_size());
     deck_mark_box_2d(AA2_POS, AA2_SIZE);
     for (s = [-1, 1]) deck_mark_box_2d([s * AA4_POS[0], AA4_POS[1]], AA4_SIZE);
-    deck_mark_box_2d([SW_POS[0], SW_POS[1] + (SW_BASE_D + SW_FACE_T) / 2],
-                     [SW_FACE_W, SW_BASE_D + SW_FACE_T]);
-    deck_mark_box_2d([0, DECK_Y / 2 - STAND_Y / 2], [STAND_X, STAND_Y]);
-    deck_mark_box_2d(slot_centre(), [nz_out_x() + 2 * NZ_FLANGE, nz_out_y() + 2 * NZ_FLANGE]);
-    difference() { circle(d = FLANGE_OD); circle(d = FLANGE_OD - 2 * DECK_MARK_W); }
+    if (!DECK_SOCKETS) {                  // the pockets are the outlines otherwise
+        for (s = [-1, 1]) deck_mark_box_2d([s * TRAY_X, 0], tray_size());
+        deck_mark_box_2d(BIN_POS, bin_size());
+        deck_mark_box_2d([SW_POS[0], SW_POS[1] + (SW_BASE_D + SW_FACE_T) / 2],
+                         [SW_FACE_W, SW_BASE_D + SW_FACE_T]);
+        deck_mark_box_2d([0, DECK_Y / 2 - STAND_Y / 2], [STAND_X, STAND_Y]);
+        deck_mark_box_2d(slot_centre(), [nz_out_x() + 2 * NZ_FLANGE, nz_out_y() + 2 * NZ_FLANGE]);
+        difference() { circle(d = FLANGE_OD); circle(d = FLANGE_OD - 2 * DECK_MARK_W); }
+    }
+}
+
+// ---- sockets.  Footprints are the parts' own base outlines, in deck
+// coordinates, taken from the same parameters the parts are drawn with.
+module sock_tray_2d()    { for (s = [-1, 1]) translate([s * TRAY_X, 0]) rrect(tray_size(), 3, center = true); }
+module sock_bin_2d()     { translate(BIN_POS) rrect(bin_size(), 3, center = true); }
+module sock_stand_2d() {                              // base plate, incl. the arm off the edge
+    arm = STAND_OVERHANG + TOWER_D / 2;
+    translate([0, DECK_Y / 2 - STAND_Y / 2 + arm / 2])
+        rrect([STAND_X, STAND_Y + arm], 4, center = true);
+}
+module sock_bracket_2d() {                            // base, plus the panel's
+    translate([SW_POS[0] - SW_FACE_W / 2, SW_POS[1]]) { // square corners
+        rrect([SW_FACE_W, SW_BASE_D + SW_FACE_T], 3);
+        square([SW_FACE_W, SW_FACE_T]);
+    }
+}
+module sock_nozzle_2d() {
+    translate(slot_centre())
+        rrect([nz_out_x() + 2 * NZ_FLANGE, nz_out_y() + 2 * NZ_FLANGE], 4, center = true);
+}
+module sock_flat_2d() { sock_tray_2d(); sock_bin_2d(); sock_stand_2d(); sock_bracket_2d(); sock_nozzle_2d(); }
+
+// the lip inside the nozzle's slot: 0.3 inside the nozzle's own slot edge so
+// it never touches, SOCK_LIP wide, standing at deck-top height.  The frame
+// pocket's floor bridges from the pocket wall to it.
+module sock_lip_2d() {
+    translate(slot_centre()) offset(delta = -0.3) rrect([SLOT_X, SLOT_Y], 2, center = true);
+}
+
+// pegs that stand up through the trays' floor holes, flush with the deck top
+module sock_pegs() {
+    if (TRAY_LIGHTEN)
+        for (t = [-1, 1], s = [-1, 1], k = [-1, 0, 1])
+            translate([t * TRAY_X + s * (SLOT_ROLL_W + TRAY_WALL) / 2, k * 26, -SOCK_D - EPS])
+                cylinder(d = SOCK_PEG_D, h = SOCK_D + 2 * EPS);
+}
+
+// solid pads under every flat pocket: rim + floor, from the deck top down
+module sock_pads() {
+    translate([0, 0, -(SOCK_D + DECK_SKIN)])
+        linear_extrude(SOCK_D + DECK_SKIN, convexity = 8)
+            offset(delta = SOCK_FIT + SOCK_RIM) sock_flat_2d();
+}
+
+// the fan ring: tube flange pocket on top, guard pocket underneath, one
+// floor between them.  Lips either side of the top pocket stand at deck-top
+// height, so its floor bridges 14.7 mm, lip to lip.
+module sock_fan_ring() {
+    ri  = DECK_HOLE_D / 2;                // 65, the hole
+    rli = TUBE_BORE / 2 - 0.5;            // inner lip, 0.5 inside the tube bore
+    rp  = FLANGE_OD / 2 + SOCK_FIT;       // flange pocket
+    rlo = rp + SOCK_RIM;                  // outer lip
+    rg  = GUARD_OD / 2 + SOCK_FIT;        // guard pocket, underneath
+    zf  = -SOCK_D - SOCK_FLOOR;           // underside of the floor
+    rotate_extrude($fn = 240)
+        union() {
+            translate([ri, zf]) square([rli - ri, -zf]);              // inner lip
+            translate([rp, zf]) square([rlo - rp, -zf]);              // outer lip
+            translate([ri, zf]) square([rlo - ri, SOCK_FLOOR]);       // floor
+            translate([rg, zf - SOCK_D]) square([SOCK_RIM, SOCK_D]);  // guard wall
+        }
+}
+
+// everything that gets cut: the pockets, less the pegs
+module sock_cuts() {
+    difference() {
+        translate([0, 0, -SOCK_D]) linear_extrude(SOCK_D + 1, convexity = 8)
+            difference() {
+                offset(delta = SOCK_FIT) sock_flat_2d();
+                sock_lip_2d();
+            }
+        sock_pegs();
+    }
+    rotate_extrude($fn = 240) {
+        translate([TUBE_BORE / 2 - 0.5, -SOCK_D])                      // tube flange
+            square([FLANGE_OD / 2 + SOCK_FIT - TUBE_BORE / 2 + 0.5, SOCK_D + 1]);
+        translate([DECK_HOLE_D / 2 - 1, -2 * SOCK_D - SOCK_FLOOR])     // guard
+            square([GUARD_OD / 2 + SOCK_FIT - DECK_HOLE_D / 2 + 1, SOCK_D]);
+    }
 }
 
 // the quarter as it sits on the craft (top face at z = 0)
 module deck_quarter_installed(sx, sy) {
     zr = -DECK_SKIN;                                    // underside of the skin
-    zb = zr - DECK_SEAM_H / 2;                          // bolt height
+    zb = zr - DECK_SEAM_H + 3.6;                        // bolt axis: the nut's
+                                                        // corners clear the rib
+                                                        // foot, the head the pads
     difference() {
         union() {
             // skin, thicker in the rib-free edge band
@@ -1049,7 +1172,14 @@ module deck_quarter_installed(sx, sy) {
                             square([1000, DECK_SEAM_W]);
                     }
                 }
+            // socket pads and the fan ring, this quarter's share
+            if (DECK_SOCKETS)
+                intersection() {
+                    union() { sock_pads(); sock_fan_ring(); }
+                    translate([0, 0, -20]) linear_extrude(40, convexity = 6) deck_quarter_2d(sx, sy);
+                }
         }
+        if (DECK_SOCKETS) sock_cuts();
         // bolt holes through the seam ribs
         for (p = DECK_BOLTS_V) if (p * sy > 0)
             translate([0, p, zb]) rotate([0, 90, 0]) cylinder(d = M3_CLEAR, h = 20, center = true);
@@ -1073,6 +1203,49 @@ module deck_printed() {
     for (sx = [-1, 1], sy = [-1, 1]) deck_quarter_installed(sx, sy);
 }
 
+// the deck in one piece, no seams or tabs: only for cutting coupons from
+module deck_whole_installed() {
+    difference() {
+        union() {
+            translate([0, 0, -DECK_SKIN]) linear_extrude(DECK_SKIN) deck_outline_2d();
+            translate([0, 0, -DECK_BAND_SKIN]) linear_extrude(DECK_BAND_SKIN - DECK_SKIN + 0.01)
+                intersection() {
+                    deck_outline_2d();
+                    difference() {
+                        rrect([DECK_X, DECK_Y], 10, center = true);
+                        offset(delta = -DECK_BAND) rrect([DECK_X, DECK_Y], 10, center = true);
+                    }
+                }
+            translate([0, 0, -DECK_SKIN - DECK_RIB_H])
+                linear_extrude(DECK_RIB_H + 0.01, convexity = 10) deck_grid_2d();
+            if (DECK_SOCKETS) { sock_pads(); sock_fan_ring(); }
+        }
+        if (DECK_SOCKETS) sock_cuts();
+    }
+}
+
+// three coupons cut out of the socketed deck, laid side by side, printed the
+// same way up as the quarters.  Press the real tube, a tray and the nozzle
+// into them before committing to four 40-minute prints; adjust SOCK_FIT.
+module deck_fit_test() {
+    c = [[[0, 75],       [60, 36]],     // fan ring: a chord of the pocket, both lips
+         [[TRAY_X, 30],  [64, 40]],     // one end of a tray pocket, two pegs
+         [[-50, -140],   [40, 32]]];    // nozzle pocket corner, with the slot lip
+    gap = 8;
+    w   = c[0][1][0] + c[1][1][0] + c[2][1][0] + 2 * gap;
+    x   = [-w / 2 + c[0][1][0] / 2,
+           -w / 2 + c[0][1][0] + gap + c[1][1][0] / 2,
+            w / 2 - c[2][1][0] / 2];
+    mirror([0, 0, 1])
+        for (i = [0 : 2])
+            translate([x[i] - c[i][0][0], -c[i][0][1], 0])
+                intersection() {
+                    deck_whole_installed();
+                    translate([c[i][0][0], c[i][0][1], 0])
+                        cube([c[i][1][0], c[i][1][1], 40], center = true);
+                }
+}
+
 
 /* ==========================================================================
    ASSEMBLY PREVIEW — not printable, just a fit check.
@@ -1091,7 +1264,8 @@ module deck_preview() {
 }
 
 module assembly(skirt = true) {
-    face     = TUBE_H + HUB_T;              // motor face height
+    drop     = (DECK_PRINTED && DECK_SOCKETS) ? SOCK_D : 0;   // parts sit in pockets
+    face     = TUBE_H + HUB_T - drop;       // motor face height
     prop_top = face - PROP_DROP;
     dowel_y  = DECK_Y / 2 + STAND_OVERHANG;
 
@@ -1106,7 +1280,8 @@ module assembly(skirt = true) {
              " mm", (PROP_DROP - HUB_T < 3) ? "  <<< TOO CLOSE, check PROP_DROP" : "  ok"));
 
     if (DECK_PRINTED) color("WhiteSmoke") deck_printed(); else deck_preview();
-    under = DECK_PRINTED ? DECK_SKIN : DECK_T;          // underside of the deck
+    under = !DECK_PRINTED ? DECK_T                      // where the guard's face sits
+          : DECK_SOCKETS ? SOCK_D + SOCK_FLOOR : DECK_SKIN;
 
     // skirt, roughly as it looks inflated
     if (skirt) color("SkyBlue", 0.18)
@@ -1115,8 +1290,8 @@ module assembly(skirt = true) {
                 rrect([DECK_X + 2 * SKIRT_OVER, DECK_Y + 2 * SKIRT_OVER], 24, center = true);
 
     color("DimGray")   translate([0, 0, -under]) mirror([0, 0, 1]) fan_guard();
-    color("SteelBlue") fan_tube();
-    color("Teal")      translate([0, 0, TUBE_H])
+    color("SteelBlue") translate([0, 0, -drop]) fan_tube();
+    color("Teal")      translate([0, 0, TUBE_H - drop])
         if (MOTOR_TYPE == "HS390") fan_cage_hs390(); else fan_cage();
 
     // motor and propeller, preview only
@@ -1131,23 +1306,23 @@ module assembly(skirt = true) {
 
     // nozzle, over the slot, blowing backwards, with a "12" in it
     color("Chocolate")
-        translate([0, -DECK_Y / 2 + SLOT_BACK, 0]) nozzle();
+        translate([0, -DECK_Y / 2 + SLOT_BACK, -drop]) nozzle();
     if (NOZZLE_V == 2)
         color("Gold")
             translate([-CARD_W / 2, -DECK_Y / 2 + SLOT_BACK + nz_wall_y() - CARD_CLEAR,
-                       NZ_FLOOR + 0.5])
+                       NZ_FLOOR + 0.5 - drop])
                 rotate([90, 0, 0]) card(plate_hole(12), "12");
     else
         color("Gold")
             translate([0, -DECK_Y / 2 + SLOT_BACK - nz_out_y() / 2 - SOCKET_LEN
-                          - PLATE_FLANGE_T, SOCKET_Z])
+                          - PLATE_FLANGE_T, SOCKET_Z - drop])
                 rotate([-90, 0, 0]) rotate(180) speed_plate(plate_hole(12), "12");
 
     // cargo: rolls either side of the fan, bin off to one side at the front
     // (keep it clear of the fan tube flange and the stick stand)
     for (s = [-1, 1])
-        color("SeaGreen") translate([s * TRAY_X, 0, 0]) nickel_tray();
-    color("SeaGreen") translate(BIN_POS) coin_bin();
+        color("SeaGreen") translate([s * TRAY_X, 0, -drop]) nickel_tray();
+    color("SeaGreen") translate([BIN_POS[0], BIN_POS[1], -drop]) coin_bin();
 
     // battery holders, not printed; shown so nothing else gets planned for
     // that space.  LampVPath 4 x AA is 62 x 57 x 16 (four cells side by
@@ -1160,12 +1335,12 @@ module assembly(skirt = true) {
         cube([AA2_SIZE[0], AA2_SIZE[1], 14.6], center = true);
 
     // toggle switch on its bracket, right side, lever pointing backwards
-    color("Crimson") translate([SW_POS[0] - SW_FACE_W / 2, SW_POS[1], 0]) switch_bracket();
-    color("Silver") translate([SW_POS[0], SW_POS[1], SW_HOLE_Z]) rotate([90, 0, 0]) cylinder(d = 6, h = 18);
+    color("Crimson") translate([SW_POS[0] - SW_FACE_W / 2, SW_POS[1], -drop]) switch_bracket();
+    color("Silver") translate([SW_POS[0], SW_POS[1], SW_HOLE_Z - drop]) rotate([90, 0, 0]) cylinder(d = 6, h = 18);
 
     // timing stick, hanging out past the front edge
-    color("Crimson") translate([0, DECK_Y / 2 - STAND_Y / 2, 0]) stick_stand();
-    color("Tan") translate([0, dowel_y, 1.5]) cylinder(d = DOWEL_D, h = 240);
+    color("Crimson") translate([0, DECK_Y / 2 - STAND_Y / 2, -drop]) stick_stand();
+    color("Tan") translate([0, dowel_y, 1.5 - drop]) cylinder(d = DOWEL_D, h = 240);
 }
 
 
@@ -1195,5 +1370,6 @@ else if (PART == "deck_fr")     deck_quarter( 1,  1);     // front right
 else if (PART == "deck_bl")     deck_quarter(-1, -1);     // back left
 else if (PART == "deck_br")     deck_quarter( 1, -1);     // back right
 else if (PART == "deck")        deck_printed();           // all four, preview
+else if (PART == "deck_fit_test") deck_fit_test();
 else if (PART == "templates")   templates();
 else echo(str("Unknown PART: ", PART));
