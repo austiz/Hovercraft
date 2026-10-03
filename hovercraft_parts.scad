@@ -38,7 +38,8 @@
                     front-right, back-left, back-right) that replaces the
                     foam board.  "deck" shows all four put together.
                     Every part presses into a pocket in it (DECK_SOCKETS).
-     "deck_fit_test" three coupons of those pockets.  Print this first and
+     "deck_fit_test" three coupons of those pockets and a jigsaw tab pair.
+                    Print this first and
                     press the real parts in; adjust SOCK_FIT, then print
                     the quarters.
 
@@ -48,8 +49,8 @@
      6x M3 x 10 + 6x M3 nut    cage to tube lugs (nuts drop into the lugs)
      1x M3 x 8                 dowel set screw in the stick stand
      7x M3 x 8 + 7x M3 nut     printed deck only: bolts the seam ribs
-                               together.  Plus clear packing tape for
-                               the joints, top and bottom.
+                               together.  Plus CA glue for the rib faces
+                               and clear packing tape for the joints.
      HS390 instead: 2x M2.5 x 5 socket head (M2.6 x 5 if its holes are
                                M2.6, as on the Mabuchi 385), and a
                                2.3 mm collet prop adapter
@@ -158,7 +159,9 @@ DECK_SEAM_W = 1.6;    // seam ribs, one each side of every joint, bolted
 DECK_SEAM_H = 9.5;    // tall enough that the bolt heads sit below the
                       // socket pads (the bolt axis is 3.6 above the rib foot)
 DECK_TAB_D  = 9;      // jigsaw tabs that lock the skin across the joints
-DECK_TAB_CLR= 0.15;
+DECK_TAB_CLR= 0.2;    // knob and slot are both first-layer features, so
+                      // elephant's foot closes this from both sides.
+                      // deck_fit_test has a tab pair to check it
 DECK_MARKS  = true;   // engraved outlines showing where each part glues on
 DECK_MARK_D = 0.2;    // (the first layer only)
 DECK_MARK_W = 0.8;
@@ -947,8 +950,9 @@ module templates() {
      makes it airtight.  The deck is the lid of the air cushion.
 
    Build order (ENGINEERING_CHECK §9): print deck_fit_test and tune
-   SOCK_FIT on the real parts; print the quarters; bolt them upside down on
-   a flat table (7x M3 x 8 + nut, snug); tape the joints underneath; guard
+   SOCK_FIT on the real parts; print the quarters; glue the rib faces (CA)
+   and bolt them upside down on a flat table (7x M3 x 8 + nut, snug); tape
+   the joints underneath; guard
    into its pocket, skirt taped on; flip it; a bead of glue in the tube and
    nozzle pockets, then press every part into its pocket.
    ========================================================================== */
@@ -958,10 +962,13 @@ function deck_fan_clear() = GUARD_OD / 2 + 2;      // rib-free: guard glue ring
 function slot_centre() = [0, -DECK_Y / 2 + SLOT_BACK];
 
 // jigsaw tabs: position along the joint, and which side (+1 / -1) owns it.
-// With sockets, the pockets that straddle a joint (nozzle, stand, trays, the
-// fan ring) lock it once the part is in, so the tabs move out of their way:
-// one on the front half of x = 0, and the y = 0 pair out past the trays.
-DECK_TABS_V = DECK_SOCKETS ? [[105, 1]]
+// A knob can only go into its slot straight down (it is wider than its
+// neck), so a tab must sit where nothing stands over the slot: in the edge
+// band, where there are no ribs and the seam ribs have ended.  With sockets
+// the band on x = 0 is taken by the stand pocket (front) and the nozzle
+// pocket (back), and those pockets lock that joint better than a tab would,
+// so it has none; the y = 0 pair moves out past the tray pockets.
+DECK_TABS_V = DECK_SOCKETS ? []
             : [[-(DECK_Y / 2 - DECK_BAND / 2), -1], [DECK_Y / 2 - DECK_BAND / 2, 1]];   // joint x = 0
 DECK_TABS_H = DECK_SOCKETS ? [[-(DECK_X / 2 - 10), 1], [DECK_X / 2 - 10, -1]]
             : [[-(DECK_X / 2 - DECK_BAND / 2), 1], [DECK_X / 2 - DECK_BAND / 2, -1]];   // joint y = 0
@@ -1243,6 +1250,16 @@ module deck_fit_test() {
                     deck_whole_installed();
                     translate([c[i][0][0], c[i][0][1], 0])
                         cube([c[i][1][0], c[i][1][1], 40], center = true);
+                }
+    // and a jigsaw tab: both halves of the one at the end of the side joint,
+    // band thickness, 2 mm apart.  Push them together on the table.
+    tx = DECK_TABS_H[1][0];
+    for (s = [-1, 1])
+        translate([-tx, -44 + s * 2, 0])
+            linear_extrude(DECK_BAND_SKIN)
+                intersection() {
+                    deck_side_2d("H", s);
+                    translate([tx - 15, -15]) square([30, 30]);
                 }
 }
 

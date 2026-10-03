@@ -626,9 +626,17 @@ mid-air.  That one fact shaped every pocket:
 - **Joints**: a 1.6 × 9.5 mm seam rib runs along each inner edge, and
   neighbouring quarters' seam ribs sit back to back with **7 × M3 × 8 + nut**
   through them: 3 on the front-back joint (y = −82, 82, 112), 4 on the
-  left-right joint (x = ±90, ±118).  Jigsaw tabs in the skin (0.15 mm
-  clearance) hold it in line: one on the front half of the centre joint,
-  one at each end of the side joint, out past the trays.
+  left-right joint (x = ±90, ±118).  **Glue the rib faces** (CA or epoxy)
+  as you bolt them: the bolts are the clamp.  Bolts alone leave the ribs
+  free to gap between bolts when the deck bends skin-up; glued faces do
+  not.  Jigsaw tabs in the skin (0.2 mm clearance) hold it in line while
+  you fit the bolts, one at each end of the side joint, out past the
+  trays.  They are two layers thick and carry nothing.  A knob is wider
+  than its neck, so it can only enter its slot straight down: a tab has to
+  sit where nothing stands over the slot, which means the edge band, past
+  the end of the seam ribs.  The centre joint has no free band (stand
+  pocket at the front, nozzle pocket at the back), so it has no tab; those
+  two pockets lock it instead.
 - **Splices**: the pockets that straddle the joints (nozzle, stand, both
   trays, and the fan ring over the centre) lock them once the parts are in.
 
@@ -648,8 +656,10 @@ pocket is empty.
    push and stay.  Reprint the coupons, not the quarters.
 2. **Print** the four quarters.  Hold each up to a bright light: no
    pinholes in the skin.
-3. **Bolt** them together upside down on a flat table: 7 × M3 × 8, head on
-   one rib, nut on the other.  Snug, not tight: PLA ribs crush.
+3. **Glue and bolt** them together upside down on a flat table: CA or
+   epoxy on the seam rib faces, then 7 × M3 × 8, head on one rib, nut on
+   the other.  Snug, not tight: PLA ribs crush.  Leave it flat until the
+   glue has cured.
 4. **Tape every joint underneath** with clear packing tape.  The underside
    is the lid of the air cushion: a leak here is lift lost.
 5. **Guard** into its pocket under the hole (nubs down), a few dots of glue.
