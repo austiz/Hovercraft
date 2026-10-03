@@ -51,6 +51,10 @@
      7x M3 x 8 + 7x M3 nut     printed deck only: bolts the seam ribs
                                together.  Plus CA glue for the rib faces
                                and clear packing tape for the joints.
+     5 ft of 1/8" or 3/16" shock cord (bungee by the foot, any hardware
+                               store) + a cord lock   holds the skirt on the
+                               deck's lip (DECK_LIP).  Cut the skirt
+                               plastic 44 x 43 cm: it wraps over the lip.
      HS390 instead: 2x M2.5 x 5 socket head (M2.6 x 5 if its holes are
                                M2.6, as on the Mabuchi 385), and a
                                2.3 mm collet prop adapter
@@ -146,15 +150,18 @@ SLOT_BACK   = 42;     // slot centre, this far forward of the back edge
 // bed.  A thin skin (the deck's top face, printed on the bed) with a
 // triangle grid of ribs underneath, like an aircraft panel.  See PART 11.
 DECK_PRINTED = true;  // assembly preview: show the printed deck, not foam
-DECK_SKIN   = 0.48;   // 2 layers at 0.28 (0.20 first layer + 0.28).  If the
-                      // deck leaks air, use 0.76 (3 layers), +30 g.
+DECK_SKIN   = 0.76;   // 3 layers (0.20 first layer + 2 x 0.28): nothing on
+                      // the deck is thinner than 3 layers.  0.48 (2 layers)
+                      // saves ~30 g and is airtight on the bed, but the
+                      // owner wants 3 everywhere.
 DECK_RIB_H  = 5;      // grid ribs, below the skin
 DECK_RIB_W  = 0.9;    // two 0.45 lines
 DECK_CELL   = 55;     // triangle side of the grid
 DECK_BAND   = 40;     // flat band round the edge, no ribs: the skirt plastic
                       // and its tape go here
-DECK_BAND_SKIN = 0.76;// the band is 3 layers: with no ribs, 2 would be floppy
-                      // when you pick the craft up by its edge
+DECK_BAND_SKIN = 0.76;// the band, no ribs: 3 layers like the skin.  A strip
+                      // beside the tape groove gets a 4th so the groove
+                      // floor is still 3
 DECK_SEAM_W = 1.6;    // seam ribs, one each side of every joint, bolted
 DECK_SEAM_H = 9.5;    // tall enough that the bolt heads sit below the
                       // socket pads (the bolt axis is 3.6 above the rib foot)
@@ -202,6 +209,21 @@ SOCK_PEG_D  = 11.2;   // pegs through the trays' 12 mm floor holes (print ~11.7)
 DECK_TAPE_IN = 10;
 DECK_TAPE_W  = 1.0;
 DECK_TAPE_D  = 0.28;
+
+// ---------------------------------------------------------------- skirt lip
+// A lip round the underside of the edge, like a bucket rim turned down,
+// with a ridge at its bottom.  The skirt plastic wraps over the lip and a
+// loop of 1/8" or 3/16" shock cord, pulled tight above the ridge, holds it and
+// seals it: a skirt swap takes a minute and nothing is taped.  The lip
+// also stiffens the edge.  The tape line stays, for a strip of tape over
+// the cord on race day if you want it.
+DECK_LIP     = true;
+LIP_H        = 10;     // below the band's underside: 3/16" cord + plastic fit
+LIP_T        = 1.35;   // 3 lines
+LIP_RIDGE    = 1.6;    // ridge at the bottom, outward, past the deck edge
+LIP_RIDGE_H  = 1.2;    // ridge height; above it, 45 degree steps back to the wall
+LIP_CORD_D   = 4.8;    // hardware-store shock cord: 1/8" (3.2) or 3/16" (4.8),
+                       // sold by the foot.  ~1.5 m, plus a cord lock or a knot
 
 // where things sit on the deck: shared by the assembly preview and the
 // engraved marks on the printed deck
@@ -1076,6 +1098,28 @@ module deck_marks_2d() {
     }
 }
 
+// the lip: wall at the edge, ridge at the bottom, stepped chamfer above
+// the ridge so the ridge prints without support (it is on the print's top
+// side, the overhang faces the bed).  Includes the ridge outside the edge,
+// so it is clipped by half-planes, not by the deck outline.
+module deck_lip() {
+    z0 = -DECK_BAND_SKIN;                    // top of the lip
+    z1 = z0 - LIP_H;                         // bottom
+    module ring(out, in) {
+        difference() {
+            offset(delta = out) rrect([DECK_X, DECK_Y], 10, center = true);
+            offset(delta = in)  rrect([DECK_X, DECK_Y], 10, center = true);
+        }
+    }
+    translate([0, 0, z1]) linear_extrude(LIP_H, convexity = 4) ring(0, -LIP_T);         // wall
+    translate([0, 0, z1]) linear_extrude(LIP_RIDGE_H + EPS, convexity = 4) ring(LIP_RIDGE, -LIP_T); // ridge
+    steps = 4;
+    for (k = [1 : steps])                                                            // chamfer
+        translate([0, 0, z1 + LIP_RIDGE_H + (k - 1) * LIP_RIDGE / steps])
+            linear_extrude(LIP_RIDGE / steps + EPS, convexity = 4)
+                ring(LIP_RIDGE * (1 - k / steps), -LIP_T);
+}
+
 module deck_tape_line_2d() {
     difference() {
         offset(delta = -DECK_TAPE_IN) rrect([DECK_X, DECK_Y], 10, center = true);
@@ -1176,13 +1220,22 @@ module deck_quarter_installed(sx, sy) {
         union() {
             // skin, thicker in the rib-free edge band
             translate([0, 0, -DECK_SKIN]) linear_extrude(DECK_SKIN) deck_quarter_2d(sx, sy);
-            translate([0, 0, -DECK_BAND_SKIN]) linear_extrude(DECK_BAND_SKIN - DECK_SKIN + 0.01)
-                intersection() {
-                    deck_quarter_2d(sx, sy);
-                    difference() {
-                        rrect([DECK_X, DECK_Y], 10, center = true);
-                        offset(delta = -DECK_BAND) rrect([DECK_X, DECK_Y], 10, center = true);
+            if (DECK_BAND_SKIN > DECK_SKIN)
+                translate([0, 0, -DECK_BAND_SKIN]) linear_extrude(DECK_BAND_SKIN - DECK_SKIN + 0.01)
+                    intersection() {
+                        deck_quarter_2d(sx, sy);
+                        difference() {
+                            rrect([DECK_X, DECK_Y], 10, center = true);
+                            offset(delta = -DECK_BAND) rrect([DECK_X, DECK_Y], 10, center = true);
+                        }
                     }
+            // the skirt lip, this quarter's share (half-planes, so the ridge
+            // outside the deck outline survives)
+            if (DECK_LIP)
+                intersection() {
+                    deck_lip();
+                    translate([0, 0, -20]) linear_extrude(40, convexity = 4)
+                        intersection() { deck_side_2d("V", sx); deck_side_2d("H", sy); }
                 }
             // grid ribs, this quarter only
             translate([0, 0, zr - DECK_RIB_H]) linear_extrude(DECK_RIB_H + 0.01, convexity = 10)
@@ -1201,8 +1254,14 @@ module deck_quarter_installed(sx, sy) {
                             square([1000, DECK_SEAM_W]);
                     }
                 }
-            // a third layer under the engraved marks, so they do not thin
-            // the skin to one
+            // a fourth layer either side of the tape groove, so its floor is 3
+            translate([0, 0, -DECK_BAND_SKIN - DECK_TAPE_D])
+                linear_extrude(DECK_TAPE_D + 0.01, convexity = 6)
+                    intersection() {
+                        offset(delta = 1.5) deck_tape_line_2d();
+                        deck_quarter_2d(sx, sy);
+                    }
+            // a layer under the engraved marks, so they do not thin the skin
             if (DECK_MARKS)
                 translate([0, 0, -DECK_SKIN - 0.28])
                     linear_extrude(0.28 + 0.01, convexity = 6)
@@ -1218,8 +1277,8 @@ module deck_quarter_installed(sx, sy) {
                 }
         }
         if (DECK_SOCKETS) sock_cuts();
-        // skirt tape line, in the underside of the band
-        translate([0, 0, -DECK_BAND_SKIN - EPS])
+        // skirt tape line: a groove in the strip under the band
+        translate([0, 0, -DECK_BAND_SKIN - DECK_TAPE_D - EPS])
             linear_extrude(DECK_TAPE_D + EPS) deck_tape_line_2d();
         // bolt holes through the seam ribs
         for (p = DECK_BOLTS_V) if (p * sy > 0)
@@ -1260,25 +1319,32 @@ module deck_whole_installed() {
             translate([0, 0, -DECK_SKIN - DECK_RIB_H])
                 linear_extrude(DECK_RIB_H + 0.01, convexity = 10) deck_grid_2d();
             if (DECK_SOCKETS) { sock_pads(); sock_fan_ring(); }
+            if (DECK_LIP) deck_lip();
+            translate([0, 0, -DECK_BAND_SKIN - DECK_TAPE_D])
+                linear_extrude(DECK_TAPE_D + 0.01, convexity = 6) offset(delta = 1.5) deck_tape_line_2d();
         }
         if (DECK_SOCKETS) sock_cuts();
+        translate([0, 0, -DECK_BAND_SKIN - DECK_TAPE_D - EPS])
+            linear_extrude(DECK_TAPE_D + EPS) deck_tape_line_2d();
     }
 }
 
-// three coupons cut out of the socketed deck, laid side by side, printed the
+function tot_before(c, gap, i) = i == 0 ? 0 : tot_before(c, gap, i - 1) + c[i - 1][1][0] + gap;
+
+// coupons cut out of the socketed deck, laid side by side, printed the
 // same way up as the quarters.  Press the real tube, a tray and the nozzle
 // into them before committing to four 40-minute prints; adjust SOCK_FIT.
 module deck_fit_test() {
     c = [[[0, 75],       [60, 36]],     // fan ring: a chord of the pocket, both lips
          [[TRAY_X, 30],  [64, 40]],     // one end of a tray pocket, two pegs
-         [[-50, -140],   [40, 32]]];    // nozzle pocket corner, with the slot lip
+         [[-50, -140],   [40, 32]],     // nozzle pocket corner, with the slot lip
+         [[-160, 40],    [24, 30]]];    // a piece of edge: lip, ridge, tape groove
     gap = 8;
-    w   = c[0][1][0] + c[1][1][0] + c[2][1][0] + 2 * gap;
-    x   = [-w / 2 + c[0][1][0] / 2,
-           -w / 2 + c[0][1][0] + gap + c[1][1][0] / 2,
-            w / 2 - c[2][1][0] / 2];
+    n   = len(c);
+    tot = tot_before(c, gap, n) - gap;
+    x   = [for (i = [0 : n - 1]) -tot / 2 + tot_before(c, gap, i) + c[i][1][0] / 2];
     mirror([0, 0, 1])
-        for (i = [0 : 2])
+        for (i = [0 : n - 1])
             translate([x[i] - c[i][0][0], -c[i][0][1], 0])
                 intersection() {
                     deck_whole_installed();
@@ -1321,9 +1387,10 @@ module assembly(skirt = true) {
     dowel_y  = DECK_Y / 2 + STAND_OVERHANG;
 
     // ---- rule checks, printed to the Console
-    echo(str("RULE 3a  craft with skirt: ", DECK_X + 2 * SKIRT_OVER, " x ",
-             DECK_Y + 2 * SKIRT_OVER, " mm  (limit 400 x 400)",
-             (max(DECK_X, DECK_Y) + 2 * SKIRT_OVER > 400) ? "  <<< TOO BIG" : "  ok"));
+    ridge = (DECK_PRINTED && DECK_LIP) ? 2 * LIP_RIDGE : 0;
+    echo(str("RULE 3a  craft with skirt: ", DECK_X + ridge + 2 * SKIRT_OVER, " x ",
+             DECK_Y + ridge + 2 * SKIRT_OVER, " mm  (limit 400 x 400)",
+             (max(DECK_X, DECK_Y) + ridge + 2 * SKIRT_OVER > 400) ? "  <<< TOO BIG" : "  ok"));
     echo(str("RULE 3e  dowel is ", SKIRT_OVER - STAND_OVERHANG,
              " mm behind the skirt's front edge  (limit 30)",
              (SKIRT_OVER - STAND_OVERHANG > 30) ? "  <<< TOO FAR BACK" : "  ok"));

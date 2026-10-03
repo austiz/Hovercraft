@@ -203,9 +203,11 @@ batch, a cold gym), so tie goes to v2.
 | Nickels, all of them | 1 000 | rule 5d |
 | **Craft, loaded** | **2 050 g = 20.1 N** | |
 
-With the printed deck (§9) instead of foam: +26 g of deck (sockets
-included) and +7 g of seam bolts, so **~2.08 kg** loaded.  That costs
-about 1.5 % of lift margin.
+With the printed deck (§9) instead of foam: +75 g of deck (three-layer
+skin, sockets, skirt lip) and +7 g of seam bolts, so **~2.13 kg** loaded.
+That costs about 4 % of lift margin: with motor A on tired cells, the
+margin was already thin (§8.1), so do the extra-weight test with the
+printed deck on.
 
 The printed parts are a third of the empty craft.  The fan tube (~85 g) and
 nozzle (~70 g) are the heavy ones; both are already at 2–2.4 mm walls.
@@ -323,7 +325,7 @@ the workshop's drift test (step 7) is the real check.
 | Cage rings, 2.4 × 4 mm | motor weight + vibration | 8 spokes carry it to the rim | fine; 4 walls/40 % infill as the header says |
 | Tube flange glue | bag pressure acts on the deck, not the tube | – | airtightness is the only requirement |
 | Deck (5 mm foam) | 2 kg spread, cushion pushes back from below | – | fine; it is a pressure vessel lid, not a beam |
-| Printed deck skin, 0.48 mm over 55 mm triangle cells | 240 Pa on one cell ≈ 0.3 N | ribs on every edge of every cell | fine; the cells are small enough that the skin barely bows (§9) |
+| Printed deck skin, 0.76 mm over 55 mm triangle cells | 240 Pa on one cell ≈ 0.3 N | ribs on every edge of every cell | fine; the cells are small enough that the skin barely bows (§9) |
 | Printed deck seams | picking the craft up by one quarter | 7 × M3 through 2 × 1.6 mm ribs, plus the parts glued across the joints | fine; lift it by two opposite edges anyway |
 | Stand arm (3 mm PLA cantilever, 20 mm) | 10 g dowel | – | fine; glue the base well because it also takes the wood-block push at launch (4l) |
 
@@ -558,16 +560,17 @@ Four printed quarters replace the 5 mm foam board.  Same outline
 (330 × 320 mm), same fan hole, so every other part and every rule check is
 unchanged.  What it buys: **every printed part presses into a pocket in the
 deck**, so nothing is marked out, nothing can go on crooked, and the parts
-are located by plastic rather than by a bead of glue.  What it costs: ~25 g
-more than foam, four prints, and seven bolts.
+are located by plastic rather than by a bead of glue.  What it costs: ~75 g
+more than foam (three-layer skin, sockets, skirt lip), four prints, and
+seven bolts.
 
 | Piece | Where | Print size (mm) | Solid g |
 |---|---|---|---|
-| `deck_fit_test` | – | 180 × 40 × 5.5 | 7 |
-| `deck_fl` | front left | 165 × 171 × 10 | 27 |
-| `deck_fr` | front right | 176 × 160 × 10 | 27 |
-| `deck_bl` | back left | 165 × 160 × 10 | 26 |
-| `deck_br` | back right | 165 × 171 × 10 | 26 |
+| `deck_fit_test` | – | 212 × 60 × 11 | 11 |
+| `deck_fl` | front left | 167 × 172 × 11 | 39 |
+| `deck_fr` | front right | 167 × 162 × 11 | 39 |
+| `deck_bl` | back left | 167 × 162 × 11 | 38 |
+| `deck_br` | back right | 167 × 172 × 11 | 38 |
 
 Each quarter fits the P1S bed (256 × 256) and prints **top face down**: the
 first layer is the deck's top surface, with the pockets open to the bed.
@@ -611,6 +614,42 @@ mid-air.  That one fact shaped every pocket:
 - What a pocket pad adds is only its rim and pegs; the fan ring is the
   heavy one (+15 g: two lips, a floor and the guard wall).
 
+### 9.1b The skirt lip
+
+The skirt is held by a lip, not tape.  Round the underside of the edge
+runs a 10 mm wall, 1.35 mm (3 lines) thick, with a 1.6 mm ridge along its
+bottom edge pointing outward, like a bucket rim turned down.  The plastic
+wraps over the lip; a loop of shock cord pulled tight above the ridge
+clamps the plastic to the wall all the way round, which both holds it and
+seals it.  Swapping a skirt is: slack the cord lock, lift the plastic off,
+lay the new one on, pull the cord.  A minute.
+
+```
+   deck edge, section            (the lip is on the print's top side:
+   ─────────────┐  skin           the ridge overhang faces the bed and
+                │ 10 mm wall      is stepped at 45°, so no support)
+     plastic ──►│
+     cord ────► ◯│
+              ▄▄▄┘ ridge 1.6 out    ← plastic wraps under here
+```
+
+- **Cord**: 1/8" or 3/16" shock cord ("bungee cord by the foot" at any
+  hardware store), 5 ft, with a cord lock from the same shelf or a knot.
+  The lip height and ridge are sized so the 3/16" fits with the plastic.
+- **Plastic**: cut it **44 × 43 cm**: 10 cm bigger than the deck each way
+  as before, plus the wrap over the lip.  Pleat each corner as the cord
+  goes on, like a shower cap.
+- **Tension**: the bag's pull on the skirt is tiny (p × depth ≈ 240 Pa ×
+  0.03 m ≈ 7 N per metre of edge); a hand-tight cord is plenty.  A strip
+  of tape over the cord on race day is belt and braces; the tape line is
+  still there for it.
+- **Stiffness**: the lip turns the 40 mm edge band into an L-section.
+  Before it, the band was the floppiest part of the deck.
+- **The lip is cut at each quarter seam** and the cord spans the gaps.
+  Rule 3a: the ridge adds 1.6 mm each side, so the craft with skirt is
+  393 × 383 (the assembly echo includes it).
+- Mass: ~21 g.
+
 ### 9.1a Thin-spot audit (0.20 first layer, then 0.28)
 
 The slicer prints a layer where the model is solid at the layer's middle,
@@ -620,10 +659,11 @@ feature, checked on that grid:
 
 | Feature | Model | Printed | Note |
 |---|---|---|---|
-| main skin | 0.48 | **2 layers** | laid on the bed: airtight |
+| main skin | 0.76 | **3 layers** | the owner's rule: nothing under 3.  (2 layers on the bed were airtight; 3 cost ~30 g) |
 | edge band | 0.76 | 3 | |
-| tape groove floor | 0.48 | 2 | the groove takes the band's third layer only |
-| under the battery-holder marks | 0.48 − 0.2 | 1 → **2** | the mark removes the first layer, so a strip under each mark adds a third (was a 650 mm run of single layer) |
+| tape groove floor | 0.76 | 3 | a 4-layer strip runs beside the groove, the groove takes its 4th |
+| under the battery-holder marks | 0.76 + 0.28 − 0.2 | 3 | the mark removes the first layer; a strip under each mark puts one back |
+| skirt lip wall | 1.35 wide | 3 lines | 10 mm tall; ridge 1.6 × 1.2 |
 | pocket floors (all) | 0.84 | **3** | the first is a bridge; was 0.48 = 1 bridged layer, which is porous |
 | fan ring floor | 0.84 | 3 | same |
 | guard pocket wall | 1.5 × 2.4 | 5 | |
@@ -633,8 +673,8 @@ feature, checked on that grid:
 | seam ribs | 1.6 wide | 3 lines (arachne) | |
 | jigsaw tabs | 0.76 | 3 | in the band |
 
-Nothing on the deck is one layer thick any more, and nothing is one line
-wide.
+Nothing on the deck is thinner than three layers or narrower than two
+lines.
 
 ### 9.2 How it is built
 
@@ -695,11 +735,10 @@ pocket is empty.
 4. **Tape every joint underneath** with clear packing tape.  The underside
    is the lid of the air cushion: a leak here is lift lost.
 5. **Guard** into its pocket under the hole (nubs down), a few dots of glue.
-   **Tape the skirt** on along the engraved line on the underside, 10 mm
-   in from the edge: packing tape first, pleat the corners, duct tape over.
-   The line breaks where the nozzle and stand pads reach it; there the
-   tape runs onto the pad, 1.2 mm lower.  Put a dab of hot glue at each
-   end of that step before the tape goes over it, or it is a leak.
+   **Skirt on**: lay the 44 × 43 cm plastic over the upturned deck, wrap
+   it over the lip all round, run the shock cord round above the ridge,
+   pleat the corners flat, pull the cord hand-tight and lock it (§9.1b).
+   Tape along the engraved line is optional.
 6. Flip it.  **Bead of glue in the tube pocket, press the tube in.**  Same
    for the nozzle.  Trays, bin, stand and bracket just press in; a dot of
    glue on each if you want them permanent.
@@ -709,7 +748,7 @@ pocket is empty.
 | Check | How | If it fails |
 |---|---|---|
 | Parts fit | the coupons, before the quarters | `SOCK_FIT` ± 0.05 |
-| Skin airtight | hold each quarter up to a bright light before assembly: no pinholes | set `DECK_SKIN = 0.76` (3 layers, +30 g) and reprint that quarter |
+| Skin airtight | hold each quarter up to a bright light before assembly: no pinholes | tape the spot underneath; the skin is already 3 layers |
 | Pocket floors airtight | same light test, through each pocket floor (they are bridged) | packing tape over the floor's underside, inside the bag |
 | Joints airtight | float the craft and run a damp finger along the seams; the fan note changes if a joint is open | more tape underneath |
 | Flat | the assembled deck lies flat on a table with no rocking | loosen the seam bolts, press flat, retighten |
