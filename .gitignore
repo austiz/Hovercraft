@@ -1,0 +1,12 @@
+# OpenSCAD wrapper files written by export_stl.ps1 and scratch renders
+_*.scad
+
+# slicer projects and output (regenerate from the STLs)
+*.3mf
+*.gcode
+stl/Desktop/
+
+# OS / editor noise
+Thumbs.db
+.DS_Store
+desktop.ini

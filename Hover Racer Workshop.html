@@ -1,0 +1,716 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Hover Racer Workshop</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+:root{
+  --bg:#F4F8FB;
+  --card:#FFFFFF;
+  --ink:#17324A;
+  --muted:#5B7285;
+  --blue:#2B7DE0;
+  --blue-soft:#DCEAFB;
+  --air:#2E9BC6;
+  --air-soft:#E2F3FA;
+  --orange:#D9621A;
+  --orange-soft:#FCEADD;
+  --green:#2E9E5B;
+  --green-soft:#E0F2E7;
+  --line:#C9D8E4;
+  --track:#8FA6B8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1B26;
+    --card:#182735;
+    --ink:#E8F1F8;
+    --muted:#9FB4C4;
+    --blue:#5AA2F0;
+    --blue-soft:#1D3A5C;
+    --air:#56C3E8;
+    --air-soft:#153444;
+    --orange:#F59B57;
+    --orange-soft:#3D2716;
+    --green:#4FC385;
+    --green-soft:#153826;
+    --line:#2C4256;
+    --track:#54687A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1B26;
+  --card:#182735;
+  --ink:#E8F1F8;
+  --muted:#9FB4C4;
+  --blue:#5AA2F0;
+  --blue-soft:#1D3A5C;
+  --air:#56C3E8;
+  --air-soft:#153444;
+  --orange:#F59B57;
+  --orange-soft:#3D2716;
+  --green:#4FC385;
+  --green-soft:#153826;
+  --line:#2C4256;
+  --track:#54687A;
+  color-scheme: dark;
+}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  font-size:17px;
+  line-height:1.55;
+  margin:0;
+  padding-block:0 48px;
+  padding-inline:16px;
+}
+.wrap{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{font-family:"Fredoka","Atkinson Hyperlegible",system-ui,sans-serif;text-wrap:balance;margin:0}
+h1{font-size:2.4rem;font-weight:700;line-height:1.1}
+h2{font-size:1.5rem;font-weight:600}
+h3{font-size:1.15rem;font-weight:600}
+p{margin:0}
+a{color:var(--blue);text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:3px}
+header.hero{padding-block:40px 8px;display:flex;flex-direction:column;gap:12px}
+.kicker{font-family:"Fredoka",sans-serif;font-weight:600;font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
+.sub{color:var(--muted);max-width:62ch}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px}
+nav.toc a{font-size:.85rem;text-decoration:none;border:1.5px solid var(--line);border-radius:999px;padding:3px 12px;background:var(--card);color:var(--ink)}
+nav.toc a:hover{border-color:var(--blue)}
+section.card{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:16px}
+.stephead{display:flex;align-items:center;gap:14px}
+.stepnum{flex:0 0 auto;width:44px;height:44px;border-radius:50%;background:var(--blue);color:#fff;font-family:"Fredoka",sans-serif;font-weight:700;font-size:1.3rem;display:flex;align-items:center;justify-content:center}
+figure{margin:0;display:flex;flex-direction:column;gap:8px}
+figure svg{max-width:100%;height:auto;display:block;margin:0 auto}
+figcaption{font-size:.88rem;color:var(--muted);text-align:center}
+.diagram{background:var(--bg);border:1.5px dashed var(--line);border-radius:14px;padding:12px;overflow-x:auto}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:"Fredoka",sans-serif;font-weight:600;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+td.num{white-space:nowrap;font-variant-numeric:tabular-nums}
+.tip{border-radius:12px;padding:12px 14px;font-size:.95rem;display:flex;gap:10px;align-items:flex-start}
+.tip .tag{flex:0 0 auto;font-family:"Fredoka",sans-serif;font-weight:600;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:2px 10px;margin-top:2px}
+.tip.grownup{background:var(--orange-soft)}
+.tip.grownup .tag{background:var(--orange);color:#fff}
+.tip.smart{background:var(--blue-soft)}
+.tip.smart .tag{background:var(--blue);color:#fff}
+.tip.win{background:var(--green-soft)}
+.tip.win .tag{background:var(--green);color:#fff}
+ul.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+ul.checks li{display:flex;gap:10px;align-items:flex-start}
+ul.checks li::before{content:"✔";flex:0 0 auto;width:24px;height:24px;border-radius:7px;background:var(--green-soft);color:var(--green);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.85rem;margin-top:2px}
+ol.plain{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px}
+strong{font-weight:700}
+.duo{display:flex;gap:16px;flex-wrap:wrap}
+.duo>figure{flex:1 1 280px;min-width:0}
+.scorerow{display:flex;gap:14px;flex-wrap:wrap}
+.scoretile{flex:1 1 180px;border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;background:var(--bg)}
+.scoretile .big{font-family:"Fredoka",sans-serif;font-weight:700;font-size:1.7rem;font-variant-numeric:tabular-nums}
+.scoretile .lbl{font-size:.85rem;color:var(--muted)}
+.formula{font-family:"Fredoka",sans-serif;font-weight:600;font-size:1.15rem;background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:12px 16px;text-align:center}
+footer{color:var(--muted);font-size:.85rem;text-align:center}
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <span class="kicker">Science Olympiad · Hovercraft B · Official 2027 Rules</span>
+  <h1>Hover Racer Workshop</h1>
+  <p class="sub">A step-by-step plan for building a machine that floats on air, carries a load of nickels down a track, and crosses the finish line at exactly the time the judges ask for.</p>
+  <nav class="toc" aria-label="Sections">
+    <a href="#float">How it floats</a>
+    <a href="#win">How you win</a>
+    <a href="#shop">Shopping list</a>
+    <a href="#step1">1 Deck</a>
+    <a href="#step2">2 Skirt</a>
+    <a href="#step3">3 Lift fan</a>
+    <a href="#step4">4 Speed plates</a>
+    <a href="#step5">5 Wiring</a>
+    <a href="#step6">6 Nickel trays</a>
+    <a href="#step7">7 Timing stick</a>
+    <a href="#step8">8 Practice</a>
+    <a href="#inspect">Inspection</a>
+    <a href="#raceday">Race day</a>
+  </nav>
+</header>
+
+<!-- ============ HOW IT FLOATS ============ -->
+<section class="card" id="float">
+  <h2>How does it float?</h2>
+  <p>Have you played air hockey? The table blows air up, and the puck rides on a thin pillow of air, so it slides with almost no rubbing. Your hovercraft is an <strong>upside-down air hockey table</strong>: it carries its own fan, blows air <em>down</em>, and rides on its own pillow of air.</p>
+  <figure>
+    <div class="diagram">
+    <svg viewBox="0 0 720 320" role="img" aria-label="Side view of the hovercraft floating: a lift fan pushes air down into a plastic skirt, the air fills the skirt like a pillow and leaks out under the edges, and a nozzle at the back lets a little air squirt backward so the craft glides forward.">
+      <defs>
+        <marker id="arrB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="var(--air)"/></marker>
+        <marker id="arrO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="var(--orange)"/></marker>
+        <marker id="arrI" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="currentColor"/></marker>
+      </defs>
+      <rect x="10" y="272" width="700" height="16" rx="4" fill="var(--track)"/>
+      <text x="360" y="308" text-anchor="middle" font-size="13" fill="var(--muted)">the track</text>
+      <rect x="190" y="236" width="340" height="34" rx="10" fill="var(--air-soft)"/>
+      <text x="360" y="258" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--air)">pillow of air</text>
+      <path d="M 190 196 C 172 214 172 240 196 244 L 236 244 C 224 236 224 214 236 200 Z" fill="none" stroke="currentColor" stroke-width="2.5"/>
+      <path d="M 530 196 C 548 214 548 240 524 244 L 484 244 C 496 236 496 214 484 200 Z" fill="none" stroke="currentColor" stroke-width="2.5"/>
+      <path d="M 236 200 C 260 226 300 232 360 232 C 420 232 460 226 484 200" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="7 5"/>
+      <text x="360" y="222" text-anchor="middle" font-size="12" fill="var(--muted)">plastic skirt (a baggy bag)</text>
+      <rect x="185" y="182" width="350" height="16" rx="4" fill="var(--card)" stroke="currentColor" stroke-width="2.5"/>
+      <text x="270" y="176" text-anchor="middle" font-size="12" fill="var(--muted)">foam deck</text>
+      <rect x="330" y="120" width="60" height="62" rx="6" fill="var(--blue-soft)" stroke="var(--blue)" stroke-width="2.5"/>
+      <line x1="340" y1="136" x2="380" y2="136" stroke="var(--blue)" stroke-width="3" stroke-linecap="round"/>
+      <line x1="340" y1="148" x2="380" y2="148" stroke="var(--blue)" stroke-width="3" stroke-linecap="round"/>
+      <text x="360" y="110" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--blue)">LIFT fan</text>
+      <line x1="360" y1="160" x2="360" y2="228" stroke="var(--air)" stroke-width="3.5" marker-end="url(#arrB)"/>
+      <text x="376" y="214" font-size="12" fill="var(--air)">air blows down</text>
+      <line x1="210" y1="256" x2="130" y2="256" stroke="var(--air)" stroke-width="3" marker-end="url(#arrB)"/>
+      <line x1="510" y1="256" x2="590" y2="256" stroke="var(--air)" stroke-width="3" marker-end="url(#arrB)"/>
+      <text x="120" y="240" text-anchor="middle" font-size="12" fill="var(--air)">air sneaks out…</text>
+      <text x="600" y="240" text-anchor="middle" font-size="12" fill="var(--air)">…under the edges</text>
+      <path d="M 212 182 L 212 160 L 168 160 L 168 182" fill="var(--orange-soft)" stroke="var(--orange)" stroke-width="2.5"/>
+      <rect x="160" y="158" width="8" height="26" rx="2" fill="var(--orange)"/>
+      <line x1="156" y1="171" x2="96" y2="171" stroke="var(--orange)" stroke-width="3.5" marker-end="url(#arrO)"/>
+      <text x="130" y="150" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--orange)">NOZZLE blows back</text>
+      <line x1="560" y1="130" x2="650" y2="130" stroke="currentColor" stroke-width="3.5" marker-end="url(#arrI)"/>
+      <text x="605" y="116" text-anchor="middle" font-size="13" font-weight="bold" fill="currentColor">so it glides this way!</text>
+      <text x="360" y="284" text-anchor="middle" font-size="11" fill="var(--muted)">the craft never touches the track — it floats!</text>
+    </svg>
+    </div>
+    <figcaption>One fan makes the air pillow. A nozzle at the back lets a little of that air squirt out backward, and that pushes the craft forward.</figcaption>
+  </figure>
+  <p>Because nothing rubs on the ground, even a whisper of air out the back is enough to move it. And in this event, slow is exactly what you want.</p>
+</section>
+
+<!-- ============ HOW YOU WIN ============ -->
+<section class="card" id="win">
+  <h2>How you win (the official scoring)</h2>
+  <p>At the start of your turn, the judges announce a <strong>Target Time</strong> between <strong>6 and 18 seconds</strong>. Every team gets the same one. Your job is to cross the 185 cm timed stretch in <em>exactly</em> that time while carrying as many nickels as you can. You get two runs, your best run counts, and it's out of 100 points:</p>
+  <div class="scorerow">
+    <div class="scoretile"><span class="big">40</span><span class="lbl"><strong>Finish points</strong>: reach the finish line without stopping</span></div>
+    <div class="scoretile"><span class="big">40</span><span class="lbl"><strong>Time points</strong>: full points at the exact Target Time, fewer the further off you are</span></div>
+    <div class="scoretile"><span class="big">20</span><span class="lbl"><strong>Nickel points</strong>: carry all the judges' nickels (about 1 kg) for all 20</span></div>
+  </div>
+  <ul class="checks">
+    <li>Keep moving! If the craft sits still for 3 seconds, the run ends where it stopped.</li>
+    <li>Your timing stick must cross the start line within 3 seconds of launch, or that run doesn't count.</li>
+    <li>Finish within 2× the Target Time, or the run is incomplete.</li>
+    <li>Nickels that fall off don't count, and falling parts cost a penalty. Build good trays (Step 6).</li>
+    <li>The judges offer a launch ramp. <strong>Don't use it.</strong> It halves your finish points and wipes out your nickel points.</li>
+  </ul>
+  <div class="tip win"><span class="tag">Win</span><p>Finishing is worth the most, so the #1 rule is <strong>never stall</strong>. The #2 rule is to be exact. A craft that crawls at a speed you can pick and repeat wins this event.</p></div>
+</section>
+
+<!-- ============ SHOPPING LIST ============ -->
+<section class="card" id="shop">
+  <h2>The shopping list</h2>
+  <p>About <strong>$240</strong> if you buy everything on Amazon, or about <strong>$175</strong> if you pick up the foam board and trash bags at a local store, since Amazon only sells them in big packs. The printed parts come from your 3D printer and use about 150 g of PLA.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Part</th><th>What it does</th><th>Buy</th><th>Qty</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Motor</strong> (size “550”, 12 V, 22,000 RPM)</td><td>Spins the lift fan. It's the only motor on the craft, and it's strong enough to lift every nickel.</td><td><a href="https://www.amazon.com/dp/B08BJV9VK7" target="_blank" rel="noopener">Fafeicy RS-550, 12 V</a> (~$15 each)</td><td class="num">2 (1 spare)</td></tr>
+      <tr><td><strong>Propellers</strong>, 5 inch (“5030”)</td><td>The fan blades. Get spares, because they break!</td><td><a href="https://www.amazon.com/dp/B0CN8LQXMQ" target="_blank" rel="noopener">MECCANIXITY 5030, 8-pack</a></td><td class="num">1 pack</td></tr>
+      <tr><td><strong>Prop adapter</strong> (3.17 mm)</td><td>Clamps the propeller onto the motor's shaft</td><td><a href="https://www.amazon.com/dp/B0DL67X2ZP" target="_blank" rel="noopener">MECCANIXITY 3.17 mm to 5 mm adapter</a> (~$6)</td><td class="num">1 pack</td></tr>
+      <tr><td><strong>Rechargeable AA batteries</strong> (NiMH, 1.2 V)</td><td>The power: 10 × 1.2 V = 12 V, the most the rules allow. Eneloops lose less voltage at high current, so the fan pushes harder. <strong>No lithium or lead batteries, and no AA rechargeables labeled “1.5 V” (those are lithium).</strong></td><td><a href="https://www.amazon.com/dp/B00JHKSN4O" target="_blank" rel="noopener">Panasonic Eneloop AA, 16-pack</a> (~$45)</td><td class="num">1 pack (10 in the craft, 6 spares)</td></tr>
+      <tr><td><strong>Battery charger</strong></td><td>Charges up to 8 at a time, so a set of 10 takes two rounds</td><td><a href="https://www.amazon.com/dp/B00EB7812C" target="_blank" rel="noopener">EBL 8-bay charger</a> (~$19)</td><td class="num">1</td></tr>
+      <tr><td><strong>4-battery holders</strong></td><td>Hold 8 of the 10 batteries</td><td><a href="https://www.amazon.com/dp/B07T7MTRZX" target="_blank" rel="noopener">LampVPath 4×AA, 2-pack</a></td><td class="num">1 pack</td></tr>
+      <tr><td><strong>2-battery holders</strong> (no switch)</td><td>Holds the last 2 batteries</td><td><a href="https://www.amazon.com/dp/B07TB4HDYH" target="_blank" rel="noopener">LampVPath 2×AA, 3-pack</a></td><td class="num">1 pack</td></tr>
+      <tr><td><strong>Toggle switch</strong> (30 A DC)</td><td>The on/off switch the rules require. The motor pulls a big burst of current when it starts, so this switch is rated well above it.</td><td><a href="https://www.amazon.com/dp/B07T3K9NQ1" target="_blank" rel="noopener">DaierTek 30 A DC toggle</a> (~$8)</td><td class="num">1</td></tr>
+      <tr><td><strong>Wire</strong>, 20 gauge</td><td>Connects everything</td><td><a href="https://www.amazon.com/dp/B01AAX64EC" target="_blank" rel="noopener">BNTECHGO red + black</a></td><td class="num">1</td></tr>
+      <tr><td><strong>Lever connectors</strong></td><td>Push-in wire joints, so no soldering</td><td><a href="https://www.amazon.com/dp/B07877JDSN" target="_blank" rel="noopener">UOHGDPY lever connectors, 50-pack</a></td><td class="num">1</td></tr>
+      <tr><td><strong>Foam board</strong>, 5 mm (3/16")</td><td>The deck. You need 2 or 3 sheets. <strong>Cheapest locally:</strong> dollar stores and craft stores sell single sheets for a few dollars.</td><td><a href="https://www.amazon.com/dp/B0GQRSQR5Q" target="_blank" rel="noopener">Elcoho 20×30" foam board, 12-pack</a> (~$43)</td><td class="num">1 (or 3 sheets locally)</td></tr>
+      <tr><td><strong>Thick trash bags</strong> (3 mil)</td><td>The skirt plastic. Any hardware store's contractor bags work too.</td><td><a href="https://www.amazon.com/dp/B00DH4IUMQ" target="_blank" rel="noopener">Ultrasac contractor bags</a> (~$26)</td><td class="num">1 box (or a few locally)</td></tr>
+      <tr><td><strong>Wooden dowels</strong>, ¼ inch</td><td>The timing stick</td><td><a href="https://www.amazon.com/dp/B01BGZJH2E" target="_blank" rel="noopener">Woodpeckers ¼" × 12" dowels, 25-pack</a></td><td class="num">1</td></tr>
+      <tr><td><strong>Safety glasses</strong> (ANSI Z87.1)</td><td>Required to compete (Category B eye protection)</td><td><a href="https://www.amazon.com/dp/B07YXPYDZN" target="_blank" rel="noopener">G &amp; F kids safety glasses, 6 pairs</a></td><td class="num">1 pack</td></tr>
+      <tr><td><strong>Real nickels</strong></td><td>Practice with the exact cargo the judges use</td><td>Any bank: 4 rolls, 1 half roll, 20 loose (about $11)</td><td class="num">1 set</td></tr>
+      <tr><td><strong>Tape + PLA filament</strong></td><td>Duct tape and clear packing tape; PLA for the printed parts</td><td>From home or any store</td><td class="num">—</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>3D-printed parts:</strong> the fan tube with its top cage, the guard under the fan hole, the <strong>nozzle</strong> with its set of <strong>speed plates</strong> and a plate rack, two nickel trays, a stand for the timing stick, and a motor mount.</p>
+  <div class="tip win"><span class="tag">Prime</span><p>Every Amazon link above was checked on October 1, 2026: each one ships from Amazon (Prime) and showed delivery by <strong>Tuesday, October 6</strong>. Amazon checked those dates for ZIP code 92679, so confirm the date for your own address at checkout.</p></div>
+  <div class="tip grownup"><span class="tag">Grown-up</span><p><strong>Before you order:</strong> keep the motor exactly as listed: 12 V and 22,000 RPM. A motor built for a different voltage can look identical but spins too slowly or burns out. Avoid the popular “RS-550S 18 V” version; on 12 V it only reaches about 13,000 RPM, which is too weak. <strong>When parts arrive:</strong> slide the adapter onto the motor shaft (3.17 mm) and press on a propeller, using the rings that come with the props if the hole is loose. Check the motor's two screw holes too (usually M3 screws, 25 mm apart). Do both <em>before</em> you print the fan tube and motor mount.</p></div>
+  <div class="tip smart"><span class="tag">Rule</span><p>Only simple electric parts are allowed: batteries, wire, switches, relays, resistors, capacitors, and up to 2 motors. No computer chips, no lasers. (No chips also means no remote control.)</p></div>
+</section>
+
+<!-- ============ STEP 1 ============ -->
+<section class="card" id="step1">
+  <div class="stephead"><span class="stepnum">1</span><h2>Cut the deck</h2></div>
+  <p>The deck is the body. Cut the foam board to <strong>36 cm × 34 cm</strong>. Then cut two openings:</p>
+  <ul class="checks">
+    <li>A <strong>round hole, 12 cm across,</strong> in the middle. The lift fan blows through it, so it's almost as wide as the 5-inch propeller. A smaller hole would choke the fan.</li>
+    <li>A <strong>3 cm × 10 cm slot</strong> near the back edge, centered left to right. That's where the nozzle drinks air from the skirt.</li>
+  </ul>
+  <p>Why this size? Bigger decks float more easily. Double the size and floating gets <em>four times</em> easier. So we use the biggest deck that still fits the 40 cm rule box, saving a little room for the puffy skirt.</p>
+  <figure>
+    <div class="diagram">
+    <svg viewBox="0 0 640 500" role="img" aria-label="Top view of the deck: a 36 by 34 centimeter foam rectangle with a 12 centimeter fan hole in the center, a nozzle slot at the back, nickel trays on both sides of the fan, battery holders along the sides, the switch near the front, and the timing stick right at the front edge.">
+      <rect x="100" y="50" width="440" height="400" rx="14" fill="var(--card)" stroke="currentColor" stroke-width="3"/>
+      <text x="320" y="36" text-anchor="middle" font-size="14" font-weight="bold" fill="currentColor">FRONT ▲ (this end crosses the lines first)</text>
+      <line x1="100" y1="476" x2="540" y2="476" stroke="var(--muted)" stroke-width="1.5"/>
+      <text x="320" y="494" text-anchor="middle" font-size="13" fill="var(--muted)">36 cm wide</text>
+      <line x1="72" y1="50" x2="72" y2="450" stroke="var(--muted)" stroke-width="1.5"/>
+      <text x="58" y="250" text-anchor="middle" font-size="13" fill="var(--muted)" transform="rotate(-90 58 250)">34 cm long</text>
+      <circle cx="320" cy="245" r="72" fill="var(--air-soft)" stroke="var(--blue)" stroke-width="3" stroke-dasharray="8 6"/>
+      <circle cx="320" cy="245" r="8" fill="var(--blue)"/>
+      <line x1="320" y1="245" x2="275" y2="200" stroke="var(--blue)" stroke-width="5" stroke-linecap="round"/>
+      <line x1="320" y1="245" x2="365" y2="290" stroke="var(--blue)" stroke-width="5" stroke-linecap="round"/>
+      <text x="320" y="335" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--blue)">LIFT fan over a 12 cm hole</text>
+      <g fill="var(--green-soft)" stroke="var(--green)" stroke-width="2">
+        <rect x="186" y="185" width="46" height="120" rx="6"/>
+        <rect x="408" y="185" width="46" height="120" rx="6"/>
+      </g>
+      <text x="209" y="176" text-anchor="middle" font-size="12" fill="var(--green)">nickel tray</text>
+      <text x="431" y="176" text-anchor="middle" font-size="12" fill="var(--green)">nickel tray</text>
+      <rect x="283" y="398" width="74" height="26" rx="5" fill="var(--orange-soft)" stroke="var(--orange)" stroke-width="2.5"/>
+      <text x="320" y="444" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--orange)">nozzle slot (3 × 10 cm)</text>
+      <g fill="var(--blue-soft)" stroke="var(--blue)" stroke-width="2">
+        <rect x="116" y="130" width="50" height="96" rx="6"/>
+        <rect x="116" y="236" width="50" height="96" rx="6"/>
+        <rect x="474" y="200" width="50" height="60" rx="6"/>
+      </g>
+      <text x="141" y="182" text-anchor="middle" font-size="11" fill="var(--blue)">4 AA</text>
+      <text x="141" y="288" text-anchor="middle" font-size="11" fill="var(--blue)">4 AA</text>
+      <text x="499" y="234" text-anchor="middle" font-size="11" fill="var(--blue)">2 AA</text>
+      <text x="141" y="352" text-anchor="middle" font-size="12" fill="var(--blue)">battery holders</text>
+      <rect x="200" y="92" width="88" height="40" rx="8" fill="var(--blue-soft)" stroke="var(--blue)" stroke-width="2.5"/>
+      <text x="244" y="117" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--blue)">switch</text>
+      <circle cx="420" cy="58" r="8" fill="var(--orange)"/>
+      <text x="420" y="92" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--orange)">timing stick</text>
+      <text x="420" y="107" text-anchor="middle" font-size="11" fill="var(--muted)">(right at the front edge)</text>
+    </svg>
+    </div>
+    <figcaption>Where everything lives on the deck. Balance matters: the 2-battery holder sits opposite the two 4-battery holders, and the nickel trays mirror each other.</figcaption>
+  </figure>
+  <div class="tip grownup"><span class="tag">Grown-up</span><p>Use a sharp craft knife on the foam board, and help with the cutting. For the round hole, trace a bowl or print a 12 cm circle template.</p></div>
+</section>
+
+<!-- ============ STEP 2 ============ -->
+<section class="card" id="step2">
+  <div class="stephead"><span class="stepnum">2</span><h2>Make the skirt</h2></div>
+  <p>The skirt turns a foam board into a hovercraft. It's also the part every team rebuilds a few times, so don't worry if your first one isn't perfect. Take it in four mini-steps.</p>
+
+  <h3>2a · Cut the plastic</h3>
+  <p>Cut the thick plastic into a rectangle <strong>46 cm × 44 cm</strong>, which is 10 cm bigger than the deck each way. The extra plastic lets the skirt puff into a pillow about <strong>3 to 4 cm deep</strong>. Too tight and it can't inflate; too baggy and it wobbles and bulges out of the rule box.</p>
+  <figure>
+    <div class="diagram">
+    <svg viewBox="0 0 560 520" role="img" aria-label="Cutting layout: a 46 by 44 centimeter plastic sheet with the 36 by 34 centimeter deck outlined in the middle, a tape line 1 centimeter inside the deck edge, and pleat folds marked at all four corners.">
+      <rect x="50" y="30" width="460" height="440" rx="6" fill="var(--air-soft)" stroke="var(--air)" stroke-width="2.5"/>
+      <text x="280" y="58" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--air)">the plastic sheet</text>
+      <rect x="100" y="80" width="360" height="340" rx="8" fill="var(--card)" stroke="currentColor" stroke-width="2.5" stroke-dasharray="9 6"/>
+      <text x="280" y="250" text-anchor="middle" font-size="13" fill="var(--muted)">deck sits here</text>
+      <text x="280" y="268" text-anchor="middle" font-size="12" fill="var(--muted)">(36 cm × 34 cm)</text>
+      <rect x="110" y="90" width="340" height="320" rx="6" fill="none" stroke="var(--orange)" stroke-width="5" stroke-dasharray="3 6" opacity="0.8"/>
+      <text x="280" y="310" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--orange)">tape line: 1 cm inside the deck edge</text>
+      <g stroke="var(--blue)" stroke-width="2.5" fill="none">
+        <path d="M 66 46 L 96 76"/><path d="M 494 46 L 464 76"/><path d="M 66 454 L 96 424"/><path d="M 494 454 L 464 424"/>
+      </g>
+      <text x="280" y="446" text-anchor="middle" font-size="12" fill="var(--blue)">fold the extra plastic at each corner into one neat pleat</text>
+      <line x1="50" y1="492" x2="510" y2="492" stroke="var(--muted)" stroke-width="1.5"/>
+      <text x="280" y="510" text-anchor="middle" font-size="13" fill="var(--muted)">46 cm</text>
+      <line x1="530" y1="30" x2="530" y2="470" stroke="var(--muted)" stroke-width="1.5"/>
+      <text x="546" y="250" text-anchor="middle" font-size="13" fill="var(--muted)" transform="rotate(-90 546 250)">44 cm</text>
+    </svg>
+    </div>
+    <figcaption>Cut the sheet 10 cm bigger than the deck so the bag has room to puff.</figcaption>
+  </figure>
+
+  <h3>2b · Tape it on</h3>
+  <p>Flip the deck upside down. Tape the sheet around the bottom <strong>1 cm in from the edge</strong>, leaving it <strong>baggy like a loose pillowcase</strong>. (Why 1 cm in? The rule box is measured <em>while your craft is floating</em>, and the puffed skirt bulges out past the deck. Taping inboard keeps it inside 40 cm.) The skirt covers both deck openings from underneath. That's how the fan fills it and the nozzle drinks from it.</p>
+  <ol class="plain">
+    <li>Start with clear packing tape in the <strong>middle of each side</strong>. Smooth every wrinkle before taping over it, because a wrinkle under the tape is a tiny tunnel that leaks air.</li>
+    <li>Work from the middles toward the corners. At each corner, fold the extra plastic into <strong>one flat pleat</strong> (like wrapping a present) and tape it down flat.</li>
+    <li>Run a second lap of <strong>duct tape</strong> on top of the first, all the way around. The air pushes hard on this seam.</li>
+  </ol>
+
+  <h3>2c · The wear pad and the air holes</h3>
+  <p>Cut a <strong>14 cm circle</strong> from a milk jug or foam board and duct-tape it to the <em>outside</em> center of the bag, on the side facing the ground. That's the <strong>wear pad</strong>, the craft's foot. It takes the rubbing when you set it down, and it keeps the air holes just off the floor so they never get squished shut.</p>
+  <p>Stick a patch of clear tape where each hole will go, then cut <strong>six 2.5 cm holes</strong> (about the size of a quarter) <em>through the tape</em>, in an even ring about 3 cm out from the pad's edge. The tape patches stop a hole from tearing into a rip. Start with this size and only make them bigger if the float test says to.</p>
+  <figure>
+    <div class="diagram">
+    <svg viewBox="0 0 720 350" role="img" aria-label="Cross-section of the working skirt: the lift fan blows air through the deck hole into the bag, the bag inflates, air squirts out the ring of holes beside the wear pad, and a thin sheet of air spreads under the whole skirt to carry the craft.">
+      <defs><marker id="arrB2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="var(--air)"/></marker></defs>
+      <rect x="20" y="306" width="680" height="14" rx="4" fill="var(--track)"/>
+      <rect x="95" y="288" width="530" height="18" rx="6" fill="var(--air-soft)"/>
+      <rect x="120" y="120" width="190" height="12" rx="3" fill="var(--card)" stroke="currentColor" stroke-width="2.5"/>
+      <rect x="410" y="120" width="190" height="12" rx="3" fill="var(--card)" stroke="currentColor" stroke-width="2.5"/>
+      <text x="170" y="112" font-size="12" fill="var(--muted)">deck</text>
+      <g stroke="var(--orange)" stroke-width="2.5">
+        <line x1="318" y1="134" x2="318" y2="146"/><line x1="340" y1="134" x2="340" y2="146"/><line x1="362" y1="134" x2="362" y2="146"/><line x1="384" y1="134" x2="384" y2="146"/><line x1="402" y1="134" x2="402" y2="146"/>
+        <line x1="312" y1="146" x2="408" y2="146"/>
+      </g>
+      <text x="470" y="160" font-size="11" fill="var(--orange)">guard under the hole keeps</text>
+      <text x="470" y="174" font-size="11" fill="var(--orange)">the plastic out of the fan</text>
+      <rect x="326" y="62" width="68" height="58" rx="6" fill="var(--blue-soft)" stroke="var(--blue)" stroke-width="2.5"/>
+      <line x1="336" y1="78" x2="384" y2="78" stroke="var(--blue)" stroke-width="3" stroke-linecap="round"/>
+      <line x1="336" y1="90" x2="384" y2="90" stroke="var(--blue)" stroke-width="3" stroke-linecap="round"/>
+      <text x="360" y="52" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--blue)">LIFT fan</text>
+      <path d="M 133 132 C 86 180 90 254 160 276 L 240 276" fill="none" stroke="currentColor" stroke-width="2.5"/>
+      <path d="M 268 276 L 295 276" fill="none" stroke="currentColor" stroke-width="2.5"/>
+      <path d="M 425 276 L 452 276" fill="none" stroke="currentColor" stroke-width="2.5"/>
+      <path d="M 480 276 L 560 276 C 630 254 634 180 587 132" fill="none" stroke="currentColor" stroke-width="2.5"/>
+      <text x="170" y="220" font-size="12" fill="var(--muted)">the bag fills up</text>
+      <text x="170" y="235" font-size="12" fill="var(--muted)">like a balloon</text>
+      <rect x="295" y="270" width="130" height="12" rx="4" fill="currentColor"/>
+      <text x="360" y="262" text-anchor="middle" font-size="11" fill="var(--muted)">wear pad (its little foot)</text>
+      <line x1="360" y1="150" x2="360" y2="210" stroke="var(--air)" stroke-width="3.5" marker-end="url(#arrB2)"/>
+      <polyline points="254,272 254,295 200,295" fill="none" stroke="var(--air)" stroke-width="3" marker-end="url(#arrB2)"/>
+      <polyline points="466,272 466,295 520,295" fill="none" stroke="var(--air)" stroke-width="3" marker-end="url(#arrB2)"/>
+      <line x1="140" y1="297" x2="70" y2="297" stroke="var(--air)" stroke-width="3" marker-end="url(#arrB2)"/>
+      <line x1="580" y1="297" x2="650" y2="297" stroke="var(--air)" stroke-width="3" marker-end="url(#arrB2)"/>
+      <text x="254" y="252" text-anchor="middle" font-size="11" fill="var(--air)">out the holes…</text>
+      <text x="360" y="340" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--air)">…and a thin sheet of air carries the whole craft</text>
+    </svg>
+    </div>
+    <figcaption>Follow the air: fan → bag → out the ring of holes → a thin cushion under everything.</figcaption>
+  </figure>
+  <figure>
+    <div class="diagram">
+    <svg viewBox="0 0 480 380" role="img" aria-label="Bottom view of the skirt: tape runs around the outer edge, a wear pad circle is taped to the center, and six air holes are cut in a ring around it.">
+      <rect x="40" y="30" width="400" height="320" rx="16" fill="var(--card)" stroke="currentColor" stroke-width="3"/>
+      <rect x="62" y="52" width="356" height="276" rx="12" fill="none" stroke="var(--orange)" stroke-width="7" opacity="0.55"/>
+      <text x="240" y="44" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--orange)">tape all around the edge</text>
+      <circle cx="240" cy="180" r="56" fill="var(--bg)" stroke="currentColor" stroke-width="2.5"/>
+      <text x="240" y="176" text-anchor="middle" font-size="11" fill="var(--muted)">wear pad</text>
+      <text x="240" y="191" text-anchor="middle" font-size="11" fill="var(--muted)">(14 cm)</text>
+      <g fill="var(--air)">
+        <circle cx="240" cy="100" r="11"/><circle cx="309" cy="140" r="11"/><circle cx="309" cy="220" r="11"/>
+        <circle cx="240" cy="260" r="11"/><circle cx="171" cy="220" r="11"/><circle cx="171" cy="140" r="11"/>
+      </g>
+      <text x="240" y="300" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--air)">6 air holes in a ring</text>
+      <text x="240" y="318" text-anchor="middle" font-size="11" fill="var(--muted)">(about the size of a quarter)</text>
+    </svg>
+    </div>
+    <figcaption>Looking at the bottom of the hovercraft. The air escapes through the ring of holes.</figcaption>
+  </figure>
+
+  <h3>2d · The first float test</h3>
+  <p>Put it on a smooth floor, flip on the lift fan, and watch it like a scientist. Whatever it does, there's a fix:</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>If it does this…</th><th>Try this</th></tr></thead>
+    <tbody>
+      <tr><td>Leans or tips to one side</td><td>The holes or the weight aren't even. Re-space the holes, or move the battery holders until it sits flat.</td></tr>
+      <tr><td>Bounces and jiggles like a basketball</td><td>The holes are too small and the bag is over-puffed. Make each hole a little bigger.</td></tr>
+      <tr><td>Barely lifts, drags on the floor</td><td>The holes are too big or the craft is too heavy. Make a new skirt with smaller holes, or take weight off.</td></tr>
+      <tr><td>Plastic gets sucked up toward the fan</td><td>Install the guard under the deck hole (Step 3).</td></tr>
+      <tr><td>A hole tears into a rip</td><td>Patch it with tape, and next time cut every hole through a tape patch.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="tip smart"><span class="tag">Smart</span><p>You can always make a hole bigger. You can never make it smaller. Start small and sneak up on it.</p></div>
+  <div class="tip win"><span class="tag">Test</span><p>Test it again with all the nickels on board (Step 6). It must still float well fully loaded, because that's how you'll race.</p></div>
+</section>
+
+<!-- ============ STEP 3 ============ -->
+<section class="card" id="step3">
+  <div class="stephead"><span class="stepnum">3</span><h2>Mount the lift fan</h2></div>
+  <p>Put the motor in the 3D-printed tube over the 12 cm hole, with the propeller blowing <em>down</em> into the skirt. Glue the tube's base to the deck all the way around so no air escapes. Turn it on: the skirt should puff up like a marshmallow and the craft should float. If it struggles with the nickels aboard, use fresh batteries or take weight off.</p>
+  <p>The RS-550 is a strong motor, about 200 g, so print the motor mount solid: 4 walls and 40% infill, held by two M3 screws. It spins the propeller about 17,000 times a minute, so do a <strong>spin test</strong> before anything else.</p>
+  <ol class="plain">
+    <li>With the fan cage on, run the motor fully loaded for one minute.</li>
+    <li>Switch it off and look at both propeller blades. Any crack, bend or white stress mark means throw that prop away and use a new one.</li>
+    <li>Check the adapter is still tight on the shaft.</li>
+  </ol>
+  <div class="tip smart"><span class="tag">Smart</span><p>Stick with the 2-blade 5030 propellers. Tough 3-blade drone props look stronger, but they take about twice the power to spin and would drain the batteries fast.</p></div>
+  <figure>
+    <div class="diagram">
+    <svg viewBox="0 0 640 260" role="img" aria-label="Safety cage rule: every propeller needs a guard with openings smaller than 9.5 millimeters, so a judge's test stick cannot touch the spinning blades.">
+      <defs><marker id="arrI2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="currentColor"/></marker></defs>
+      <circle cx="170" cy="130" r="80" fill="var(--bg)" stroke="var(--orange)" stroke-width="4"/>
+      <g stroke="var(--orange)" stroke-width="3">
+        <line x1="170" y1="52" x2="170" y2="208"/><line x1="92" y1="130" x2="248" y2="130"/>
+        <line x1="115" y1="75" x2="225" y2="185"/><line x1="225" y1="75" x2="115" y2="185"/>
+        <circle cx="170" cy="130" r="45" fill="none"/>
+      </g>
+      <circle cx="170" cy="130" r="7" fill="currentColor"/>
+      <line x1="170" y1="130" x2="146" y2="100" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+      <line x1="170" y1="130" x2="194" y2="160" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+      <text x="170" y="236" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--orange)">cage on top AND guard underneath</text>
+      <rect x="340" y="118" width="180" height="24" rx="12" fill="var(--card)" stroke="currentColor" stroke-width="2.5"/>
+      <line x1="336" y1="130" x2="266" y2="130" stroke="currentColor" stroke-width="3" marker-end="url(#arrI2)"/>
+      <text x="430" y="104" text-anchor="middle" font-size="12" fill="var(--muted)">the judge pokes with a 9.5 mm stick…</text>
+      <text x="430" y="170" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--green)">…and it must NOT reach the blades</text>
+      <text x="430" y="190" text-anchor="middle" font-size="11" fill="var(--muted)">so keep every opening smaller than 9.5 mm</text>
+    </svg>
+    </div>
+    <figcaption>A missing guard is the #1 way teams get disqualified. Cage the fan from above, and guard the deck hole from below.</figcaption>
+  </figure>
+  <div class="tip smart"><span class="tag">Rule</span><p>“All propellers/impellers, including those under the vehicle, must have shielding.” Print the cage and guard with openings of about 7 mm and test them with a pencil (about 7 mm thick) before the judges test with their 9.5 mm stick. A craft that fails the safety check doesn't get to run.</p></div>
+</section>
+
+<!-- ============ STEP 4 ============ -->
+<section class="card" id="step4">
+  <div class="stephead"><span class="stepnum">4</span><h2>Build the nozzle and speed plates</h2></div>
+  <p>This is the design's secret weapon. The Target Time is 6 to 18 seconds, which is <em>crawling</em>, slower than walking. So instead of a second fan, we let the squished air in the skirt do the pushing. A 3D-printed <strong>nozzle</strong> sits over the slot at the back of the deck. It drinks air from the bag and squirts it out <strong>straight backward</strong> through a round socket.</p>
+  <p>Into that socket you press a <strong>speed plate</strong>: a flat printed disc with a hole in it. <strong>Big hole = more air = faster. Small hole = slower.</strong> Each plate is labeled with the time it makes, so on race day you just pick the plate that matches the Target Time.</p>
+  <figure>
+    <div class="diagram">
+    <svg viewBox="0 0 700 330" role="img" aria-label="Cutaway of the nozzle: a printed duct over a slot at the back of the deck takes squished air from the skirt and blows it backward through a round socket. Swappable speed plates press into the socket: plate 6 has a big hole for a fast run, plate 12 a medium hole, and plate 18 a small hole for a slow run.">
+      <defs>
+        <marker id="arrA3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="var(--air)"/></marker>
+        <marker id="arrO3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="var(--orange)"/></marker>
+        <marker id="arrI4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="currentColor"/></marker>
+      </defs>
+      <rect x="80" y="170" width="400" height="14" rx="4" fill="var(--card)" stroke="currentColor" stroke-width="2.5"/>
+      <rect x="170" y="170" width="70" height="14" fill="var(--air-soft)"/>
+      <text x="400" y="162" font-size="12" fill="var(--muted)">deck (back part)</text>
+      <path d="M 92 184 C 60 220 70 272 140 284 L 470 284" fill="none" stroke="currentColor" stroke-width="2.5"/>
+      <text x="300" y="244" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--air)">squished air inside the bag</text>
+      <path d="M 240 170 L 240 104 L 128 104 L 128 170" fill="var(--orange-soft)" stroke="var(--orange)" stroke-width="3"/>
+      <text x="200" y="94" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--orange)">printed nozzle</text>
+      <rect x="116" y="112" width="12" height="52" rx="3" fill="currentColor"/>
+      <rect x="116" y="130" width="12" height="16" fill="var(--bg)"/>
+      <text x="92" y="190" text-anchor="middle" font-size="11" fill="var(--muted)">speed plate</text>
+      <text x="92" y="204" text-anchor="middle" font-size="11" fill="var(--muted)">in the socket</text>
+      <polyline points="205,225 205,138 150,138" fill="none" stroke="var(--air)" stroke-width="3.5" marker-end="url(#arrA3)"/>
+      <line x1="112" y1="138" x2="36" y2="138" stroke="var(--orange)" stroke-width="4" marker-end="url(#arrO3)"/>
+      <text x="60" y="124" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--orange)">air out</text>
+      <line x1="400" y1="118" x2="470" y2="118" stroke="currentColor" stroke-width="3.5" marker-end="url(#arrI4)"/>
+      <text x="435" y="104" text-anchor="middle" font-size="12" font-weight="bold" fill="currentColor">craft moves</text>
+      <!-- plates -->
+      <circle cx="560" cy="70" r="36" fill="var(--card)" stroke="var(--orange)" stroke-width="3"/>
+      <circle cx="560" cy="70" r="24" fill="var(--bg)" stroke="var(--orange)" stroke-width="2"/>
+      <text x="630" y="66" font-size="13" font-weight="bold" fill="currentColor">plate 6</text>
+      <text x="630" y="82" font-size="11" fill="var(--muted)">big hole, fast</text>
+      <circle cx="560" cy="165" r="36" fill="var(--card)" stroke="var(--orange)" stroke-width="3"/>
+      <circle cx="560" cy="165" r="12" fill="var(--bg)" stroke="var(--orange)" stroke-width="2"/>
+      <text x="630" y="161" font-size="13" font-weight="bold" fill="currentColor">plate 12</text>
+      <text x="630" y="177" font-size="11" fill="var(--muted)">medium</text>
+      <circle cx="560" cy="260" r="36" fill="var(--card)" stroke="var(--orange)" stroke-width="3"/>
+      <circle cx="560" cy="260" r="8" fill="var(--bg)" stroke="var(--orange)" stroke-width="2"/>
+      <text x="630" y="256" font-size="13" font-weight="bold" fill="currentColor">plate 18</text>
+      <text x="630" y="272" font-size="11" fill="var(--muted)">small hole, slow</text>
+    </svg>
+    </div>
+    <figcaption>Press a plate into the socket and you've set the speed. There's nothing to slide, nothing to drift, and no setting to misread.</figcaption>
+  </figure>
+  <h3>What to print</h3>
+  <ul class="checks">
+    <li><strong>The nozzle:</strong> an elbow that glues over the 3 × 10 cm slot and turns the air to point <strong>straight back</strong>, centered left to right. It ends in a round socket about <strong>50 mm</strong> across. Glue it down airtight, because a leak around the base is air that doesn't push.</li>
+    <li><strong>Speed plates:</strong> flat discs about 3 mm thick that press snugly into the socket, each with a round hole. Print the number big on each one. Start with just <strong>three test plates</strong> with holes of <strong>15, 22 and 30 mm</strong>. Step 8 shows how to work out the rest.</li>
+    <li><strong>A “zero” plate</strong> with no hole. You use it for the drift test (Step 8).</li>
+    <li><strong>A plate rack:</strong> a little holder with numbered slots, so the plates travel with the craft and never get mixed up.</li>
+  </ul>
+  <p><strong>And here's the magic:</strong> load more nickels and the craft gets heavier, so the air in the bag gets squished <em>harder</em>. That pushes air out the nozzle <em>harder</em>, all by itself. The extra push almost exactly makes up for the extra weight, so each plate gives nearly the same time whether the craft is empty or full. The judges will ask how your craft works, and this answer impresses them.</p>
+</section>
+
+<!-- ============ STEP 5 ============ -->
+<section class="card" id="step5">
+  <div class="stephead"><span class="stepnum">5</span><h2>Wire it up</h2></div>
+  <p>With the nozzle doing the pushing, the wiring is one simple loop. The three battery holders connect in a chain (+ of one to − of the next) to make 12 V. Then it goes batteries → switch → motor → back to the batteries.</p>
+  <figure>
+    <div class="diagram">
+    <svg viewBox="0 0 720 300" role="img" aria-label="Wiring diagram: two 4-battery holders and one 2-battery holder chained together make 12 volts, which runs through the switch to the lift motor and back to the batteries.">
+      <rect x="40" y="70" width="84" height="120" rx="10" fill="var(--green-soft)" stroke="var(--green)" stroke-width="2.5"/>
+      <rect x="140" y="70" width="84" height="120" rx="10" fill="var(--green-soft)" stroke="var(--green)" stroke-width="2.5"/>
+      <rect x="240" y="100" width="50" height="60" rx="10" fill="var(--green-soft)" stroke="var(--green)" stroke-width="2.5"/>
+      <text x="82" y="134" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--green)">4 AA</text>
+      <text x="182" y="134" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--green)">4 AA</text>
+      <text x="265" y="134" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--green)">2 AA</text>
+      <line x1="124" y1="130" x2="140" y2="130" stroke="var(--green)" stroke-width="3"/>
+      <line x1="224" y1="130" x2="240" y2="130" stroke="var(--green)" stroke-width="3"/>
+      <text x="165" y="214" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--green)">chained together = 12 volts</text>
+      <text x="165" y="232" text-anchor="middle" font-size="11" fill="var(--muted)">(battery labels showing!)</text>
+      <polyline points="290,130 340,130" fill="none" stroke="var(--blue)" stroke-width="3.5"/>
+      <rect x="340" y="106" width="110" height="48" rx="10" fill="var(--blue-soft)" stroke="var(--blue)" stroke-width="2.5"/>
+      <text x="395" y="128" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--blue)">SWITCH</text>
+      <text x="395" y="144" text-anchor="middle" font-size="11" fill="var(--blue)">(on / off)</text>
+      <polyline points="450,130 520,130" fill="none" stroke="var(--blue)" stroke-width="3.5"/>
+      <circle cx="565" cy="130" r="42" fill="var(--blue-soft)" stroke="var(--blue)" stroke-width="3"/>
+      <text x="565" y="126" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--blue)">LIFT</text>
+      <text x="565" y="142" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--blue)">motor</text>
+      <polyline points="607,130 670,130 670,268 20,268 20,130 40,130" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-dasharray="6 5"/>
+      <text x="345" y="288" text-anchor="middle" font-size="11" fill="var(--muted)">dashed line = the wire back to the batteries</text>
+    </svg>
+    </div>
+    <figcaption>One loop. Lever connectors mean no soldering, and the batteries pop out easily for impound.</figcaption>
+  </figure>
+  <div class="tip grownup"><span class="tag">Grown-up</span><p>Help connect the wires with the lever connectors, and check the chain goes + to − between holders. Never let the bare + and − wires touch. Before gluing anything down, test: the motor should spin fast and blow <em>down</em>. If it blows up, swap the two motor wires.</p></div>
+  <div class="tip smart"><span class="tag">Power</span><p>The motor pulls about 4–5 amps while running, and a big burst for an instant when it starts. That's why the switch is rated 30 A and the wires are thick 20 gauge. Push each battery firmly into its holder and keep the springs clean, because a loose battery wastes power. The motor gets warm in long tests, so give it a minute's rest between batches.</p></div>
+  <div class="tip smart"><span class="tag">Rule</span><p>At impound, your craft is turned in with the <strong>batteries stored separately</strong>, so keep the holders easy to reach, not buried under tape.</p></div>
+</section>
+
+<!-- ============ STEP 6 ============ -->
+<section class="card" id="step6">
+  <div class="stephead"><span class="stepnum">6</span><h2>Print the nickel trays</h2></div>
+  <p>The judges provide the cargo: <strong>4 rolls of nickels (about 200 g each), 1 half roll, and 20 loose nickels</strong>, about 1 kg in all. Carrying all of it earns the full 20 nickel points. The rules say <strong>no tape, no glue, and no opening the rolls</strong>, so the nickels just sit in whatever your craft offers. Print trays with walls.</p>
+  <figure>
+    <div class="diagram">
+    <svg viewBox="0 0 640 360" role="img" aria-label="Top view of the printed nickel trays: two trays sit on either side of the lift fan, each with two slots shaped for nickel rolls, plus a small bin at the front for the half roll and loose nickels.">
+      <rect x="70" y="40" width="500" height="290" rx="14" fill="var(--card)" stroke="currentColor" stroke-width="2.5" stroke-dasharray="10 7"/>
+      <text x="320" y="66" text-anchor="middle" font-size="12" fill="var(--muted)">deck (top view, front is up)</text>
+      <circle cx="320" cy="200" r="62" fill="var(--air-soft)" stroke="var(--blue)" stroke-width="2.5" stroke-dasharray="7 5"/>
+      <text x="320" y="205" text-anchor="middle" font-size="11" fill="var(--blue)">lift fan</text>
+      <rect x="120" y="120" width="110" height="160" rx="10" fill="var(--green-soft)" stroke="var(--green)" stroke-width="2.5"/>
+      <rect x="134" y="134" width="36" height="132" rx="14" fill="var(--card)" stroke="var(--green)" stroke-width="2"/>
+      <rect x="180" y="134" width="36" height="132" rx="14" fill="var(--card)" stroke="var(--green)" stroke-width="2"/>
+      <text x="175" y="302" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--green)">2 roll slots</text>
+      <rect x="410" y="120" width="110" height="160" rx="10" fill="var(--green-soft)" stroke="var(--green)" stroke-width="2.5"/>
+      <rect x="424" y="134" width="36" height="132" rx="14" fill="var(--card)" stroke="var(--green)" stroke-width="2"/>
+      <rect x="470" y="134" width="36" height="132" rx="14" fill="var(--card)" stroke="var(--green)" stroke-width="2"/>
+      <text x="465" y="302" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--green)">2 roll slots</text>
+      <rect x="270" y="78" width="100" height="44" rx="8" fill="var(--green-soft)" stroke="var(--green)" stroke-width="2.5"/>
+      <text x="320" y="99" text-anchor="middle" font-size="11" fill="var(--green)">half roll +</text>
+      <text x="320" y="113" text-anchor="middle" font-size="11" fill="var(--green)">20 loose</text>
+    </svg>
+    </div>
+    <figcaption>The slots hug the rolls, and the walls keep everything aboard. The trays mirror each other so the load balances.</figcaption>
+  </figure>
+  <ul class="checks">
+    <li>A nickel roll is about <strong>21 mm across and 80 mm long</strong>. Make the slots about 22 mm wide and 84 mm long, and test them with the real rolls you got from the bank.</li>
+    <li>Make the slot walls at least 12 mm tall. A roll that falls off costs points <em>and</em> a penalty.</li>
+    <li>Print a small bin with a lip for the half roll and the loose nickels.</li>
+    <li><strong>Always carry the full load, and load it the same way every time</strong> (same rolls in the same slots). Where the weight sits changes how the craft drifts, so the same load every run means the same time every run.</li>
+  </ul>
+  <div class="tip win"><span class="tag">Win</span><p>Because of the nozzle's magic (Step 4), carrying all the nickels barely changes your time. So always carry all of them: 20 points, and you only need to practice one way.</p></div>
+</section>
+
+<!-- ============ STEP 7 ============ -->
+<section class="card" id="step7">
+  <div class="stephead"><span class="stepnum">7</span><h2>Add the timing stick</h2></div>
+  <p>The race is timed by light beams at the start and finish, like the sensor on a garage door. Your craft carries a wooden stick that breaks the beams. The rules are picky, so get this exactly right:</p>
+  <figure>
+    <div class="diagram">
+    <svg viewBox="0 0 480 300" role="img" aria-label="Side view showing the timing stick rules: the quarter-inch dowel stands right at the front edge, its top at least 20 centimeters above the track, and it is the first part to cross the timing beam, which sits about 17 centimeters high.">
+      <defs><marker id="arrI3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="currentColor"/></marker></defs>
+      <rect x="10" y="256" width="460" height="14" rx="4" fill="var(--track)"/>
+      <rect x="60" y="208" width="280" height="14" rx="4" fill="var(--card)" stroke="currentColor" stroke-width="2.5"/>
+      <path d="M 70 222 C 60 232 60 246 76 250 L 324 250 C 340 246 340 232 330 222 Z" fill="var(--air-soft)" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4"/>
+      <rect x="327" y="58" width="9" height="150" rx="3" fill="var(--orange)"/>
+      <text x="320" y="46" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--orange)">the timing stick</text>
+      <line x1="388" y1="58" x2="388" y2="256" stroke="var(--muted)" stroke-width="1.5"/>
+      <line x1="380" y1="58" x2="396" y2="58" stroke="var(--muted)" stroke-width="1.5"/>
+      <line x1="380" y1="256" x2="396" y2="256" stroke="var(--muted)" stroke-width="1.5"/>
+      <text x="408" y="160" font-size="12" fill="var(--muted)" transform="rotate(-90 408 160)" text-anchor="middle">at least 20 cm</text>
+      <text x="200" y="192" font-size="11" fill="var(--muted)">stick right at the front edge →</text>
+      <line x1="20" y1="120" x2="460" y2="120" stroke="var(--blue)" stroke-width="2.5" stroke-dasharray="10 7"/>
+      <text x="90" y="110" font-size="12" font-weight="bold" fill="var(--blue)">timing beam (~17 cm high)</text>
+      <line x1="150" y1="290" x2="250" y2="290" stroke="currentColor" stroke-width="3" marker-end="url(#arrI3)"/>
+      <text x="200" y="284" text-anchor="middle" font-size="11" fill="var(--muted)">craft moves this way</text>
+    </svg>
+    </div>
+    <figcaption>The stick must be the very first part to cross each beam.</figcaption>
+  </figure>
+  <ul class="checks">
+    <li>A ¼-inch (or thicker) wooden dowel, standing straight up in a printed socket</li>
+    <li><strong>Right at the front edge.</strong> The rules allow up to 3 cm back, but on a slow run the craft starts so gently that the stick needs every centimeter to cross the start line within 3 seconds.</li>
+    <li>The top of the stick at least 20 cm above the <em>track</em> while floating. Cut it to about 24 cm to be safe.</li>
+    <li>Nothing on the craft sticks out in front of it</li>
+  </ul>
+</section>
+
+<!-- ============ STEP 8 ============ -->
+<section class="card" id="step8">
+  <div class="stephead"><span class="stepnum">8</span><h2>Practice: make your speed plates</h2></div>
+  <p>On competition day you get the Target Time, then <strong>8 minutes and just 2 runs, with no practice runs allowed</strong>. So all the learning happens at home. First, build the official track:</p>
+  <ul class="checks">
+    <li>Two straight 2×4 boards taped to a smooth floor, <strong>45 cm apart</strong> and at least 240 cm long</li>
+    <li>A start line at least 45 cm from the start end, and a finish line <strong>185 cm</strong> past it</li>
+  </ul>
+
+  <div class="tip smart"><span class="tag">Batteries</span><p><strong>The 20-minute rule:</strong> one charge gives about 30 minutes of motor time, but the power fades near the end, and that would throw off your plate times. So recharge after about 20 minutes of running, and split the full calibration into two practice sessions. Use the same set of 10 batteries for practice and the race.</p></div>
+
+  <h3>8a · The drift test</h3>
+  <p>Press in the <strong>zero plate</strong> (no hole), load all the nickels, and float the craft in the middle of the track. With no air out the back, it should just sit there. If it slowly creeps one way, something is out of balance: the batteries, the trays, or an uneven skirt. Fix that first. The craft is super sensitive, so a slow run depends on it floating perfectly still.</p>
+  <div class="tip smart"><span class="tag">Smart</span><p>If it drifts the same way wherever you put it, the floor might be tilted instead. Turn the craft around. If it drifts toward the same end of the room, it's the floor, so find a flatter spot to practice.</p></div>
+
+  <h3>8b · Time the three test plates</h3>
+  <p>Fully loaded, with the craft touching the start line, time each test plate (15, 22 and 30 mm) <strong>3 times</strong>. Measure from when the stick crosses the start line to when it crosses the finish line. Write down the average for each plate.</p>
+
+  <h3>8c · Find your craft's magic number</h3>
+  <p>Here's a fun math fact: for this craft, <strong>hole size × time stays about the same</strong>. A hole twice as wide makes it twice as fast. So multiply each plate's hole size by its time:</p>
+  <div class="formula">magic number = hole size (mm) × time (seconds)</div>
+  <p>Say the 22 mm plate took 11 seconds. Then 22 × 11 = <strong>242</strong>. Check the other two plates. They should give numbers close to that, so use the average of all three.</p>
+
+  <h3>8d · Print the full set</h3>
+  <p>Now work out the hole for every Target Time by dividing:</p>
+  <div class="formula">hole size = magic number ÷ Target Time</div>
+  <p>With a magic number of 242, the full set looks like this (yours will be different):</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Plate</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th><th>16</th><th>17</th><th>18</th></tr></thead>
+    <tbody><tr><td>Hole (mm)</td><td class="num">40</td><td class="num">35</td><td class="num">30</td><td class="num">27</td><td class="num">24</td><td class="num">22</td><td class="num">20</td><td class="num">19</td><td class="num">17</td><td class="num">16</td><td class="num">15</td><td class="num">14</td><td class="num">13</td></tr></tbody>
+  </table>
+  </div>
+  <p>Print all 13, then <strong>test every plate 3 times</strong> and write the real times on your <strong>speed chart</strong>. If a plate is off by more than half a second, reprint it a millimeter bigger (faster) or smaller (slower).</p>
+  <div class="tip smart"><span class="tag">Rule</span><p>Your speed chart must be <strong>impounded with the craft</strong> in the morning, because no new notes can come in later. Make two copies and impound both. The plate rack goes in too, as spare parts.</p></div>
+  <div class="tip win"><span class="tag">States</span><p>At State and National tournaments the Target Times come in half seconds (like 12.5). Just print half-second plates too, using the same division.</p></div>
+</section>
+
+<!-- ============ INSPECTION ============ -->
+<section class="card" id="inspect">
+  <h2>Pass inspection: the rules checklist</h2>
+  <p>Before you race, a judge checks your craft. Go down this list at home so there are no surprises:</p>
+  <div class="duo">
+  <figure>
+    <div class="diagram">
+    <svg viewBox="0 0 300 300" role="img" aria-label="The whole hovercraft, including the timing stick, must fit inside a 40 by 40 by 40 centimeter box.">
+      <rect x="40" y="40" width="220" height="220" rx="8" fill="none" stroke="var(--green)" stroke-width="4" stroke-dasharray="12 8"/>
+      <rect x="62" y="196" width="176" height="12" rx="3" fill="var(--card)" stroke="currentColor" stroke-width="2"/>
+      <path d="M 70 208 C 62 216 62 226 74 229 L 226 229 C 238 226 238 216 230 208 Z" fill="var(--air-soft)" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="229" y="76" width="7" height="120" rx="3" fill="var(--orange)"/>
+      <rect x="136" y="160" width="30" height="36" rx="4" fill="var(--blue-soft)" stroke="var(--blue)" stroke-width="2"/>
+      <text x="150" y="284" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--green)">fits in a 40 cm box ✓</text>
+      <text x="150" y="30" text-anchor="middle" font-size="11" fill="var(--muted)">40 cm × 40 cm × 40 cm</text>
+    </svg>
+    </div>
+    <figcaption>Everything, stick included, inside the box.</figcaption>
+  </figure>
+  <figure>
+    <div class="diagram">
+    <svg viewBox="0 0 300 300" role="img" aria-label="The float test: a judge pushes the hovering craft down, and it must rise back up on its air cushion.">
+      <defs>
+        <marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="var(--green)"/></marker>
+        <marker id="arrM" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="var(--muted)"/></marker>
+      </defs>
+      <rect x="20" y="240" width="260" height="12" rx="3" fill="var(--track)"/>
+      <rect x="70" y="180" width="160" height="11" rx="3" fill="var(--card)" stroke="currentColor" stroke-width="2"/>
+      <path d="M 78 191 C 70 200 70 212 82 215 L 218 215 C 230 212 230 200 222 191 Z" fill="var(--air-soft)" stroke="currentColor" stroke-width="1.5"/>
+      <line x1="150" y1="120" x2="150" y2="168" stroke="var(--muted)" stroke-width="3" marker-end="url(#arrM)"/>
+      <text x="150" y="110" text-anchor="middle" font-size="12" fill="var(--muted)">judge pushes down…</text>
+      <line x1="245" y1="215" x2="245" y2="165" stroke="var(--green)" stroke-width="3.5" marker-end="url(#arrG)"/>
+      <text x="245" y="152" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--green)">…it pops back up!</text>
+      <text x="150" y="284" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--green)">the float test ✓</text>
+    </svg>
+    </div>
+    <figcaption>Push it down; the air pillow lifts it right back.</figcaption>
+  </figure>
+  </div>
+  <ul class="checks">
+    <li>The whole craft (stick included) fits in a 40 × 40 × 40 cm box, <strong>measured while it's floating</strong>, so the puffed-up skirt counts too</li>
+    <li>The fan has a cage on top and a guard below that a 9.5 mm stick can't poke through</li>
+    <li>Store-bought batteries with their original labels easy to see, adding up to 12 volts or less by the labels (we chose rechargeable AAs, but the rules allow other kinds)</li>
+    <li>No lithium or lead batteries, no computer chips, no lasers</li>
+    <li>The motor has a switch you can flip with your fingers (no twisting wires together)</li>
+    <li>It floats, and pops back up when pushed down</li>
+    <li>Both teammates have <strong>safety glasses</strong></li>
+    <li>You can explain how you built it, because <strong>you</strong> built it. Judges ask, and the speed plates are a great story!</li>
+  </ul>
+</section>
+
+<!-- ============ RACE DAY ============ -->
+<section class="card" id="raceday">
+  <h2>Race day, step by step</h2>
+  <ol class="plain">
+    <li><strong>The night before:</strong> charge all 10 batteries. The charger holds 8, so it takes two rounds; start early. Pack safety glasses, the craft, the plate rack, spare props, spare skirt plastic, tape, a calculator, and <strong>both copies of the speed chart</strong>.</li>
+    <li><strong>Impound (morning):</strong> turn in the craft with the <strong>batteries stored separately</strong>, plus the plate rack, spare parts and speed chart.</li>
+    <li><strong>Your turn begins:</strong> safety glasses on. The judges announce the <strong>Target Time</strong> and your 8 minutes start. Put the batteries in.</li>
+    <li><strong>Pick your run-1 plate</strong> from the speed chart. <strong>If the Target Time is 14 seconds or more, use one plate faster</strong> (for example, plate 15 for a 16-second target). A slow run that stalls loses almost everything, and being a little early only costs a point or two.</li>
+    <li>Load all the nickels the usual way. Dry-sweep the track if it's dusty (that's allowed).</li>
+    <li>Place the craft with its front touching the start line. The judge holds a wood block in front of it.</li>
+    <li>Flip the switch and let the skirt puff up. Hands off, then count down out loud: <strong>“3, 2, 1, launch!”</strong> The judge pulls the block away.</li>
+    <li><strong>Don't touch it</strong>, not even a nudge, until the judge says you may. Touching it means the run scores zero.</li>
+    <li><strong>Run 2: fix it with math.</strong> Use the calculator:
+      <div class="formula" style="margin-top:8px">new plate = plate you used × Target Time ÷ your run-1 time</div>
+      For example, with a Target Time of 12, plate 12 ran 13.0 seconds: 12 × 12 ÷ 13 = 11.1, so use <strong>plate 11</strong>. This fixes whatever that track's floor does. If run 1 stalled, use two plates faster.</li>
+  </ol>
+  <div class="tip win"><span class="tag">Win</span><p>Everything you decide on race day comes from a card you made at home and one division problem. No guessing, no nerves. That's engineering!</p></div>
+</section>
+
+<footer>Built to the official Science Olympiad 2027 Hovercraft (Div B) rules · Track: 185 cm timed, 45 cm wide · Target Time 6–18 s · Scoring: 40 finish + 40 time + 20 nickels · Amazon links checked October 1, 2026: all Prime, delivery by October 6</footer>
+
+</div>
+
+</body></html>
