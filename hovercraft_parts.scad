@@ -213,12 +213,12 @@ DECK_TAPE_W  = 1.0;
 DECK_TAPE_D  = 0.28;
 
 // ---------------------------------------------------------------- wear pad
-// The workshop's 14 cm milk-jug circle, printed: flat, 3 layers, edge
+// The workshop's 14 cm milk-jug circle, printed: flat, 2 layers, edge
 // chamfered so the tape lies over it and nothing catches on the track.
-// ~14 g against ~5 g of milk jug; durable and slippery.
+// ~10 g against ~5 g of milk jug; durable and slippery.
 WEAR_PAD_D  = 140;
-WEAR_PAD_T  = 0.76;   // 3 layers: it only has to stay flat and slide
-WEAR_PAD_CH = 0.4;    // edge chamfer
+WEAR_PAD_T  = 0.48;   // 2 layers: it only has to stay flat and slide
+WEAR_PAD_CH = 0.2;    // edge chamfer: the first layer, one step in
 
 // ---------------------------------------------------------------- skirt lip
 // A lip round the underside of the edge, like a bucket rim turned down,

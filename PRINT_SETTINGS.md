@@ -27,7 +27,7 @@ at normal speeds; a fast printer halves them.
 | coin_bin | 1 | 3 | 15 % | none | flat | 53 × 56 × 16 | 16 | ¾ h | |
 | stick_stand | 1 | 3 | 20 % | none | base | 46 × 56 × 38 | 16 | 1 h | The set-screw hole is a horizontal 2.6 mm hole; run an M3 screw through it once to clear it. |
 | switch_bracket | 1 | 3 | 15 % | none | base | 34 × 33 × 36 | 9 | ¾ h | The 12.8 mm panel hole is horizontal; a little sag at the top is fine, the switch nut clamps it. |
-| wear_pad | 1 | 2 | 15 % (all skin) | none | flat, chamfer down | 140 × 140 × 0.8 | 14.5 (sliced) | 21 min | The foot on the outside of the bag. Three layers; the chamfered edge goes toward the track. Replaces the workshop's milk-jug circle (which is lighter, ~5 g, if you would rather). |
+| wear_pad | 1 | 2 | 15 % (all skin) | none | flat, chamfer down | 140 × 140 × 0.5 | 9 (sliced) | 17 min | The foot on the outside of the bag. Two layers, like a milk jug; the chamfered edge goes toward the track. Replaces the workshop's milk-jug circle (which is lighter, ~5 g, if you would rather). |
 | templates | 1 | 2 | 15 % | none | flat | 144 × 194 × 2 | 12 | ¾ h | Optional. Trace the inside edges. |
 
 | **Printed deck** (optional, replaces the foam board; ENGINEERING_CHECK §9) | | | | | | | | | |
