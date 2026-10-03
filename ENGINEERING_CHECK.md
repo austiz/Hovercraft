@@ -592,8 +592,15 @@ mid-air.  That one fact shaped every pocket:
   features, so elephant's foot tightens them and the slicer's compensation
   (0.15) loosens them back; the printed parts are 0.1–0.2 oversize.  The
   coupons decide: 0.1 is a tap-in press fit, 0.35 a drop-in.
-- **Rim**: 2.4 mm of solid at deck-top height round every pocket; under
-  each pocket the skin is the normal 0.48.
+- **Rim**: 2.4 mm of solid at deck-top height round every pocket.
+- **Floors are 3 layers (0.84 mm), not the skin's 2.**  The main skin is
+  two layers laid on the bed and is airtight.  A pocket floor starts with
+  a bridge layer, which has gaps between its lines, and the slicer's
+  0.28 mm grid can turn a 0.48 floor into that single bridged layer.  Two
+  more layers over the bridge close it.  Still, hold every quarter up to
+  a bright light and look through the pocket floors in particular; any
+  that glow through get a strip of packing tape on the underside, inside
+  the bag, where it costs nothing.
 - **Airtightness**: the tube and nozzle pockets locate the parts but a press
   fit is not a seal.  Run a bead of hot glue or silicone round the inside of
   those two pockets before pressing the part in; the pocket keeps the bead
@@ -603,6 +610,31 @@ mid-air.  That one fact shaped every pocket:
   so their heads clear the pocket pads that straddle the joints.
 - What a pocket pad adds is only its rim and pegs; the fan ring is the
   heavy one (+15 g: two lips, a floor and the guard wall).
+
+### 9.1a Thin-spot audit (0.20 first layer, then 0.28)
+
+The slicer prints a layer where the model is solid at the layer's middle,
+so a feature's real thickness is a whole number of layers, and 0.48 of
+model can become one layer if it sits across the grid badly.  Every thin
+feature, checked on that grid:
+
+| Feature | Model | Printed | Note |
+|---|---|---|---|
+| main skin | 0.48 | **2 layers** | laid on the bed: airtight |
+| edge band | 0.76 | 3 | |
+| tape groove floor | 0.48 | 2 | the groove takes the band's third layer only |
+| under the battery-holder marks | 0.48 − 0.2 | 1 → **2** | the mark removes the first layer, so a strip under each mark adds a third (was a 650 mm run of single layer) |
+| pocket floors (all) | 0.84 | **3** | the first is a bridge; was 0.48 = 1 bridged layer, which is porous |
+| fan ring floor | 0.84 | 3 | same |
+| guard pocket wall | 1.5 × 2.4 | 5 | |
+| rims, lips, slot lip | 2.34 tall; 2.4 / 1.35 wide | 9 | 5 / 3 lines wide |
+| tray pegs | Ø11.2 × 1.5 | 6 | on the bed |
+| grid ribs | 0.9 wide | 2 lines | |
+| seam ribs | 1.6 wide | 3 lines (arachne) | |
+| jigsaw tabs | 0.76 | 3 | in the band |
+
+Nothing on the deck is one layer thick any more, and nothing is one line
+wide.
 
 ### 9.2 How it is built
 
@@ -678,6 +710,7 @@ pocket is empty.
 |---|---|---|
 | Parts fit | the coupons, before the quarters | `SOCK_FIT` ± 0.05 |
 | Skin airtight | hold each quarter up to a bright light before assembly: no pinholes | set `DECK_SKIN = 0.76` (3 layers, +30 g) and reprint that quarter |
+| Pocket floors airtight | same light test, through each pocket floor (they are bridged) | packing tape over the floor's underside, inside the bag |
 | Joints airtight | float the craft and run a damp finger along the seams; the fan note changes if a joint is open | more tape underneath |
 | Flat | the assembled deck lies flat on a table with no rocking | loosen the seam bolts, press flat, retighten |
 | Size | 330 × 320 mm assembled | rule 3a margin is 10 mm, so ±1 mm is irrelevant |

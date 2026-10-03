@@ -163,8 +163,9 @@ DECK_TAB_CLR= 0.2;    // knob and slot are both first-layer features, so
                       // elephant's foot closes this from both sides.
                       // deck_fit_test has a tab pair to check it
 DECK_MARKS  = true;   // engraved outlines showing where each part glues on
-DECK_MARK_D = 0.2;    // (the first layer only)
-DECK_MARK_W = 0.8;
+DECK_MARK_D = 0.2;    // (the first layer only).  The skin is 2 layers, so
+DECK_MARK_W = 0.8;    // a mark would leave 1: a strip under each mark adds
+DECK_MARK_PAD = 1.2;  // a third, this far either side of the line
 
 // ---------------------------------------------------------------- deck sockets
 // Every printed part presses into a pocket in the deck's top face (the fan
@@ -185,8 +186,12 @@ SOCK_FIT    = 0.2;    // per side.  The pocket walls are first-layer features,
                       // compensation (0.15 in the Bambu profiles) puts most
                       // of that back.  Tight: 0.1.  Drop-in: 0.35.
 SOCK_RIM    = 2.4;    // solid rim round each pocket, flush with the deck top
-SOCK_FLOOR  = 0.76;   // fan ring: floor between the tube flange above and the
-                      // guard below (3 layers)
+SOCK_FLOOR  = 0.84;   // every pocket floor: 3 layers of 0.28, the first of
+                      // them a bridge.  The main skin is 2 layers laid on
+                      // the bed and airtight; a bridged layer has gaps
+                      // between its lines, so a floor needs two more over
+                      // it to close.  Also the floor between the tube flange
+                      // and the guard in the fan ring.
 SOCK_LIP    = 1.35;   // lip round the nozzle slot that the frame bridges to.
                       // It makes the slot 96.7 x 26.7; the cards absorb that.
 SOCK_PEG_D  = 11.2;   // pegs through the trays' 12 mm floor holes (print ~11.7)
@@ -1119,8 +1124,8 @@ module sock_pegs() {
 
 // solid pads under every flat pocket: rim + floor, from the deck top down
 module sock_pads() {
-    translate([0, 0, -(SOCK_D + DECK_SKIN)])
-        linear_extrude(SOCK_D + DECK_SKIN, convexity = 8)
+    translate([0, 0, -(SOCK_D + SOCK_FLOOR)])
+        linear_extrude(SOCK_D + SOCK_FLOOR, convexity = 8)
             offset(delta = SOCK_FIT + SOCK_RIM) sock_flat_2d();
 }
 
@@ -1196,6 +1201,15 @@ module deck_quarter_installed(sx, sy) {
                             square([1000, DECK_SEAM_W]);
                     }
                 }
+            // a third layer under the engraved marks, so they do not thin
+            // the skin to one
+            if (DECK_MARKS)
+                translate([0, 0, -DECK_SKIN - 0.28])
+                    linear_extrude(0.28 + 0.01, convexity = 6)
+                        intersection() {
+                            offset(delta = DECK_MARK_PAD) deck_marks_2d();
+                            deck_quarter_2d(sx, sy);
+                        }
             // socket pads and the fan ring, this quarter's share
             if (DECK_SOCKETS)
                 intersection() {
