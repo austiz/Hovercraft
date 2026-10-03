@@ -33,12 +33,19 @@
      "switch_bracket" panel for the toggle switch (it cannot mount through
                     foam: the nut crushes it and the body hangs in the bag)
      "templates"    marking templates for the fan hole and the nozzle slot
+     "deck_fl" "deck_fr" "deck_bl" "deck_br"
+                    OPTIONAL printed deck in four quarters (front-left,
+                    front-right, back-left, back-right) that replaces the
+                    foam board.  "deck" shows all four put together.
 
    Hardware to buy (none of it comes with the motor)
    ------------------------------------------------------------------------
      2x M3 x 6 socket head     motor to cage hub.  6 mm, NO LONGER.
      6x M3 x 10 + 6x M3 nut    cage to tube lugs (nuts drop into the lugs)
      1x M3 x 8                 dowel set screw in the stick stand
+     7x M3 x 8 + 7x M3 nut     printed deck only: bolts the seam ribs
+                               together.  Plus clear packing tape for
+                               the joints, top and bottom.
      HS390 instead: 2x M2.5 x 5 socket head (M2.6 x 5 if its holes are
                                M2.6, as on the Mabuchi 385), and a
                                2.3 mm collet prop adapter
@@ -908,6 +915,11 @@ module templates() {
      side joints.
    - A strip of clear packing tape along each joint on top and underneath
      makes it airtight.  The deck is the lid of the air cushion.
+
+   Build order (ENGINEERING_CHECK §9): bolt the quarters upside down on a
+   flat table (7x M3 x 8 + nut, snug), tape the joints underneath, glue the
+   guard and tape the skirt on, flip it, glue the parts on their engraved
+   outlines, tape any joint on top that no part covers.
    ========================================================================== */
 function tray_size()  = [2 * SLOT_ROLL_W + 3 * TRAY_WALL, SLOT_ROLL_L + 2 * TRAY_WALL];
 function bin_size()   = [2 * SLOT_ROLL_W + 3 * TRAY_WALL, SLOT_HALF_L + 2 * TRAY_WALL];
@@ -917,9 +929,11 @@ function slot_centre() = [0, -DECK_Y / 2 + SLOT_BACK];
 // jigsaw tabs: position along the joint, and which side (+1 / -1) owns it
 DECK_TABS_V = [[-(DECK_Y / 2 - DECK_BAND / 2), -1], [DECK_Y / 2 - DECK_BAND / 2, 1]];   // joint x = 0
 DECK_TABS_H = [[-(DECK_X / 2 - DECK_BAND / 2), 1], [DECK_X / 2 - DECK_BAND / 2, -1]];   // joint y = 0
-// bolt holes through the seam ribs, along each joint
-DECK_BOLTS_V = [-90, 88, 108];
-DECK_BOLTS_H = [-112, -90, 90, 112];
+// bolt holes through the seam ribs, along each joint.  Each one sits where
+// no grid rib meets the seam, so the head and the nut both seat flat on it
+// (grid ribs reach the joints at multiples of 47.6 / 55 / 95.3 mm).
+DECK_BOLTS_V = [-82, 82, 112];
+DECK_BOLTS_H = [-118, -90, 90, 118];
 
 module deck_outline_2d() {
     difference() {
