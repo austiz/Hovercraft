@@ -663,7 +663,11 @@ pocket is empty.
 4. **Tape every joint underneath** with clear packing tape.  The underside
    is the lid of the air cushion: a leak here is lift lost.
 5. **Guard** into its pocket under the hole (nubs down), a few dots of glue.
-   **Tape the skirt** on in the 40 mm band, as with foam.
+   **Tape the skirt** on along the engraved line on the underside, 10 mm
+   in from the edge: packing tape first, pleat the corners, duct tape over.
+   The line breaks where the nozzle and stand pads reach it; there the
+   tape runs onto the pad, 1.2 mm lower.  Put a dab of hot glue at each
+   end of that step before the tape goes over it, or it is a leak.
 6. Flip it.  **Bead of glue in the tube pocket, press the tube in.**  Same
    for the nozzle.  Trays, bin, stand and bracket just press in; a dot of
    glue on each if you want them permanent.

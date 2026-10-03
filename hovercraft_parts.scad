@@ -191,6 +191,13 @@ SOCK_LIP    = 1.35;   // lip round the nozzle slot that the frame bridges to.
                       // It makes the slot 96.7 x 26.7; the cards absorb that.
 SOCK_PEG_D  = 11.2;   // pegs through the trays' 12 mm floor holes (print ~11.7)
 
+// skirt tape line: a groove on the underside, one layer deep, where the
+// first strip of tape goes (the workshop says 1 cm in from the edge).  It
+// breaks where a socket pad or a jigsaw tab is in the way.
+DECK_TAPE_IN = 10;
+DECK_TAPE_W  = 1.0;
+DECK_TAPE_D  = 0.28;
+
 // where things sit on the deck: shared by the assembly preview and the
 // engraved marks on the printed deck
 TRAY_X      = 118;                        // nickel trays at (+/-TRAY_X, 0)
@@ -953,7 +960,7 @@ module templates() {
    SOCK_FIT on the real parts; print the quarters; glue the rib faces (CA)
    and bolt them upside down on a flat table (7x M3 x 8 + nut, snug); tape
    the joints underneath; guard
-   into its pocket, skirt taped on; flip it; a bead of glue in the tube and
+   into its pocket, skirt taped on along the engraved line; flip it; a bead of glue in the tube and
    nozzle pockets, then press every part into its pocket.
    ========================================================================== */
 function tray_size()  = [2 * SLOT_ROLL_W + 3 * TRAY_WALL, SLOT_ROLL_L + 2 * TRAY_WALL];
@@ -1061,6 +1068,16 @@ module deck_marks_2d() {
         deck_mark_box_2d([0, DECK_Y / 2 - STAND_Y / 2], [STAND_X, STAND_Y]);
         deck_mark_box_2d(slot_centre(), [nz_out_x() + 2 * NZ_FLANGE, nz_out_y() + 2 * NZ_FLANGE]);
         difference() { circle(d = FLANGE_OD); circle(d = FLANGE_OD - 2 * DECK_MARK_W); }
+    }
+}
+
+module deck_tape_line_2d() {
+    difference() {
+        offset(delta = -DECK_TAPE_IN) rrect([DECK_X, DECK_Y], 10, center = true);
+        offset(delta = -(DECK_TAPE_IN + DECK_TAPE_W)) rrect([DECK_X, DECK_Y], 10, center = true);
+        if (DECK_SOCKETS) offset(delta = SOCK_FIT + SOCK_RIM + 0.5) sock_flat_2d();  // not through a pocket floor
+        for (t = DECK_TABS_H) translate([t[0], 0]) square([14, 14], center = true);  // not through a tab
+        for (t = DECK_TABS_V) translate([0, t[0]]) square([14, 14], center = true);
     }
 }
 
@@ -1187,6 +1204,9 @@ module deck_quarter_installed(sx, sy) {
                 }
         }
         if (DECK_SOCKETS) sock_cuts();
+        // skirt tape line, in the underside of the band
+        translate([0, 0, -DECK_BAND_SKIN - EPS])
+            linear_extrude(DECK_TAPE_D + EPS) deck_tape_line_2d();
         // bolt holes through the seam ribs
         for (p = DECK_BOLTS_V) if (p * sy > 0)
             translate([0, p, zb]) rotate([0, 90, 0]) cylinder(d = M3_CLEAR, h = 20, center = true);
