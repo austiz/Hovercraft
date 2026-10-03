@@ -47,6 +47,7 @@ $parts = [ordered]@{
     stick_stand    = @{ stl = "stick_stand.stl";     copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "20%" } }
     switch_bracket = @{ stl = "switch_bracket.stl";  copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%" } }
     templates      = @{ stl = "templates.stl";       copies = 1; o = @{ wall_loops = "2"; sparse_infill_density = "15%" } }
+    wear_pad       = @{ stl = "wear_pad.stl";        copies = 1; o = @{ wall_loops = "2"; sparse_infill_density = "15%" } }   # 4 layers: all skin anyway
     # printed deck quarters (optional, replaces the foam board).  Print the
     # fit test first and press the real parts into it.
     deck_fit_test  = @{ stl = "deck_fit_test.stl"; copies = 1; o = $deck }

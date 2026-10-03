@@ -33,6 +33,8 @@
      "switch_bracket" panel for the toggle switch (it cannot mount through
                     foam: the nut crushes it and the body hangs in the bag)
      "templates"    marking templates for the fan hole and the nozzle slot
+     "wear_pad"     the 14 cm foot that is duct-taped to the outside of the
+                    bag under the fan (the workshop uses a milk jug)
      "deck_fl" "deck_fr" "deck_bl" "deck_br"
                     OPTIONAL printed deck in four quarters (front-left,
                     front-right, back-left, back-right) that replaces the
@@ -209,6 +211,14 @@ SOCK_PEG_D  = 11.2;   // pegs through the trays' 12 mm floor holes (print ~11.7)
 DECK_TAPE_IN = 10;
 DECK_TAPE_W  = 1.0;
 DECK_TAPE_D  = 0.28;
+
+// ---------------------------------------------------------------- wear pad
+// The workshop's 14 cm milk-jug circle, printed: flat, 4 layers, edge
+// chamfered so the tape lies over it and nothing catches on the track.
+// 20 g against ~5 g of milk jug; durable and slippery.
+WEAR_PAD_D  = 140;
+WEAR_PAD_T  = 1.12;   // 4 layers
+WEAR_PAD_CH = 0.6;    // edge chamfer
 
 // ---------------------------------------------------------------- skirt lip
 // A lip round the underside of the edge, like a bucket rim turned down,
@@ -947,6 +957,18 @@ module switch_bracket() {
 
 
 /* ==========================================================================
+   WEAR PAD
+   Prints flat.  Duct-tape it to the outside centre of the bag, chamfered
+   side towards the track, then cut the six air holes in a ring 3 cm out
+   from its edge, as the workshop says.
+   ========================================================================== */
+module wear_pad() {
+    cylinder(d1 = WEAR_PAD_D - 2 * WEAR_PAD_CH, d2 = WEAR_PAD_D, h = WEAR_PAD_CH + EPS);
+    translate([0, 0, WEAR_PAD_CH]) cylinder(d = WEAR_PAD_D, h = WEAR_PAD_T - WEAR_PAD_CH);
+}
+
+
+/* ==========================================================================
    BONUS — MARKING TEMPLATES
    Lay these on the foam board and trace round the inside.  Saves hunting for
    a bowl exactly 12 cm across.
@@ -1490,4 +1512,5 @@ else if (PART == "deck_br")     deck_quarter( 1, -1);     // back right
 else if (PART == "deck")        deck_printed();           // all four, preview
 else if (PART == "deck_fit_test") deck_fit_test();
 else if (PART == "templates")   templates();
+else if (PART == "wear_pad")    wear_pad();
 else echo(str("Unknown PART: ", PART));
