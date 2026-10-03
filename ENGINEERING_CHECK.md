@@ -350,3 +350,147 @@ the workshop's drift test (step 7) is the real check.
 | press-fit speed plates | drop-in cards in a guide | the seal is made by pressure, not by the fit; nothing to tune or wear |
 | self-tapped cage screws | nuts trapped in the lugs | the cage comes off for every prop change |
 | switch "through the deck" (implied) | on a printed bracket | foam cannot take an M12 panel nut |
+
+---
+
+## 8. Motors: three candidates and how to choose
+
+All three are brushed motors on the same 5030 propeller and 10 × AA NiMH
+pack, so all three are legal (rule 3b allows up to two motors, brushed or
+brushless; a brushless motor would need a separate speed controller, which
+is an integrated circuit and is **not** allowed).
+
+| | A: RS-550 22k (workshop) | B: RS-550 40k, 12 V | C: smaller original |
+|---|---|---|---|
+| Rated | 12 V, 22 000 rpm no-load | 12 V, 40 000 rpm no-load | **unknown: measure** (modelled as a typical RS-380 class, 12 V ~18 000 rpm) |
+| Fits the printed cage hub | yes (35.8 mm can, 2 × M3 at 25 mm) | same RS-550 frame: **check** screw spacing and shaft length | **probably not**: smaller cans use different screw spacing (often M2.5). The hub is generated from `MOTOR_BOLTS`, `MOTOR_BOSS_D` and the screw size, so a matching cage is a parameter change once it is measured |
+
+### 8.1 Predicted performance
+
+From `node tools/motor_model.js` (motor + propeller + pack resistance
+solved together).  Lift margin is how far the bag pressure exceeds what
+the 2.06 kg loaded craft needs (136–190 Pa); "floats up to" is the total
+craft mass it could still lift.  All numbers are ±30 %.
+
+**Nominal batteries (12 V, holders in decent shape):**
+
+| | A 22k | B 40k | C small (assumed) |
+|---|---|---|---|
+| Propeller speed | 16 000 rpm | 19 000 rpm | 12 400 rpm |
+| Current | 5.0 A | **12.6 A** | 2.4 A |
+| Voltage left at the motor | 10.3 V | **7.6 V** | 11.1 V |
+| Bag pressure | 217 Pa | 303 Pa | 128 Pa |
+| **Lift margin** | +14 … +59 % | **+59 … +123 %** | **−32 … −6 %** |
+| Floats up to | 2.4–3.3 kg | 3.3–4.6 kg | 1.4–1.9 kg |
+| Heat in batteries + holders | 9 W | **56 W** | 2 W |
+| Fan-on time per charge | ~23 min | **~9 min** | ~47 min |
+| Propeller tip speed | 107 m/s | 126 m/s | 82 m/s |
+
+**Tired batteries (11 V, warm holder springs):** A drops to −11 … +24 %
+(may not float the full load), B to +12 … +56 %, C to −45 … −23 %.
+
+What that means:
+
+- **A (workshop motor)** works, but its margin disappears as the cells
+  tire.  Gentle on the batteries.
+- **B (40k)** has by far the most lift and keeps floating on tired cells.
+  You will not see 40 000 rpm: the motor wants more current than ten AA
+  cells can give, so roughly half the battery's energy becomes heat in the
+  cells and holder springs.  The batteries are its bottleneck.
+- **C (smaller)**, if it really is an RS-380 class motor, is likely too weak
+  to lift the full nickel load on a 5-inch propeller.  It might float the
+  craft empty or with a partial load.  This is the least certain row:
+  measure it before ruling it out.
+
+The run time for a given speed card is inversely proportional to propeller
+speed, so **a faster motor means smaller holes for the same target time**
+(B: about 0.89× the hole sizes of A).  Each motor needs its own
+calibration (workshop step 8).  For all three, a 2 % battery sag makes a
+run ~0.2 s slower at TT 12; B drains the pack about 2.5× faster, so its
+times creep more across a session.
+
+### 8.2 The test day
+
+Do all of this with one set of freshly charged cells per motor, the same
+propeller, the same skirt and the full nickel load.  Write the numbers in
+the table in §8.4.
+
+**Tools:** a phone with a free audio spectrum app (Spectroid on Android,
+"Spectrum Analyzer" on iPhone), a multimeter, a kitchen scale, a timer,
+and ~1 kg of extra weight in 100 g bags (coins or rice in zip bags).
+
+1. **Fit check (motor off).**  Does it bolt to the cage hub?  Measure the
+   screw spacing, can diameter and how far the shaft sticks out past the
+   face.  Fit adapter and prop; measure motor face to the top of the prop
+   hub (`PROP_DROP`).  Spin it by hand: nothing may touch the cage.
+2. **Propeller speed (fan on, craft floating).**  Hold the phone 30 cm
+   from the fan.  The spectrum shows a tall peak at the **blade-pass
+   frequency**; for a 2-blade prop, **rpm = peak Hz × 30**.  (633 Hz →
+   19 000 rpm.)  Then run `node tools/motor_model.js --rpm <your rpm>` to
+   turn it into bag pressure and lift margin.
+3. **Voltage at the motor (fan on).**  Multimeter across the motor's two
+   terminals.  Compare with the pack voltage with the fan off.  A big gap
+   (more than ~3 V) means high current and hot holders.
+4. **Extra-weight test (the real lift margin).**  With the full nickel
+   load aboard, add 100 g bags spread evenly until the craft no longer
+   rises when you push it down gently (the rule 3c check).  Lift margin =
+   (heaviest load that still floats ÷ race load) − 1.  Repeat after
+   5 minutes of fan-on time to see the tired-battery margin.
+5. **Heat check.**  After one minute of fan-on, touch the battery holders,
+   the wires and the motor can.  Holders you cannot hold a finger on for
+   5 seconds are wasting power: bridge the springs with wire or use better
+   holders.  A motor too hot to touch after a minute is overloaded.
+6. **Repeatability.**  Five runs with the 22 mm test orifice, reseating it
+   between runs.  Record each time; the **spread** (max − min) is what
+   costs Time Score.
+7. **Drift over a session.**  Keep going with the same cells: 10 more runs
+   at one-minute intervals.  Plot time against run number.  A steady creep
+   is battery sag; a motor with less creep is easier to race.
+8. **Endurance.**  Total fan-on minutes until the craft no longer floats
+   the full load.  Must comfortably exceed a competition (2 runs plus
+   setup, ~3 minutes of fan time).
+
+### 8.3 How to choose
+
+Rank the motors in this order; the first test that separates them decides:
+
+1. **Floats the full load on cells that have done 5 minutes** (test 4,
+   repeated).  A motor that fails this loses 20 points of Mass Score or
+   doesn't run at all.  Want at least +20 % margin on tired cells.
+2. **Smallest run-time spread** (test 6).  1 s of spread at TT 12 is
+   ~3.3 points of Time Score.
+3. **Least drift over 10 runs** (test 7).
+4. **Holders and motor stay touchable** (test 5).
+
+If B wins on lift but its holders cook, fix the holders rather than
+dropping the motor: lift margin is worth more than battery efficiency.
+
+### 8.4 Results sheet
+
+| Test | A 22k | B 40k | C small |
+|---|---|---|---|
+| Rated V / no-load rpm (label) | 12 V / 22 000 | 12 V / 40 000 | |
+| Fits hub? screw spacing / shaft length | | | |
+| `PROP_DROP` (mm) | | | |
+| Prop rpm, fresh cells (Hz × 30) | | | |
+| Pack V off / motor V on | | | |
+| Heaviest load that floats, fresh (kg) | | | |
+| … after 5 min fan-on (kg) | | | |
+| Holders after 1 min (ok / hot) | | | |
+| 5 runs, 22 mm orifice: times | | | |
+| Spread (s) | | | |
+| Drift over 10 runs (s) | | | |
+| Fan-on minutes until it won't float | | | |
+| **Pick** | | | |
+
+### 8.5 Batteries go with the motor
+
+- Buy enough cells for **two full sets of 10**.  Calibrate and race on a
+  freshly charged set; use the other for testing.
+- With B, use 18-gauge wire if you can, keep wires short, and check the
+  holders for heat (§8.2 test 5).
+- Never mix cell types or add a 1.5 V cell: the 12.0 V limit is by label,
+  and 10 × 1.2 V is exactly 12.0.
+- Propeller safety scales with speed: do the workshop's one-minute spin
+  test with each motor, wear glasses, and keep everyone out of the plane
+  of the propeller on first power-up.

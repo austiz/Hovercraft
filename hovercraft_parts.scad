@@ -125,6 +125,38 @@ SLOT_X      = 100;    // slot, left to right
 SLOT_Y      = 30;     // slot, front to back
 SLOT_BACK   = 42;     // slot centre, this far forward of the back edge
 
+// ---------------------------------------------------------------- printed deck
+// Optional replacement for the foam board: four quarters, each fits the P1S
+// bed.  A thin skin (the deck's top face, printed on the bed) with a
+// triangle grid of ribs underneath, like an aircraft panel.  See PART 11.
+DECK_PRINTED = false; // assembly preview: show the printed deck, not foam
+DECK_SKIN   = 0.48;   // 2 layers at 0.28 (0.20 first layer + 0.28).  If the
+                      // deck leaks air, use 0.76 (3 layers), +30 g.
+DECK_RIB_H  = 5;      // grid ribs, below the skin
+DECK_RIB_W  = 0.9;    // two 0.45 lines
+DECK_CELL   = 55;     // triangle side of the grid
+DECK_BAND   = 40;     // flat band round the edge, no ribs: the skirt plastic
+                      // and its tape go here
+DECK_BAND_SKIN = 0.76;// the band is 3 layers: with no ribs, 2 would be floppy
+                      // when you pick the craft up by its edge
+DECK_SEAM_W = 1.6;    // seam ribs, one each side of every joint, bolted
+DECK_SEAM_H = 7;
+DECK_TAB_D  = 9;      // jigsaw tabs that lock the skin across the joints
+DECK_TAB_CLR= 0.15;
+DECK_MARKS  = true;   // engraved outlines showing where each part glues on
+DECK_MARK_D = 0.2;    // (the first layer only)
+DECK_MARK_W = 0.8;
+
+// where things sit on the deck: shared by the assembly preview and the
+// engraved marks on the printed deck
+TRAY_X      = 118;                        // nickel trays at (+/-TRAY_X, 0)
+BIN_POS     = [62, DECK_Y / 2 - 42];      // coin bin, front right
+AA2_POS     = [-62, DECK_Y / 2 - 42];     // 2 x AA holder, front left
+AA4_POS     = [110, -112];                // 4 x AA holders at (+/-x, y)
+SW_POS      = [118, -80];                 // switch bracket, panel centre
+AA4_SIZE    = [62, 57];
+AA2_SIZE    = [58.5, 32.4];
+
 // ---------------------------------------------------------------- the fan
 // Motor: RS-550, 12 V, can 35.8 mm, two M3 holes 25 mm apart on the shaft
 // face, 3.17 mm shaft.  Propeller: 5030, 127 mm across, on a collet adapter.
@@ -824,6 +856,176 @@ module templates() {
 
 
 /* ==========================================================================
+   PART 11 — PRINTED DECK  (optional, replaces the foam board)
+   Four quarters, each about 165 x 160 mm, so each one fits the P1S bed.
+   Modelled the way it sits on the craft: top face at z = 0, ribs hanging
+   below.  deck_quarter() flips it for printing, top face on the bed.
+
+   How the four pieces lock together:
+   - Jigsaw tabs in the skin, out in the rib-free edge band where the skirt
+     tape goes, lock the joints flat.
+   - Each piece has a tall seam rib along its two inner edges.  The ribs of
+     neighbouring pieces sit back to back and bolt together (M3 x 8 + nut)
+     through the holes in them.
+   - On top, the parts glued over the joints splice them: the fan tube
+     flange covers the centre where all four meet, the nozzle flange the
+     back joint, the stick stand the front joint, and the nickel trays the
+     side joints.
+   - A strip of clear packing tape along each joint on top and underneath
+     makes it airtight.  The deck is the lid of the air cushion.
+   ========================================================================== */
+function tray_size()  = [2 * SLOT_ROLL_W + 3 * TRAY_WALL, SLOT_ROLL_L + 2 * TRAY_WALL];
+function bin_size()   = [2 * SLOT_ROLL_W + 3 * TRAY_WALL, SLOT_HALF_L + 2 * TRAY_WALL];
+function deck_fan_clear() = GUARD_OD / 2 + 2;      // rib-free: guard glue ring
+function slot_centre() = [0, -DECK_Y / 2 + SLOT_BACK];
+
+// jigsaw tabs: position along the joint, and which side (+1 / -1) owns it
+DECK_TABS_V = [[-(DECK_Y / 2 - DECK_BAND / 2), -1], [DECK_Y / 2 - DECK_BAND / 2, 1]];   // joint x = 0
+DECK_TABS_H = [[-(DECK_X / 2 - DECK_BAND / 2), 1], [DECK_X / 2 - DECK_BAND / 2, -1]];   // joint y = 0
+// bolt holes through the seam ribs, along each joint
+DECK_BOLTS_V = [-90, 88, 108];
+DECK_BOLTS_H = [-112, -90, 90, 112];
+
+module deck_outline_2d() {
+    difference() {
+        rrect([DECK_X, DECK_Y], 10, center = true);
+        circle(d = DECK_HOLE_D);
+        translate(slot_centre()) rrect([SLOT_X, SLOT_Y], 2, center = true);
+    }
+}
+
+// one jigsaw tab on the joint line x = 0, sticking out towards -o * x
+module deck_tab_2d(o) {
+    r = DECK_TAB_D / 2;
+    translate([-o * (r + 1.5), 0]) circle(r = r);                     // knob
+    translate([o > 0 ? -(r + 1.5) : 0, -r * 0.5]) square([r + 1.5, r]); // neck
+}
+
+// side s of the joint x = 0 (axis "V") or y = 0 (axis "H"), tabs included
+module deck_side_2d(axis, s) {
+    tabs = (axis == "V") ? DECK_TABS_V : DECK_TABS_H;
+    // H is V turned 90 degrees: x -> y.  Positions along it map to -x.
+    rotate(axis == "V" ? 0 : 90)
+        difference() {
+            union() {
+                translate([s > 0 ? 0 : -1000, -1000]) square([1000, 2000]);
+                for (t = tabs) if (t[1] == s)
+                    translate([0, axis == "V" ? t[0] : -t[0]]) deck_tab_2d(s);
+            }
+            for (t = tabs) if (t[1] == -s)
+                translate([0, axis == "V" ? t[0] : -t[0]])
+                    offset(delta = DECK_TAB_CLR) deck_tab_2d(-s);
+        }
+}
+
+module deck_quarter_2d(sx, sy) {
+    intersection() {
+        deck_outline_2d();
+        deck_side_2d("V", sx);
+        deck_side_2d("H", sy);
+    }
+}
+
+// where ribs are allowed: inside the edge band, outside the guard ring
+module deck_rib_zone_2d() {
+    difference() {
+        offset(delta = -DECK_BAND) rrect([DECK_X, DECK_Y], 10, center = true);
+        circle(r = deck_fan_clear());
+        translate(slot_centre()) rrect([SLOT_X, SLOT_Y], 2, center = true);
+    }
+}
+
+module deck_grid_2d() {
+    h = DECK_CELL * sqrt(3) / 2;
+    n = ceil(max(DECK_X, DECK_Y) / h);
+    intersection() {
+        deck_rib_zone_2d();
+        union() {
+            for (a = [0, 60, 120]) rotate(a)
+                for (k = [-n : n]) translate([-500, k * h - DECK_RIB_W / 2]) square([1000, DECK_RIB_W]);
+            // rim round every edge of the rib zone, closing the cells
+            difference() { deck_rib_zone_2d(); offset(delta = -DECK_RIB_W) deck_rib_zone_2d(); }
+        }
+    }
+}
+
+module deck_mark_box_2d(c, size) {
+    translate(c)
+        difference() { square(size, center = true);
+                       offset(delta = -DECK_MARK_W) square(size, center = true); }
+}
+
+module deck_marks_2d() {
+    for (s = [-1, 1]) deck_mark_box_2d([s * TRAY_X, 0], tray_size());
+    deck_mark_box_2d(BIN_POS, bin_size());
+    deck_mark_box_2d(AA2_POS, AA2_SIZE);
+    for (s = [-1, 1]) deck_mark_box_2d([s * AA4_POS[0], AA4_POS[1]], AA4_SIZE);
+    deck_mark_box_2d([SW_POS[0], SW_POS[1] + (SW_BASE_D + SW_FACE_T) / 2],
+                     [SW_FACE_W, SW_BASE_D + SW_FACE_T]);
+    deck_mark_box_2d([0, DECK_Y / 2 - STAND_Y / 2], [STAND_X, STAND_Y]);
+    deck_mark_box_2d(slot_centre(), [nz_out_x() + 2 * NZ_FLANGE, nz_out_y() + 2 * NZ_FLANGE]);
+    difference() { circle(d = FLANGE_OD); circle(d = FLANGE_OD - 2 * DECK_MARK_W); }
+}
+
+// the quarter as it sits on the craft (top face at z = 0)
+module deck_quarter_installed(sx, sy) {
+    zr = -DECK_SKIN;                                    // underside of the skin
+    zb = zr - DECK_SEAM_H / 2;                          // bolt height
+    difference() {
+        union() {
+            // skin, thicker in the rib-free edge band
+            translate([0, 0, -DECK_SKIN]) linear_extrude(DECK_SKIN) deck_quarter_2d(sx, sy);
+            translate([0, 0, -DECK_BAND_SKIN]) linear_extrude(DECK_BAND_SKIN - DECK_SKIN + 0.01)
+                intersection() {
+                    deck_quarter_2d(sx, sy);
+                    difference() {
+                        rrect([DECK_X, DECK_Y], 10, center = true);
+                        offset(delta = -DECK_BAND) rrect([DECK_X, DECK_Y], 10, center = true);
+                    }
+                }
+            // grid ribs, this quarter only
+            translate([0, 0, zr - DECK_RIB_H]) linear_extrude(DECK_RIB_H + 0.01, convexity = 10)
+                intersection() {
+                    deck_grid_2d();
+                    translate([sx > 0 ? 0 : -1000, sy > 0 ? 0 : -1000]) square(1000);
+                }
+            // seam ribs along this quarter's two joints
+            translate([0, 0, zr - DECK_SEAM_H]) linear_extrude(DECK_SEAM_H + 0.01, convexity = 4)
+                intersection() {
+                    deck_rib_zone_2d();
+                    union() {
+                        translate([sx > 0 ? 0 : -DECK_SEAM_W, sy > 0 ? 0 : -1000])
+                            square([DECK_SEAM_W, 1000]);
+                        translate([sx > 0 ? 0 : -1000, sy > 0 ? 0 : -DECK_SEAM_W])
+                            square([1000, DECK_SEAM_W]);
+                    }
+                }
+        }
+        // bolt holes through the seam ribs
+        for (p = DECK_BOLTS_V) if (p * sy > 0)
+            translate([0, p, zb]) rotate([0, 90, 0]) cylinder(d = M3_CLEAR, h = 20, center = true);
+        for (p = DECK_BOLTS_H) if (p * sx > 0)
+            translate([p, 0, zb]) rotate([90, 0, 0]) cylinder(d = M3_CLEAR, h = 20, center = true);
+        // engraved outlines on the top face
+        if (DECK_MARKS)
+            translate([0, 0, -DECK_MARK_D]) linear_extrude(DECK_MARK_D + 0.01) deck_marks_2d();
+    }
+}
+
+// print orientation: flipped, top face on the bed, centred on the origin
+module deck_quarter(sx, sy) {
+    mirror([0, 0, 1])
+        translate([-sx * DECK_X / 4, -sy * DECK_Y / 4, 0])
+            deck_quarter_installed(sx, sy);
+}
+
+// all four, installed (preview)
+module deck_printed() {
+    for (sx = [-1, 1], sy = [-1, 1]) deck_quarter_installed(sx, sy);
+}
+
+
+/* ==========================================================================
    ASSEMBLY PREVIEW — not printable, just a fit check.
    Deck top sits at z = 0.  +Y is the front.
    ========================================================================== */
@@ -854,7 +1056,8 @@ module assembly(skirt = true) {
     echo(str("FIT      propeller to cage underside: ", PROP_DROP - HUB_T,
              " mm", (PROP_DROP - HUB_T < 3) ? "  <<< TOO CLOSE, check PROP_DROP" : "  ok"));
 
-    deck_preview();
+    if (DECK_PRINTED) color("WhiteSmoke") deck_printed(); else deck_preview();
+    under = DECK_PRINTED ? DECK_SKIN : DECK_T;          // underside of the deck
 
     // skirt, roughly as it looks inflated
     if (skirt) color("SkyBlue", 0.18)
@@ -862,7 +1065,7 @@ module assembly(skirt = true) {
             linear_extrude(34)
                 rrect([DECK_X + 2 * SKIRT_OVER, DECK_Y + 2 * SKIRT_OVER], 24, center = true);
 
-    color("DimGray")   translate([0, 0, -DECK_T]) mirror([0, 0, 1]) fan_guard();
+    color("DimGray")   translate([0, 0, -under]) mirror([0, 0, 1]) fan_guard();
     color("SteelBlue") fan_tube();
     color("Teal")      translate([0, 0, TUBE_H]) fan_cage();
 
@@ -891,20 +1094,22 @@ module assembly(skirt = true) {
     // cargo: rolls either side of the fan, bin off to one side at the front
     // (keep it clear of the fan tube flange and the stick stand)
     for (s = [-1, 1])
-        color("SeaGreen") translate([s * 118, 0, 0]) nickel_tray();
-    color("SeaGreen") translate([62, DECK_Y / 2 - 42, 0]) coin_bin();
+        color("SeaGreen") translate([s * TRAY_X, 0, 0]) nickel_tray();
+    color("SeaGreen") translate(BIN_POS) coin_bin();
 
     // battery holders, not printed; shown so nothing else gets planned for
     // that space.  LampVPath 4 x AA is 62 x 57 x 16 (four cells side by
     // side), rear corners.  LampVPath 2 x AA is 58.5 x 32.4 x 14.6, front
     // left, opposite the coin bin.  Shuffle them to balance the craft.
     for (s = [-1, 1])
-        color("Gray", 0.5) translate([s * 110, -112, 8]) cube([62, 57, 16], center = true);
-    color("Gray", 0.5) translate([-62, DECK_Y / 2 - 42, 7.3]) cube([58.5, 32.4, 14.6], center = true);
+        color("Gray", 0.5) translate([s * AA4_POS[0], AA4_POS[1], 8])
+            cube([AA4_SIZE[0], AA4_SIZE[1], 16], center = true);
+    color("Gray", 0.5) translate([AA2_POS[0], AA2_POS[1], 7.3])
+        cube([AA2_SIZE[0], AA2_SIZE[1], 14.6], center = true);
 
     // toggle switch on its bracket, right side, lever pointing backwards
-    color("Crimson") translate([118 - SW_FACE_W / 2, -80, 0]) switch_bracket();
-    color("Silver") translate([118, -80, SW_HOLE_Z]) rotate([90, 0, 0]) cylinder(d = 6, h = 18);
+    color("Crimson") translate([SW_POS[0] - SW_FACE_W / 2, SW_POS[1], 0]) switch_bracket();
+    color("Silver") translate([SW_POS[0], SW_POS[1], SW_HOLE_Z]) rotate([90, 0, 0]) cylinder(d = 6, h = 18);
 
     // timing stick, hanging out past the front edge
     color("Crimson") translate([0, DECK_Y / 2 - STAND_Y / 2, 0]) stick_stand();
@@ -932,5 +1137,10 @@ else if (PART == "nickel_tray") nickel_tray();
 else if (PART == "coin_bin")    coin_bin();
 else if (PART == "stick_stand") stick_stand();
 else if (PART == "switch_bracket") switch_bracket();
+else if (PART == "deck_fl")     deck_quarter(-1,  1);     // front left
+else if (PART == "deck_fr")     deck_quarter( 1,  1);     // front right
+else if (PART == "deck_bl")     deck_quarter(-1, -1);     // back left
+else if (PART == "deck_br")     deck_quarter( 1, -1);     // back right
+else if (PART == "deck")        deck_printed();           // all four, preview
 else if (PART == "templates")   templates();
 else echo(str("Unknown PART: ", PART));
