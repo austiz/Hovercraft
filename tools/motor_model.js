@@ -29,8 +29,8 @@ const MOTORS = {
   "B  RS-550 40k 12 V":                  { kv: 40000 / 12, R: 0.15, I0: 2.5 },
   "C  smaller original (ASSUMED RS-380)":{ kv: 18000 / 12, R: 1.20, I0: 0.5 },
   // HS390: 12 V / 22 000 rpm is the listing; R and I0 are typical 390-size
-  // guesses.  The 101 g motor + 12 g sleeve replace the 220 g RS-550.
-  "D  HS390 22k 12 V (on the sleeve)":   { kv: 22000 / 12, R: 1.20, I0: 0.4, kg: RACE_KG - 0.220 + 0.113 },
+  // guesses.  The 101 g motor replaces the 220 g RS-550.
+  "D  HS390 22k 12 V (fan_cage_hs390)":  { kv: 22000 / 12, R: 1.20, I0: 0.4, kg: RACE_KG - 0.220 + 0.101 },
 };
 const PACKS = [
   ["fresh, good contacts", 13.0, 0.25],

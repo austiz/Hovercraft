@@ -12,6 +12,7 @@ at normal speeds; a fast printer halves them.
 |---|---|---|---|---|---|---|---|---|---|
 | fan_tube | 1 | 3 | 15 % | none | flange | 164 × 164 × 50 | 85 | 4 h | Brim 3–5 mm: a big flat ring likes to lift at the edge. The nut pockets on the lug tops must come out clean; check a nut drops in before assembly. |
 | fan_cage | 1 | **4** | **40 %** | none | flat, hub up | 164 × 164 × 6 | 55 | 2½ h | Carries the motor and is the safety guard. Counterbores are on the bed side; the 3.3 mm hole above each is a short bridge, fine. Brim helps here too. |
+| fan_cage_hs390 | 1 | **4** | **40 %** | none | flat, hub up | 164 × 164 × 6 | 55 | 2½ h | **Only if you fly the HS390** (ENGINEERING_CHECK §8.6): the same cage with its hub drilled for 2 × M2.5 at 16 mm. Measure your motor's screw spacing first and set `HS_BOLTS`. |
 | fan_guard | 1 | 3 | 15 % | none | flat, nubs up | 150 × 150 × 7 | 28 | 1½ h | |
 | nozzle (v2, card guide) `stl\nozzle.stl` | 1 | 3 | 15 % | none | flange | 128 × 64 × 64 | 65 | 3½ h | The 46 mm exit has a 45° roof so it prints without supports. The card guide channel is open at the top. |
 | plates = cards (v2) `stl\plates.stl` | 1 batch | 3 | **100 %** | none | lying flat, head up | 154 × 200 × 8 | 60 | 2½ h | **Same settings and orientation for every card, always.** Consistency between cards is what makes the speed calibration repeatable. Needs a 220 mm bed; on a 180 mm bed set `PLATE_BATCH` to 4 cards (2 × 2). |
@@ -26,7 +27,6 @@ at normal speeds; a fast printer halves them.
 | coin_bin | 1 | 3 | 15 % | none | flat | 53 × 56 × 16 | 16 | ¾ h | |
 | stick_stand | 1 | 3 | 20 % | none | base | 46 × 56 × 38 | 16 | 1 h | The set-screw hole is a horizontal 2.6 mm hole; run an M3 screw through it once to clear it. |
 | switch_bracket | 1 | 3 | 15 % | none | base | 34 × 33 × 36 | 9 | ¾ h | The 12.8 mm panel hole is horizontal; a little sag at the top is fine, the switch nut clamps it. |
-| hs390_sleeve | 1 | **4** | **40 %** | none | bottom (as exported) | 50 × 50 × 26 | 12 | ½ h | **Only for the HS390 motor** (ENGINEERING_CHECK §8.6). The inside is a 45° cone, so no supports. The nut pocket is horizontal with a corner on top: check an M3 nut drops in. Measure the can first and set `HS_CAN_D`. |
 | templates | 1 | 2 | 15 % | none | flat | 144 × 194 × 2 | 12 | ¾ h | Optional. Trace the inside edges. |
 
 **Do not print** `mockup_assembly.stl`: it is the whole craft as one view-only

@@ -17,6 +17,7 @@
                     slicer or any 3D viewer.  Do NOT print it.
      "fan_tube"     the shroud that glues over the 12 cm deck hole
      "fan_cage"     the top guard; the RS-550 bolts straight to its hub
+     "fan_cage_hs390"  the same cage with a hub for the HS390 motor instead
      "fan_guard"    the guard that glues UNDER the deck hole
      "nozzle"       the box over the 3 x 10 cm slot with the card guide
                     (NOZZLE_V = 2) or the press-fit socket (NOZZLE_V = 1).
@@ -31,9 +32,6 @@
      "stick_stand"  socket for the 1/4" timing dowel
      "switch_bracket" panel for the toggle switch (it cannot mount through
                     foam: the nut crushes it and the body hangs in the bag)
-     "hs390_sleeve" OPTIONAL: holds an HS390 motor on the same fan_cage
-                    (no drilling; see PART 12).  MOTOR_TYPE = "HS390"
-                    shows it in the assembly.
      "templates"    marking templates for the fan hole and the nozzle slot
 
    Hardware to buy (none of it comes with the motor)
@@ -41,8 +39,9 @@
      2x M3 x 6 socket head     motor to cage hub.  6 mm, NO LONGER.
      6x M3 x 10 + 6x M3 nut    cage to tube lugs (nuts drop into the lugs)
      1x M3 x 8                 dowel set screw in the stick stand
-     1x M3 x 16 + 1x M3 nut    HS390 sleeve only (PART 12), with 4 small
-                               zip ties and a 2.3 mm collet prop adapter
+     HS390 instead: 2x M2.5 x 5 socket head (M2.6 x 5 if its holes are
+                               M2.6, as on the Mabuchi 385), and a
+                               2.3 mm collet prop adapter
      4x 6.3 mm female spade crimps   the toggle switch has spade tabs; the
                                lever connectors in the shopping list do
                                not take them
@@ -202,27 +201,20 @@ GUARD_T     = 3;
 GUARD_ZONE  = DECK_HOLE_D + 4;
 GUARD_NUB_H = 4;      // little feet that stop the skirt sealing flat on it
 
-// ---------------------------------------------------------------- HS390 sleeve
-// Optional: an HS390 (390 size, 12 V, 22 000 rpm, ~28 mm can, 2.3 mm shaft)
-// on the SAME fan_cage, no drilling.  Its can covers the hub's two M3 holes,
-// and any plate under it would lift the propeller into the cage, so the motor
-// face sits straight on the hub (exactly where the RS-550 face sits) and a
-// split clamp sleeve holds it there, zip-tied to four cage spokes.  PART 12.
+// ---------------------------------------------------------------- HS390 cage
+// Optional second motor: HS390 (390 size, 12 V, 22 000 rpm, ~28 mm can,
+// 2.3 mm shaft).  Its can covers the RS-550 screw holes, so it gets its own
+// cage (PART 2b, "fan_cage_hs390"): same grid, same tube, different hub.
+// Screw pattern is the Mabuchi 385 datasheet's.  MEASURE YOUR MOTOR.
 MOTOR_TYPE  = "RS550";// assembly preview: "RS550" or "HS390"
-HS_CAN_D    = 28.0;   // MEASURE: listings say 28, some 390 cans are 27.7
+HS_CAN_D    = 28.0;   // listings say 28; the Mabuchi 385 is 27.7
 HS_LEN      = 38;     // can length, preview only
-HS_GRIP     = 0.4;    // bore is this much over the can; the pinch screw
-                      // closes it.  A vertical printed hole comes out 0.2 to
-                      // 0.3 mm small, so the motor still slides in.
-HS_WALL     = 2.4;
-HS_H        = 24;     // sleeve height above the hub top: ~16 mm of grip
-HS_STEP_CLR = 0.8;    // bottom bore over the hub (diameter).  The hub stands
-                      // HUB_T - CAGE_T = 2 mm proud of the rings; the sleeve
-                      // drops over that step, which centres it on the shaft.
-HS_SPLIT    = 2.5;    // pinch gap: closes the bore by HS_SPLIT / pi
-HS_TAB_T    = 6;      // pinch tabs, each side of the gap
-HS_EAR_W    = 5;      // zip-tie ears, sitting on four of the cage spokes
-HS_EAR_H    = 5;
+HS_BOLTS    = 16;     // its two tapped holes (M2.6 on the 385)
+HS_BOSS_D   = 11.5;   // clears the ~10 mm centring boss.  The counterbores
+                      // break into it a little: deliberate, so no knife edge
+M25_SNUG    = 2.8;    // M2.5 / M2.6 located by the hole
+M25_HEAD_D  = 5;      // counterbore for an M2.5 socket head (4.5 mm)
+M25_HEAD_H  = 3.5;    // leaves 2.5 mm under the head: M2.5 x 5 goes 2.5 mm in
 
 // ---------------------------------------------------------------- the nozzle
 NZ_WALL     = 2;
@@ -446,18 +438,27 @@ module fan_tube() {
    4 walls, 40% infill: it carries a 200 g motor that shakes.
    The two motor screws go in from underneath into counterbores, so their
    heads sit flush with the cage and nothing hangs down toward the prop.
+
+   PART 2b — "fan_cage_hs390": the same cage with a hub for the HS390
+   (two M2.5 x 5 screws, 16 mm apart).  Print the one for the motor you fly;
+   the tube, the lugs and everything else are shared.
    ========================================================================== */
-module fan_cage() {
+// The arguments describe the motor face; the defaults are the RS-550.
+// vent_a is the half-angle of the vent windows: wide enough to breathe,
+// narrow enough to keep a wall beside the screw counterbores.
+module fan_cage(bolts = MOTOR_BOLTS, boss_d = MOTOR_BOSS_D, can_d = MOTOR_CAN_D,
+                screw_d = M3_SNUG, head_d = M3_HEAD_D, head_h = M3_HEAD_H,
+                vent_a = 16) {
     difference() {
         union() {
             grid_plate(CAGE_OD, CAGE_ZONE, CAGE_T, HUB_OD);
             cylinder(d = HUB_OD, h = HUB_T);
         }
-        bore(MOTOR_BOSS_D, HUB_T);                              // boss + shaft
+        bore(boss_d, HUB_T);                                    // boss + shaft
         for (s = [-1, 1])                                       // motor screws
-            translate([s * MOTOR_BOLTS / 2, 0, 0]) {
-                bore(M3_SNUG, HUB_T);
-                bore(M3_HEAD_D, M3_HEAD_H);                     // head, underneath
+            translate([s * bolts / 2, 0, 0]) {
+                bore(screw_d, HUB_T);
+                bore(head_d, head_h);                           // head, underneath
             }
         // windows under the motor's face vents, so it can breathe.  They sit
         // inside the motor's own footprint (the can covers them) and are
@@ -467,18 +468,25 @@ module fan_cage() {
                 linear_extrude(HUB_T + 2 * EPS, center = true)
                     intersection() {
                         difference() {
-                            circle(r = MOTOR_BOSS_D / 2 + 2 + GRID_OPEN);
-                            circle(r = MOTOR_BOSS_D / 2 + 2);
+                            circle(r = min(boss_d / 2 + 2 + GRID_OPEN, can_d / 2 - 1));
+                            circle(r = boss_d / 2 + 2);
                         }
-                        // +/-16 degrees keeps 3 mm of wall beside the
-                        // screw counterbores at +/-12.5 mm
-                        polygon([[0, 0], [30 * cos(-16), 30 * sin(-16)],
-                                 [30, 0], [30 * cos(16), 30 * sin(16)]]);
+                        // RS-550: +/-16 degrees keeps 3 mm of wall beside
+                        // the counterbores at +/-12.5 mm.  HS390: +/-12
+                        // keeps ~2 mm beside the ones at +/-8 mm.
+                        polygon([[0, 0], [30 * cos(-vent_a), 30 * sin(-vent_a)],
+                                 [30, 0], [30 * cos(vent_a), 30 * sin(vent_a)]]);
                     }
         for (i = [0 : LUG_N - 1])                               // onto the tube
             rotate(i * 360 / LUG_N)
                 translate([LUG_R, 0, 0]) bore(M3_CLEAR, CAGE_T);
     }
+}
+
+
+module fan_cage_hs390() {
+    fan_cage(HS_BOLTS, HS_BOSS_D, HS_CAN_D, M25_SNUG, M25_HEAD_D, M25_HEAD_H,
+             vent_a = 12);
 }
 
 
@@ -1068,78 +1076,6 @@ module deck_preview() {
             }
 }
 
-/* ==========================================================================
-   PART 12 — HS390 SLEEVE  (optional, only for the HS390 motor)
-   Fits the fan_cage you already have.  The motor face sits on the hub, the
-   sleeve grips the can with one M3 x 16 pinch screw + nut, and four zip ties
-   (2.5 mm wide or less) hold the sleeve to the cage spokes.
-     1. Sleeve over the hub, ears on the spokes.  Each tie goes down beside
-        its ear, under the spoke, up the other side and over the ear's groove.
-     2. Motor in from the top, shaft through the hub.  Push it down until the
-        face is flat on the hub, terminals where the wires want them.
-     3. Tighten the pinch screw until the motor will not turn by hand.
-   The ties lie ~1 mm under the spokes, so they eat 1 mm of the propeller's
-   clearance under the cage: with the HS390, measure PROP_DROP again.
-   Prints as shown (bottom on the bed), no supports: the inside goes from
-   the hub bore to the can bore in a 45 degree cone.
-   ========================================================================== */
-HS_STEP = HUB_T - CAGE_T;               // hub top above the cage rings
-HS_ZB   = -HS_STEP + 0.2;               // sleeve bottom (0 = hub top)
-
-module hs390_sleeve() {
-    r_lo = (HUB_OD + HS_STEP_CLR) / 2;  // over the hub step
-    r_hi = (HS_CAN_D + HS_GRIP) / 2;    // round the can
-    w    = HS_WALL;
-    lift = w * (sqrt(2) - 1);           // keeps the cone wall w thick
-    tab_x = [r_hi + w - 1, r_lo + w - 0.8];
-    pin_x = (r_hi + w + tab_x[1]) / 2;  // pinch screw axis
-    pin_z = (r_lo - r_hi + HS_H) / 2 + 2;
-
-    difference() {
-        union() {
-            rotate_extrude($fn = 120)
-                polygon([[r_lo, HS_ZB], [r_lo + w, HS_ZB], [r_lo + w, lift],
-                         [r_hi + w, r_lo - r_hi + lift], [r_hi + w, HS_H],
-                         [r_hi, HS_H], [r_hi, r_lo - r_hi], [r_lo, 0]]);
-            // pinch tabs, either side of the gap at +X
-            for (s = [-1, 1])
-                translate([tab_x[0], s > 0 ? HS_SPLIT / 2 : -HS_SPLIT / 2 - HS_TAB_T, HS_ZB])
-                    cube([tab_x[1] - tab_x[0], HS_TAB_T, HS_H - HS_ZB]);
-            // tie ears on the 45 degree spokes, clear of the tabs at 0
-            for (a = [45 : 90 : 359])
-                rotate(a) difference() {
-                    translate([r_lo, -HS_EAR_W / 2, HS_ZB])
-                        cube([GRID_OPEN + HUB_OD / 2 + GRID_BAR - 0.5 - r_lo,
-                              HS_EAR_W, HS_EAR_H]);
-                    translate([HUB_OD / 2 + GRID_BAR + GRID_OPEN / 2 - 2,
-                               -HS_EAR_W, HS_ZB + HS_EAR_H - 1])
-                        cube([4, 2 * HS_EAR_W, 1 + EPS]);       // tie groove
-                }
-        }
-        // the hub, then a 45 degree cone up to the can
-        rotate_extrude($fn = 120)
-            polygon([[0, HS_ZB - 1], [r_lo, HS_ZB - 1], [r_lo, 0],
-                     [r_hi, r_lo - r_hi], [r_hi, HS_H + 1], [0, HS_H + 1]]);
-        // the gap
-        translate([r_hi - 1, -HS_SPLIT / 2, HS_ZB - 1])
-            cube([r_lo + w + 2 - r_hi, HS_SPLIT, HS_H - HS_ZB + 2]);
-        // pinch screw: clearance through both tabs, nut in the -Y tab.  The
-        // nut pocket has a corner on top so it prints without sagging.
-        translate([pin_x, 0, pin_z]) {
-            rotate([90, 0, 0]) cylinder(d = M3_CLEAR, h = 4 * HS_TAB_T, center = true);
-            translate([0, -HS_SPLIT / 2 - HS_TAB_T + NUT_T, 0])
-                rotate([90, 0, 0]) rotate(90)
-                    cylinder(d = NUT_AF / cos(30), h = NUT_T + 1, $fn = 6);
-        }
-    }
-}
-
-// HS390 can, preview only
-module hs390_preview() {
-    cylinder(d = HS_CAN_D, h = HS_LEN);
-    translate([0, 0, HS_LEN]) cylinder(d = 24, h = 6);          // end bell
-}
-
 module assembly(skirt = true) {
     face     = TUBE_H + HUB_T;              // motor face height
     prop_top = face - PROP_DROP;
@@ -1166,20 +1102,13 @@ module assembly(skirt = true) {
 
     color("DimGray")   translate([0, 0, -under]) mirror([0, 0, 1]) fan_guard();
     color("SteelBlue") fan_tube();
-    color("Teal")      translate([0, 0, TUBE_H]) fan_cage();
+    color("Teal")      translate([0, 0, TUBE_H])
+        if (MOTOR_TYPE == "HS390") fan_cage_hs390(); else fan_cage();
 
     // motor and propeller, preview only
-    if (MOTOR_TYPE == "HS390") {
-        color("Orange") translate([0, 0, face]) hs390_sleeve();
-        color("Gray", 0.8) translate([0, 0, face]) hs390_preview();
-        echo(str("FIT      HS390 sleeve: pinch closes the bore ",
-                 round(100 * HS_SPLIT / PI) / 100, " mm, needs ", HS_GRIP,
-                 " + print shrink", (HS_SPLIT / PI < HS_GRIP + 0.2) ? "  <<< SPLIT TOO SMALL" : "  ok"));
-        echo(str("FIT      HS390 zip ties under the spokes leave ~",
-                 PROP_DROP - HUB_T - 1, " mm over the propeller",
-                 (PROP_DROP - HUB_T - 1 < 2) ? "  <<< TOO CLOSE, check PROP_DROP" : "  ok"));
-    } else
-        color("Gray", 0.8) translate([0, 0, face]) cylinder(d = MOTOR_CAN_D, h = MOTOR_LEN);
+    color("Gray", 0.8) translate([0, 0, face])
+        if (MOTOR_TYPE == "HS390") cylinder(d = HS_CAN_D, h = HS_LEN);
+        else cylinder(d = MOTOR_CAN_D, h = MOTOR_LEN);
     color("Black", 0.6) {
         translate([0, 0, prop_top - PROP_HUB_T]) cylinder(d = 20, h = PROP_HUB_T);
         translate([0, 0, prop_top - PROP_HUB_T / 2])
@@ -1233,6 +1162,7 @@ if      (PART == "assembly")    assembly();
 else if (PART == "mockup")      assembly(skirt = false);   // export as STL to view
 else if (PART == "fan_tube")    fan_tube();
 else if (PART == "fan_cage")    fan_cage();
+else if (PART == "fan_cage_hs390") fan_cage_hs390();
 else if (PART == "fan_guard")   fan_guard();
 else if (PART == "nozzle")      nozzle();
 else if (PART == "nozzle_v1")   nozzle_v1();
@@ -1251,6 +1181,5 @@ else if (PART == "deck_fr")     deck_quarter( 1,  1);     // front right
 else if (PART == "deck_bl")     deck_quarter(-1, -1);     // back left
 else if (PART == "deck_br")     deck_quarter( 1, -1);     // back right
 else if (PART == "deck")        deck_printed();           // all four, preview
-else if (PART == "hs390_sleeve") translate([0, 0, -HS_ZB]) hs390_sleeve();
 else if (PART == "templates")   templates();
 else echo(str("Unknown PART: ", PART));

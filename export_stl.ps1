@@ -16,10 +16,9 @@ if (-not $exe) { Write-Error "OpenSCAD not found. Install it from https://opensc
 
 New-Item -ItemType Directory -Force $out | Out-Null
 
-$parts = "fan_tube", "fan_cage", "fan_guard", "nozzle",
+$parts = "fan_tube", "fan_cage", "fan_cage_hs390", "fan_guard", "nozzle",
          "plates", "plate_zero", "plate_test", "plate_rack",
-         "nickel_tray", "coin_bin", "stick_stand", "switch_bracket", "templates",
-         "hs390_sleeve"
+         "nickel_tray", "coin_bin", "stick_stand", "switch_bracket", "templates"
 
 # Windows PowerShell mangles quotes inside native arguments, so instead of
 # -D PART="..." each part gets a one-line wrapper (the last assignment wins).
