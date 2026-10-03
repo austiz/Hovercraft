@@ -1,0 +1,104 @@
+# Slices every printable part for a Bambu Lab P1S (0.4 nozzle) with
+# Bambu PLA Basic at 0.28 mm layers, applying the per-part settings from
+# PRINT_SETTINGS.md.  Output: sliced\<part>.3mf (open in Bambu Studio or
+# send from Bambu Handy; each contains its plate_1.gcode).
+#
+#   powershell -ExecutionPolicy Bypass -File slice_all.ps1 [-Only part1,part2] [-BedType "Cool Plate"]
+#
+# Needs: Bambu Studio installed, node.exe on the PATH, the STLs already
+# exported by export_stl.ps1.
+
+param(
+    [string[]] $Only = @(),
+    [string] $BedType = "Textured PEI Plate",
+    [string] $Machine  = "Bambu Lab P1S 0.4 nozzle",
+    [string] $Process  = "0.28mm Extra Draft @BBL X1C",     # X1C profiles are the P1S defaults
+    [string] $Filament = "Bambu PLA Basic @BBL P1S 0.4 nozzle"
+)
+
+$Only = @($Only | ForEach-Object { $_ -split "," } | Where-Object { $_ })   # "-Only a,b" via -File arrives as one string
+$exe = "C:\Program Files\Bambu Studio\bambu-studio.exe"
+if (-not (Test-Path $exe)) { Write-Error "Bambu Studio not found at $exe"; exit 1 }
+$root    = $PSScriptRoot
+$presets = Join-Path $root "sliced\presets"
+$out     = Join-Path $root "sliced"
+New-Item -ItemType Directory -Force $presets | Out-Null
+
+# ---- per-part process overrides.  Keys are Bambu Studio setting names.
+$common = @{ }
+$parts = [ordered]@{
+    # part            = @{ stl = <path under stl\>;  copies; overrides }
+    fan_tube       = @{ stl = "fan_tube.stl";        copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%"; brim_type = "outer_only"; brim_width = "4" } }
+    fan_cage       = @{ stl = "fan_cage.stl";        copies = 1; o = @{ wall_loops = "4"; sparse_infill_density = "40%"; brim_type = "outer_only"; brim_width = "4" } }
+    fan_guard      = @{ stl = "fan_guard.stl";       copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%" } }
+    nozzle         = @{ stl = "nozzle.stl";          copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%"; enable_support = "0" } }
+    plates         = @{ stl = "plates.stl";          copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "rectilinear" } }
+    plate_test     = @{ stl = "plate_test.stl";      copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "rectilinear" } }
+    plate_zero     = @{ stl = "plate_zero.stl";      copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "rectilinear" } }
+    plate_rack     = @{ stl = "plate_rack.stl";      copies = 1; o = @{ wall_loops = "2"; sparse_infill_density = "15%" } }
+    nickel_tray    = @{ stl = "nickel_tray.stl";     copies = 2; o = @{ wall_loops = "3"; sparse_infill_density = "15%" } }
+    coin_bin       = @{ stl = "coin_bin.stl";        copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%" } }
+    stick_stand    = @{ stl = "stick_stand.stl";     copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "20%" } }
+    switch_bracket = @{ stl = "switch_bracket.stl";  copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%" } }
+    templates      = @{ stl = "templates.stl";       copies = 1; o = @{ wall_loops = "2"; sparse_infill_density = "15%" } }
+    # the press-fit v1 nozzle set, for the comparison (needs supports everywhere)
+    v1_nozzle      = @{ stl = "v1\nozzle.stl";       copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%"; enable_support = "1"; support_type = "normal(auto)"; support_on_build_plate_only = "0"; support_threshold_angle = "40" } }
+    v1_plates      = @{ stl = "v1\plates.stl";       copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "rectilinear" } }
+    v1_plate_test  = @{ stl = "v1\plate_test.stl";   copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "rectilinear" } }
+    v1_plate_zero  = @{ stl = "v1\plate_zero.stl";   copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "rectilinear" } }
+    v1_plate_rack  = @{ stl = "v1\plate_rack.stl";   copies = 1; o = @{ wall_loops = "2"; sparse_infill_density = "15%" } }
+}
+
+# ---- flatten the machine and filament presets once
+$flat = Join-Path $root "tools\flatten_preset.js"
+$mach = Join-Path $presets "machine.json"
+$fila = Join-Path $presets "filament.json"
+& node $flat machine  $Machine  $mach system
+& node $flat filament $Filament $fila system
+if ($LASTEXITCODE -ne 0) { Write-Error "preset flattening failed"; exit 1 }
+
+$results = @()
+foreach ($name in $parts.Keys) {
+    if ($Only.Count -gt 0 -and $Only -notcontains $name) { continue }
+    $p    = $parts[$name]
+    $stl  = Join-Path $root ("stl\" + $p.stl)
+    if (-not (Test-Path $stl)) { Write-Warning "$name`: $stl missing (run export_stl.ps1)"; continue }
+    $proc = Join-Path $presets "process_$name.json"
+    $ovf  = Join-Path $presets "overrides_$name.json"
+    $ov   = $p.o.Clone(); $ov["name"] = "hover $name 0.28"
+    ConvertTo-Json $ov | Set-Content -Encoding ascii $ovf
+    & node $flat process $Process $proc User $ovf
+    if (-not (Test-Path $proc)) { Write-Host "  FAILED: process preset not written"; continue }
+
+    $dir  = Join-Path $out "_$name"
+    if (Test-Path $dir) { Remove-Item $dir -Recurse -Force }
+    New-Item -ItemType Directory -Force $dir | Out-Null
+    $inputs = @(); for ($i = 0; $i -lt $p.copies; $i++) { $inputs += "`"$stl`"" }
+    # --arrange 1 always: the STLs are centred on the origin, so without it
+    # the slicer sees an object hanging off the plate
+    $args = @("--debug", "1",
+              "--load-settings", "`"$mach;$proc`"",
+              "--load-filaments", "`"$fila`"",
+              "--curr-bed-type", "`"$BedType`"",
+              "--arrange", "1", "--slice", "0",
+              "--export-3mf", "$name.3mf", "--outputdir", "`"$dir`"") + $inputs
+    Write-Host ("Slicing {0,-15}" -f $name) -NoNewline
+    $run = Start-Process -FilePath $exe -ArgumentList $args -Wait -PassThru -NoNewWindow `
+            -RedirectStandardOutput "$dir\out.txt" -RedirectStandardError "$dir\err.txt"
+    $r = Get-Content "$dir\result.json" -Raw | ConvertFrom-Json
+    if ($run.ExitCode -ne 0 -or -not (Test-Path "$dir\plate_1.gcode")) {
+        Write-Host "  FAILED: $($r.error_string)"
+        $results += [pscustomobject]@{ part = $name; status = "FAILED: " + $r.error_string }
+        continue
+    }
+    $g = Get-Content "$dir\plate_1.gcode" -TotalCount 40
+    $time = ($g | Select-String 'total estimated time: (.+)$').Matches[0].Groups[1].Value
+    $gram = ($g | Select-String 'total filament weight \[g\] : (.+)$').Matches[0].Groups[1].Value
+    Move-Item "$dir\$name.3mf" (Join-Path $out "$name.3mf") -Force
+    Remove-Item $dir -Recurse -Force
+    Write-Host ("  {0,10}  {1,6} g" -f $time, $gram)
+    $results += [pscustomobject]@{ part = $name; copies = $p.copies; time = $time; grams = $gram; status = "ok" }
+}
+$results | Format-Table -AutoSize | Out-String | Write-Host
+$results | ConvertTo-Json | Set-Content (Join-Path $out "summary.json")
+Write-Host "3MF files are in $out"

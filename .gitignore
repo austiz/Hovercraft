@@ -1,10 +1,11 @@
 # OpenSCAD wrapper files written by export_stl.ps1 and scratch renders
 _*.scad
 
-# slicer projects and output (regenerate from the STLs)
+# slicer projects and output (regenerate with slice_all.ps1)
 *.3mf
 *.gcode
 stl/Desktop/
+sliced/
 
 # OS / editor noise
 Thumbs.db
