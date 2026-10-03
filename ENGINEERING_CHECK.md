@@ -59,7 +59,8 @@ hole from below, and the cage must be off to reach the adapter):
 | battery holders | foam tape; rear corners (4×AA ×2), front-left (2×AA) | shuffle to balance (§5.5) |
 
 **Fasteners to buy: 2 × M3×6, 6 × M3×10, 6 × M3 nuts, 1 × M3×8, 4 × 6.3 mm
-spade crimps.**  Nothing else on the craft uses a screw.
+spade crimps.**  Nothing else on the craft uses a screw.  (With the HS390
+sleeve, add 1 × M3×16, 1 × M3 nut and 4 zip ties: §8.6.)
 
 ---
 
@@ -365,6 +366,9 @@ is an integrated circuit and is **not** allowed).
 | Rated | 12 V, 22 000 rpm no-load | 12 V, 40 000 rpm no-load | **unknown: measure** (modelled as a typical RS-380 class, 12 V ~18 000 rpm) |
 | Fits the printed cage hub | yes (35.8 mm can, 2 × M3 at 25 mm) | same RS-550 frame: **check** screw spacing and shaft length | **probably not**: smaller cans use different screw spacing (often M2.5). The hub is generated from `MOTOR_BOLTS`, `MOTOR_BOSS_D` and the screw size, so a matching cage is a parameter change once it is measured |
 
+A fourth option, the **HS390** (a 390-size motor), runs on the existing cage
+through a printed clamp sleeve: §8.6.
+
 ### 8.1 Predicted performance
 
 From `node tools/motor_model.js` (motor + propeller + pack resistance
@@ -494,3 +498,64 @@ dropping the motor: lift margin is worth more than battery efficiency.
 - Propeller safety scales with speed: do the workshop's one-minute spin
   test with each motor, wear glasses, and keep everyone out of the plane
   of the propeller on first power-up.
+
+### 8.6 HS390 on the existing cage (`hs390_sleeve`, PART 12)
+
+The HS390 (390 size: 12 V, 22 000 rpm no-load, Ø28 × ~38 mm can, 2.3 mm
+shaft, ~101 g) can run on the cage you already printed.  Nothing gets
+drilled or reprinted.
+
+**Why a sleeve and not a plate.**  The cage hub's two M3 holes are 25 mm
+apart (r = 12.5), and a Ø28 can covers them, so they cannot be reached.
+A plate under the motor would lift the propeller one millimetre for every
+millimetre of plate, and the RS-550 already leaves only 4 mm (§2).  So the
+HS390's face sits **straight on the hub at z = 56, the same place as the
+RS-550's face**, and a printed sleeve holds it there:
+
+```
+           ┌──┐ HS390 can, Ø28
+    pinch ═╡  ╞═  M3 × 16 + nut, closes a 2.5 mm gap (0.8 mm off the bore)
+     tab   │  │
+          ╱│  │╲  45° cone (prints without supports)
+   ear ▄▄╱ │  │ ╲▄▄ ear ← zip tie round the spoke under it
+  ═══════█▀▀▀▀▀▀█═══════  cage rings (z 50–54), hub stands 2 mm proud
+         █ hub  █         the sleeve's bottom bore (Ø44.8) drops over that
+                          step and centres everything on the shaft
+```
+
+| Item | Value | Check |
+|---|---|---|
+| Motor face | on the hub top, z = 56 | same as RS-550, so the cage clearance is still `PROP_DROP − HUB_T` |
+| Grip | Ø28.4 bore, 16 mm long, split, one M3 pinch screw | closes 0.8 mm; a 28.0 can needs ~0.2, a 27.7 can ~0.5 |
+| Centring | Ø44.8 bore over the hub's 2 mm step | ±0.4 mm before the pinch; propeller tips have 4.5 mm |
+| Hold-down | 4 zip ties round the 45° spokes | thrust ~1.5 N up; each tie holds well over 50 N |
+| Tie under the spoke | ~1 mm | takes 1 mm off the propeller clearance: **3 mm** at `PROP_DROP` 10 |
+| Motor torque | ~0.01 N·m | the pinch alone holds hundreds of times that |
+| Mass | sleeve 12 g + motor 101 g | **−107 g** against the RS-550: the craft goes 2.06 → 1.95 kg |
+
+**Buy:** 1 × M3 × 16 + 1 × M3 nut, 4 small zip ties (≤ 2.5 mm wide), and a
+**2.3 mm** collet propeller adapter (the MECCANIXITY one is 3.17 mm and will
+not grip the HS390 shaft; 2.3 mm adapters are sold for 380-size motors).
+
+**Measure before printing:** the can diameter (`HS_CAN_D`; 27.7 or 28.0),
+and the shaft protrusion.  Listings disagree (6 to 11 mm).  With the 2.3 mm
+adapter on, measure `PROP_DROP` again: under ~9 mm the blades come within
+2 mm of the ties.  If that happens, put the ties round the spokes in a
+figure-eight so they lie flat, or hot-glue the sleeve's rim to the cage
+instead of tying it.
+
+**Predicted performance** (`node tools/motor_model.js`, row D, with the
+lighter craft; R is a guess for a 390-size motor, so ±30 % like the rest):
+
+| Battery | Prop rpm | Current | Bag Pa | Lift margin |
+|---|---|---|---|---|
+| fresh | 14 300 | 3.6 A | 173 | −4 … +34 % |
+| nominal | 13 200 | 3.1 A | 147 | **−19 … +14 %** |
+| tired | 12 000 | 2.6 A | 121 | −33 … −6 % |
+
+That is **between motors A and C**: easy on the batteries (~37 min of fan
+per charge), but it probably will not float the full nickel load on tired
+cells.  Treat it like C in §8.2: run the fit check and the extra-weight test
+(test 4) before racing on it.  If it floats the full load after 5 minutes of
+fan-on with margin to spare, it is a legitimate pick.  Its speed cards need
+their own calibration (holes ~1.2× A's for the same time).

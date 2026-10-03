@@ -22,11 +22,15 @@ const NEED = [136, 190];              // Pa: cushion pressure over bag .. deck a
 const P_REF = 243, RPM_REF = 17000;   // bag pressure anchor
 const CAP_AH = 1.9;                   // usable Eneloop capacity at high current
 
-// kv = no-load rpm per volt, R = winding resistance (ohm), I0 = no-load amps
+// kv = no-load rpm per volt, R = winding resistance (ohm), I0 = no-load amps,
+// kg = loaded craft mass with this motor, if it is not RACE_KG
 const MOTORS = {
   "A  RS-550 22k (workshop)":            { kv: 22000 / 12, R: 0.30, I0: 1.0 },
   "B  RS-550 40k 12 V":                  { kv: 40000 / 12, R: 0.15, I0: 2.5 },
   "C  smaller original (ASSUMED RS-380)":{ kv: 18000 / 12, R: 1.20, I0: 0.5 },
+  // HS390: 12 V / 22 000 rpm is the listing; R and I0 are typical 390-size
+  // guesses.  The 101 g motor + 12 g sleeve replace the 220 g RS-550.
+  "D  HS390 22k 12 V (on the sleeve)":   { kv: 22000 / 12, R: 1.20, I0: 0.4, kg: RACE_KG - 0.220 + 0.113 },
 };
 const PACKS = [
   ["fresh, good contacts", 13.0, 0.25],
@@ -35,7 +39,10 @@ const PACKS = [
 ];
 
 const bag = rpm => P_REF * Math.pow(rpm / RPM_REF, 2);
-const margin = p => `${(100 * (p / NEED[1] - 1)).toFixed(0).padStart(4)} .. ${(100 * (p / NEED[0] - 1)).toFixed(0).padStart(4)} %`;
+const margin = (p, kg = RACE_KG) => {
+  const q = p * RACE_KG / kg;         // a lighter craft needs less pressure
+  return `${(100 * (q / NEED[1] - 1)).toFixed(0).padStart(4)} .. ${(100 * (q / NEED[0] - 1)).toFixed(0).padStart(4)} %`;
+};
 const maxKg = p => `${(RACE_KG * p / NEED[1]).toFixed(1)} .. ${(RACE_KG * p / NEED[0]).toFixed(1)} kg`;
 
 function operatingPoint(m, V, Rpack) {
@@ -69,7 +76,7 @@ for (const [name, m] of Object.entries(MOTORS)) {
   console.log("  battery state            rpm     amps  V@motor  shaft W  heat: pack/motor  bag Pa   lift margin        floats up to   fan-on per charge");
   for (const [label, V, Rp] of PACKS) {
     const o = operatingPoint(m, V, Rp), p = bag(o.rpm);
-    console.log(`  ${label.padEnd(22)} ${o.rpm.toFixed(0).padStart(6)}  ${o.I.toFixed(1).padStart(6)}  ${o.Vmotor.toFixed(1).padStart(7)}  ${o.shaftW.toFixed(0).padStart(7)}  ${o.packHeatW.toFixed(0).padStart(5)} / ${o.motorHeatW.toFixed(0).padStart(3)} W   ${p.toFixed(0).padStart(6)}   ${margin(p)}   ${maxKg(p).padStart(14)}   ${(CAP_AH / o.I * 60).toFixed(0).padStart(3)} min`);
+    console.log(`  ${label.padEnd(22)} ${o.rpm.toFixed(0).padStart(6)}  ${o.I.toFixed(1).padStart(6)}  ${o.Vmotor.toFixed(1).padStart(7)}  ${o.shaftW.toFixed(0).padStart(7)}  ${o.packHeatW.toFixed(0).padStart(5)} / ${o.motorHeatW.toFixed(0).padStart(3)} W   ${p.toFixed(0).padStart(6)}   ${margin(p, m.kg)}   ${maxKg(p).padStart(14)}   ${(CAP_AH / o.I * 60).toFixed(0).padStart(3)} min`);
   }
   const a = operatingPoint(m, 12.0, 0.35), b = operatingPoint(m, 11.76, 0.35);
   console.log(`  2 % battery sag -> ${(100 * (a.rpm / b.rpm - 1)).toFixed(1)} % slower run = ${(12 * (a.rpm / b.rpm - 1)).toFixed(2)} s at TT 12;  tip speed ${a.tip.toFixed(0)} m/s`);

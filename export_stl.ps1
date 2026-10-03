@@ -18,7 +18,8 @@ New-Item -ItemType Directory -Force $out | Out-Null
 
 $parts = "fan_tube", "fan_cage", "fan_guard", "nozzle",
          "plates", "plate_zero", "plate_test", "plate_rack",
-         "nickel_tray", "coin_bin", "stick_stand", "switch_bracket", "templates"
+         "nickel_tray", "coin_bin", "stick_stand", "switch_bracket", "templates",
+         "hs390_sleeve"
 
 # Windows PowerShell mangles quotes inside native arguments, so instead of
 # -D PART="..." each part gets a one-line wrapper (the last assignment wins).

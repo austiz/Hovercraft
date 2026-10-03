@@ -26,6 +26,7 @@ at normal speeds; a fast printer halves them.
 | coin_bin | 1 | 3 | 15 % | none | flat | 53 × 56 × 16 | 16 | ¾ h | |
 | stick_stand | 1 | 3 | 20 % | none | base | 46 × 56 × 38 | 16 | 1 h | The set-screw hole is a horizontal 2.6 mm hole; run an M3 screw through it once to clear it. |
 | switch_bracket | 1 | 3 | 15 % | none | base | 34 × 33 × 36 | 9 | ¾ h | The 12.8 mm panel hole is horizontal; a little sag at the top is fine, the switch nut clamps it. |
+| hs390_sleeve | 1 | **4** | **40 %** | none | bottom (as exported) | 50 × 50 × 26 | 12 | ½ h | **Only for the HS390 motor** (ENGINEERING_CHECK §8.6). The inside is a 45° cone, so no supports. The nut pocket is horizontal with a corner on top: check an M3 nut drops in. Measure the can first and set `HS_CAN_D`. |
 | templates | 1 | 2 | 15 % | none | flat | 144 × 194 × 2 | 12 | ¾ h | Optional. Trace the inside edges. |
 
 **Do not print** `mockup_assembly.stl`: it is the whole craft as one view-only
