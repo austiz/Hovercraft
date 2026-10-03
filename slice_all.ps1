@@ -32,9 +32,10 @@ $parts = [ordered]@{
     fan_cage       = @{ stl = "fan_cage.stl";        copies = 1; o = @{ wall_loops = "4"; sparse_infill_density = "40%"; brim_type = "outer_only"; brim_width = "4" } }
     fan_guard      = @{ stl = "fan_guard.stl";       copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%" } }
     nozzle         = @{ stl = "nozzle.stl";          copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%"; enable_support = "0" } }
-    plates         = @{ stl = "plates.stl";          copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "rectilinear" } }
-    plate_test     = @{ stl = "plate_test.stl";      copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "rectilinear" } }
-    plate_zero     = @{ stl = "plate_zero.stl";      copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "rectilinear" } }
+    # 100% infill: leave the pattern alone, the slicer makes it solid anyway
+    plates         = @{ stl = "plates.stl";          copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "zig-zag" } }
+    plate_test     = @{ stl = "plate_test.stl";      copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "zig-zag" } }
+    plate_zero     = @{ stl = "plate_zero.stl";      copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "zig-zag" } }
     plate_rack     = @{ stl = "plate_rack.stl";      copies = 1; o = @{ wall_loops = "2"; sparse_infill_density = "15%" } }
     nickel_tray    = @{ stl = "nickel_tray.stl";     copies = 2; o = @{ wall_loops = "3"; sparse_infill_density = "15%" } }
     coin_bin       = @{ stl = "coin_bin.stl";        copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%" } }
@@ -43,9 +44,9 @@ $parts = [ordered]@{
     templates      = @{ stl = "templates.stl";       copies = 1; o = @{ wall_loops = "2"; sparse_infill_density = "15%" } }
     # the press-fit v1 nozzle set, for the comparison (needs supports everywhere)
     v1_nozzle      = @{ stl = "v1\nozzle.stl";       copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%"; enable_support = "1"; support_type = "normal(auto)"; support_on_build_plate_only = "0"; support_threshold_angle = "40" } }
-    v1_plates      = @{ stl = "v1\plates.stl";       copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "rectilinear" } }
-    v1_plate_test  = @{ stl = "v1\plate_test.stl";   copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "rectilinear" } }
-    v1_plate_zero  = @{ stl = "v1\plate_zero.stl";   copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "rectilinear" } }
+    v1_plates      = @{ stl = "v1\plates.stl";       copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "zig-zag" } }
+    v1_plate_test  = @{ stl = "v1\plate_test.stl";   copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "zig-zag" } }
+    v1_plate_zero  = @{ stl = "v1\plate_zero.stl";   copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "zig-zag" } }
     v1_plate_rack  = @{ stl = "v1\plate_rack.stl";   copies = 1; o = @{ wall_loops = "2"; sparse_infill_density = "15%" } }
 }
 
