@@ -6,9 +6,11 @@ $out = Join-Path $PSScriptRoot "stl"
 # openscad.com is the console build: it waits for the render and returns an
 # exit code.  openscad.exe returns immediately, so it is only a fallback.
 $exe = $null
-foreach ($p in "C:\Program Files\OpenSCAD\openscad.com",
+foreach ($p in "$env:LOCALAPPDATA\Programs\OpenSCAD-Nightly\openscad.com",
+               "C:\Program Files\OpenSCAD\openscad.com",
                "C:\Program Files\OpenSCAD (Nightly)\openscad.com",
-               "C:\Program Files (x86)\OpenSCAD\openscad.com") {
+               "C:\Program Files (x86)\OpenSCAD\openscad.com",
+               "$env:USERPROFILE\Tools\openscad-2021.01\openscad.com") {
     if (Test-Path $p) { $exe = $p; break }
 }
 if (-not $exe) { $exe = (Get-Command openscad -ErrorAction SilentlyContinue).Source }
@@ -16,9 +18,13 @@ if (-not $exe) { Write-Error "OpenSCAD not found. Install it from https://opensc
 
 New-Item -ItemType Directory -Force $out | Out-Null
 
-$parts = "fan_tube", "fan_cage", "fan_cage_hs390", "fan_guard", "nozzle",
-         "plates", "plate_zero", "plate_test", "plate_rack",
-         "nickel_tray", "coin_bin", "stick_stand", "switch_bracket", "templates", "wear_pad",
+# fan_tube / fan_guard are foam-board-deck-only now: the printed deck
+# quarters have the duct and bottom guard built in.
+$parts = "fan_cage", "fan_cage_hs390", "nozzle",
+         "plates", "plate_zero", "plate_test", "plate_rack", "rack_aux", "chart_plate",
+         "nickel_tray", "tray_bar", "coin_bin", "bin_lid",
+         "stick_stand", "switch_bracket", "templates", "wear_pad", "deck_fit_test",
+         "aa4_mount", "aa2_tray", "aa2_fences", "wire_clips",
          "deck_fl", "deck_fr", "deck_bl", "deck_br"
 
 # Windows PowerShell mangles quotes inside native arguments, so instead of
@@ -30,7 +36,8 @@ foreach ($part in $parts) {
     Write-Host "Rendering $part ..."
     "include <hovercraft_parts.scad>`nPART = `"$part`";" | Set-Content -Encoding ascii $wrap
     $log = & $exe -o $file $wrap 2>&1 | Out-String
-    $bad = ($LASTEXITCODE -ne 0) -or ($log -match "ERROR|WARNING|not.*manifold")
+    # -cmatch: the nightly's harmless "Fontconfig error" must not count as ERROR
+    $bad = ($LASTEXITCODE -ne 0) -or ($log -cmatch "ERROR|WARNING|not.*manifold")
     Remove-Item $wrap -ErrorAction SilentlyContinue
     if ($bad) { Write-Warning "$part`n$log"; $failed += $part }
 }
@@ -39,13 +46,13 @@ if ($failed) { Write-Warning ("Problems with: " + ($failed -join ", ")) }
 # the press-fit (v1) nozzle set, for comparison, into stl\v1\
 $v1 = Join-Path $out "v1"
 New-Item -ItemType Directory -Force $v1 | Out-Null
-foreach ($part in "nozzle", "plates", "plate_zero", "plate_test", "plate_rack") {
+foreach ($part in "nozzle", "plates", "plate_zero", "plate_test", "plate_rack", "rack_aux") {
     $file = Join-Path $v1 "$part.stl"
     $wrap = Join-Path $PSScriptRoot "_export_v1_$part.scad"
     Write-Host "Rendering v1 $part ..."
     "include <hovercraft_parts.scad>`nNOZZLE_V = 1;`nPART = `"$part`";" | Set-Content -Encoding ascii $wrap
     $log = & $exe -o $file $wrap 2>&1 | Out-String
-    $bad = ($LASTEXITCODE -ne 0) -or ($log -match "ERROR|WARNING|not.*manifold")
+    $bad = ($LASTEXITCODE -ne 0) -or ($log -cmatch "ERROR|WARNING|not.*manifold")
     Remove-Item $wrap -ErrorAction SilentlyContinue
     if ($bad) { Write-Warning "v1 $part`n$log"; $failed += "v1/$part" }
 }

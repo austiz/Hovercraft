@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "openscad": {
+      "command": "uvx",
+      "args": ["openscad-mcp"],
+      "env": {
+        "OPENSCAD_PATH": "C:\\Users\\austi\\AppData\\Local\\Programs\\OpenSCAD-Nightly\\openscad.com",
+        "MCP_ALLOWED_PATHS": "C:\\Users\\austi\\Desktop\\SoulBox\\Soulbox3\\Hovercraft"
+      }
+    }
+  }
+}

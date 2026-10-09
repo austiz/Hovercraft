@@ -26,28 +26,46 @@ New-Item -ItemType Directory -Force $presets | Out-Null
 
 # ---- per-part process overrides.  Keys are Bambu Studio setting names.
 $common = @{ }
-# printed deck: the skin is 2 layers (0.20 first + 0.28) and every rib is two
-# 0.45 lines, so 2 walls makes everything solid perimeters.  No brim: it
-# would wrap the jigsaw tabs, and textured PEI holds a flat plate anyway.
-# Thick bridges: the socket floors are bridges, up to 53 mm under the bin.
-$deck = @{ wall_loops = "2"; sparse_infill_density = "15%"; brim_type = "no_brim"; initial_layer_print_height = "0.2"; thick_bridges = "1" }
+# printed deck: quarters print as installed, duct up, with the integral
+# 2.4 mm duct wall — 3 walls so it slices as solid perimeters.  No brim:
+# MANDATORY — a brim would web the guard grid openings and the breakaway
+# support rings (the lip ridge is the built-in adhesion foot anyway).
+# Thick bridges: the whole skin and the socket floors are bridges now.
+# NO auto support: the grid prints on its own modeled breakaway rings.
+$deck = @{ wall_loops = "3"; sparse_infill_density = "15%"; brim_type = "no_brim"; initial_layer_print_height = "0.2"; thick_bridges = "1"; enable_support = "0" }
 $parts = [ordered]@{
     # part            = @{ stl = <path under stl\>;  copies; overrides }
-    fan_tube       = @{ stl = "fan_tube.stl";        copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%"; brim_type = "outer_only"; brim_width = "4" } }
+    # (fan_tube / fan_guard removed: built into the deck quarters now)
     fan_cage       = @{ stl = "fan_cage.stl";        copies = 1; o = @{ wall_loops = "4"; sparse_infill_density = "40%"; brim_type = "outer_only"; brim_width = "4" } }
-    fan_guard      = @{ stl = "fan_guard.stl";       copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%" } }
-    nozzle         = @{ stl = "nozzle.stl";          copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%"; enable_support = "0" } }
+    # only if you fly the HS390: the same cage, hub drilled for its motor
+    fan_cage_hs390 = @{ stl = "fan_cage_hs390.stl";  copies = 1; o = @{ wall_loops = "4"; sparse_infill_density = "40%"; brim_type = "outer_only"; brim_width = "4" } }
+    nozzle       = @{ stl = "nozzle.stl";          copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%"; enable_support = "0" } }
     # 100% infill: leave the pattern alone, the slicer makes it solid anyway
     plates         = @{ stl = "plates.stl";          copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "zig-zag" } }
     plate_test     = @{ stl = "plate_test.stl";      copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "zig-zag" } }
     plate_zero     = @{ stl = "plate_zero.stl";      copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "zig-zag" } }
     plate_rack     = @{ stl = "plate_rack.stl";      copies = 1; o = @{ wall_loops = "2"; sparse_infill_density = "15%" } }
+    rack_aux       = @{ stl = "rack_aux.stl";        copies = 1; o = @{ wall_loops = "2"; sparse_infill_density = "15%" } }
+    # two chart plates: rule 2a, the calibration chart must be in impound - one
+    # rides the box, one is the backup.  Solid, so a drop can't crack a corner.
+    chart_plate    = @{ stl = "chart_plate.stl";     copies = 2; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "zig-zag" } }
     nickel_tray    = @{ stl = "nickel_tray.stl";     copies = 2; o = @{ wall_loops = "3"; sparse_infill_density = "15%" } }
+    # bars print on their side: layers run through the snap legs, so the
+    # flex loads the plastic in-plane.  Two trays + one spare.
+    tray_bar       = @{ stl = "tray_bar.stl";        copies = 3; o = @{ wall_loops = "3"; sparse_infill_density = "15%" } }
     coin_bin       = @{ stl = "coin_bin.stl";        copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%" } }
+    bin_lid        = @{ stl = "bin_lid.stl";         copies = 2; o = @{ wall_loops = "3"; sparse_infill_density = "15%" } }   # one + a spare
     stick_stand    = @{ stl = "stick_stand.stl";     copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "20%" } }
     switch_bracket = @{ stl = "switch_bracket.stl";  copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%" } }
     templates      = @{ stl = "templates.stl";       copies = 1; o = @{ wall_loops = "2"; sparse_infill_density = "15%" } }
-    wear_pad       = @{ stl = "wear_pad.stl";        copies = 1; o = @{ wall_loops = "2"; sparse_infill_density = "15%" } }   # 4 layers: all skin anyway
+    # four: pads abrade on plywood tracks, spares go in the impound box
+    wear_pad       = @{ stl = "wear_pad.stl";        copies = 4; o = @{ wall_loops = "2"; sparse_infill_density = "15%" } }   # 2 layers: all skin anyway
+    # battery mounts: elephant-foot comp matters, the snap-arm walls are
+    # only three extrusion lines thick and start at the bed
+    aa4_mount      = @{ stl = "aa4_mount.stl";       copies = 2; o = @{ wall_loops = "3"; sparse_infill_density = "15%"; elefant_foot_compensation = "0.15" } }
+    aa2_tray       = @{ stl = "aa2_tray.stl";        copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%"; elefant_foot_compensation = "0.15" } }
+    aa2_fences     = @{ stl = "aa2_fences.stl";      copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%" } }
+    wire_clips     = @{ stl = "wire_clips.stl";      copies = 1; o = @{ wall_loops = "2"; sparse_infill_density = "15%" } }
     # printed deck quarters (optional, replaces the foam board).  Print the
     # fit test first and press the real parts into it.
     deck_fit_test  = @{ stl = "deck_fit_test.stl"; copies = 1; o = $deck }
@@ -61,6 +79,7 @@ $parts = [ordered]@{
     v1_plate_test  = @{ stl = "v1\plate_test.stl";   copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "zig-zag" } }
     v1_plate_zero  = @{ stl = "v1\plate_zero.stl";   copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "zig-zag" } }
     v1_plate_rack  = @{ stl = "v1\plate_rack.stl";   copies = 1; o = @{ wall_loops = "2"; sparse_infill_density = "15%" } }
+    v1_rack_aux    = @{ stl = "v1\rack_aux.stl";     copies = 1; o = @{ wall_loops = "2"; sparse_infill_density = "15%" } }
 }
 
 # ---- flatten the machine and filament presets once

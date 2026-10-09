@@ -1,0 +1,8 @@
+{
+  // OpenSCAD language server extension (leathong.openscad-language-support).
+  // launchPath is the GUI binary used by the preview command.
+  "scad-lsp.launchPath": "C:\\Users\\austi\\AppData\\Local\\Programs\\OpenSCAD-Nightly\\openscad.exe",
+  "[scad]": {
+    "editor.tabSize": 4
+  }
+}
