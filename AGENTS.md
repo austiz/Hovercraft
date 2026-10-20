@@ -14,6 +14,7 @@ Units mm, Z up, every part is drawn **in its print orientation**.
 | `ENGINEERING_CHECK.md` | math and slicer behaviour (850 lines: grep it, don't read the whole thing) |
 | `RECOVERY_PLAN.md` | bench triage after the first failed test (screws, hot batteries, no lift) |
 | `RESEARCH.md` | background research |
+| `TEAM_AEOLUS.md` | team spirit, not engineering: the craft's name (Aeolus), dance, song + guitar chords, uniforms |
 | `tools/motor_model.js` | `node tools/motor_model.js [--rpm N]`: fan motor / lift model |
 | `tools/verify.ps1` | one-command verify: part lists, `assembly` rules, every part's asserts; `-Stl a,b` / `-Stl all` adds mesh checks (calls `check_parts.js`, `mesh_check.js`) |
 | `SCAD_PRACTICES.md` | researched OpenSCAD / FDM / AI-CAD practices and how this repo compares |
@@ -54,7 +55,10 @@ The nightly's `Fontconfig error` line is harmless.
 `plate` (`PLATE_TIME`) `plates` (`PLATE_BATCH`) `plate_zero` `plate_test` `plate_rack`
 `rack_aux` `chart_plate` · `nickel_tray` `tray_bar` `coin_bin` `bin_lid` · `stick_stand`
 `switch_bracket` · `aa4_mount` `aa2_tray` `aa2_fences` `wire_clips` · `deck_fl` `deck_fr`
-`deck_bl` `deck_br` `deck` (preview of all four) `deck_fit_test` · `templates` `wear_pad` ·
+`deck_bl` `deck_br` `deck` (preview of all four) `deck_fit_test` · `bdeck_fl` `bdeck_fr`
+`bdeck_bl` `bdeck_br` `bdeck` `blower_box` (blower variant: Delta BFB1212GH instead of the
+propeller; these PART names set `BLOWER`, and `FAN_TYPE = "blower"` sets it for `assembly`/`deck`) ·
+`templates` `wear_pad` ·
 `fan_tube` `fan_guard` (**foam-board deck only**: the printed quarters have the duct and
 guard built in, and these two are not exported any more)
 
@@ -89,8 +93,10 @@ module in the .scad → dispatch line at the bottom → PART list in the .scad h
 - **Finger safety**: cage/guard openings `GRID_OPEN` ≤ 7 mm (a 9.5 mm dowel must not reach the blades).
 - RS-550 shaft is short: nothing goes between the motor and the cage hub. Motor screws M3 × 6 max (longer ones hit the windings).
 - Horizontal printed holes come out 0.3–0.5 mm small. Use `M3_TAP_H` for a horizontal self-tap hole. The other `M3_*` sizes are for vertical holes. (This is what made the first build's seam screws so hard to drive.)
-- Deck quarters print top face up on their **modeled** breakaway supports: **no brim, no
-  auto supports** (a brim webs the guard grid). Only nozzle v1 needs supports.
+- Deck quarters print top face up with **no brim, no auto supports**: the guard grid is
+  their first 3 mm on the bed (a brim webs it shut), and full-depth ribs, one-line
+  half-ribs and a band ring carry the bridged skin (worst span ~24 mm). Nothing to snap
+  out. Only nozzle v1 needs supports.
 - STLs are pre-oriented: never tell anyone to rotate them in the slicer (moving them around on the bed is fine).
 - Print `nickel_tray`, `tray_bar`, `aa4_mount` and `chart_plate` ×2.
 - The skirt is a **cap** (shock cord in a taped hem, 48 × 47 cm sheet) that stretches over

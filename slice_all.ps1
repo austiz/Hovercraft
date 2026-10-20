@@ -28,10 +28,10 @@ New-Item -ItemType Directory -Force $presets | Out-Null
 $common = @{ }
 # printed deck: quarters print as installed, duct up, with the integral
 # 2.4 mm duct wall — 3 walls so it slices as solid perimeters.  No brim:
-# MANDATORY — a brim would web the guard grid openings and the breakaway
-# support rings (the lip ridge is the built-in adhesion foot anyway).
+# MANDATORY — the guard grid is the first layers, on the bed, and a brim
+# would web its openings shut (the lip ridge is the adhesion foot anyway).
 # Thick bridges: the whole skin and the socket floors are bridges now.
-# NO auto support: the grid prints on its own modeled breakaway rings.
+# NO auto support: the ribs and half-ribs carry the skin; the grid is on the bed.
 $deck = @{ wall_loops = "3"; sparse_infill_density = "15%"; brim_type = "no_brim"; initial_layer_print_height = "0.2"; thick_bridges = "1"; enable_support = "0" }
 $parts = [ordered]@{
     # part            = @{ stl = <path under stl\>;  copies; overrides }
@@ -73,6 +73,14 @@ $parts = [ordered]@{
     deck_fr        = @{ stl = "deck_fr.stl";      copies = 1; o = $deck }
     deck_bl        = @{ stl = "deck_bl.stl";      copies = 1; o = $deck }
     deck_br        = @{ stl = "deck_br.stl";      copies = 1; o = $deck }
+    # the blower deck (Delta BFB1212GH instead of the propeller): same
+    # settings, its port guard bars are on the bed too.  blower_box prints
+    # roof down, the roof grid on the bed: no brim, no supports
+    bdeck_fl       = @{ stl = "bdeck_fl.stl";     copies = 1; o = $deck }
+    bdeck_fr       = @{ stl = "bdeck_fr.stl";     copies = 1; o = $deck }
+    bdeck_bl       = @{ stl = "bdeck_bl.stl";     copies = 1; o = $deck }
+    bdeck_br       = @{ stl = "bdeck_br.stl";     copies = 1; o = $deck }
+    blower_box     = @{ stl = "blower_box.stl";   copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%"; brim_type = "no_brim"; enable_support = "0" } }
     # the press-fit v1 nozzle set, for the comparison (needs supports everywhere)
     v1_nozzle      = @{ stl = "v1\nozzle.stl";       copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "15%"; enable_support = "1"; support_type = "normal(auto)"; support_on_build_plate_only = "0"; support_threshold_angle = "40" } }
     v1_plates      = @{ stl = "v1\plates.stl";       copies = 1; o = @{ wall_loops = "3"; sparse_infill_density = "100%"; sparse_infill_pattern = "zig-zag" } }

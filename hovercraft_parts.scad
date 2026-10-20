@@ -60,6 +60,17 @@
                     this first and press the real parts in; adjust
                     SOCK_FIT / DT_CLR / DECK_TAB_CLR, then print the
                     quarters.
+     "bdeck_fl" "bdeck_fr" "bdeck_bl" "bdeck_br"
+                    the same printed deck for a BLOWER instead of the
+                    propeller: a Delta BFB1212GH (120 x 120 x 32, 12 V,
+                    ~4 A) screwed flat on the deck, blowing sideways into a
+                    hood over a guarded port.  No duct: ~13 mm tall.  Only
+                    the fan differs; every other pocket is the same.
+                    "bdeck" shows all four.  Setting FAN_TYPE to blower
+                    puts the blower in "assembly" and "deck" too.
+     "blower_box"   the blower's lid: guard roof over its inlet, standoffs
+                    on its three screw holes, and the hood that turns its
+                    outlet down through the deck.  Prints roof down.
 
    Hardware to buy (none of it comes with the motor)
    ------------------------------------------------------------------------
@@ -74,6 +85,12 @@
                                skirt cap, which snaps over the deck's lip
                                (DECK_LIP).  Cut the skirt plastic 48 x 47 cm:
                                43 x 42 of skirt + a 2 cm hem each side.
+     Blower deck instead of the propeller: 5x M4 x 50 (pan or socket
+                               head) — three through blower_box and the
+                               blower into the deck, two through the hood
+                               tubes — and ~40 cm of 3 mm closed-cell foam
+                               tape (window/door seal) for the hood frame.
+                               No cage, motor, prop or nuts.
      HS390 instead: 2x M2.5 x 5 socket head (M2.6 x 5 if its holes are
                                M2.6, as on the Mabuchi 385), and a
                                2.3 mm collet prop adapter
@@ -100,8 +117,7 @@
 
    Build order (printed deck + fan)
    ------------------------------------------------------------------------
-     1. Snap the breakaway support rings and posts out of each quarter,
-        through the open bore.  Light-test the skin; tape any pinholes.
+     1. Light-test each quarter's skin; tape any pinholes.
      2. Right side up on a flat table: lower front-right onto front-left
         (the dovetails only go in straight down), the same for the back
         pair, then lower the front half onto the back half.  No screws.
@@ -122,6 +138,23 @@
      above with the cage off.  This order is not optional.
      (Foam-board deck instead: glue fan_tube over the hole and fan_guard
      under it, airtight all the way round both flanges, then 4-6.)
+
+   Build order (blower deck: bdeck_* + blower_box)
+   ------------------------------------------------------------------------
+     1-3. As above, with the bdeck quarters (no duct seams, no cage).
+     4. Stick 3 mm foam tape on blower_box's frame: both posts, the strip
+        over the window and the deck's sill, the face that meets the
+        blower's outlet side.
+     5. Stand the blower label-side down on the deck, outlet towards the
+        back, its three holes over the three pilot holes, wires out the
+        front.  Lower blower_box on: hood walls into their grooves,
+        standoffs on the blower's holes.
+     6. 5x M4 x 50 from the top, snug, not tight (they self-tap PLA).
+     7. Blue wire (PWM) left open = full speed.  CHECK THIS ON THE BENCH:
+        some 4-wire fans idle with PWM open (ENGINEERING_CHECK 8.7).
+        Do NOT tie blue to the 12 V wire.
+     Cut only TWO 24 mm holes in the skirt, not six (ENGINEERING_CHECK
+     section 8.7): the blower makes pressure, not flow.
 
    WHY THE MOTOR BOLTS STRAIGHT TO THE CAGE: an RS-550 shaft only sticks out
    7.5 to 12.5 mm.  Any plate between motor and cage lifts the propeller
@@ -144,6 +177,12 @@
 
 // ---------------------------------------------------------------- what to show
 PART = "assembly";
+FAN_TYPE = "prop";    // "prop" or "blower": the fan "assembly" and "deck"
+                      // show.  The bdeck_* parts and blower_box are always
+                      // the blower, whatever this says
+BLOWER = FAN_TYPE == "blower"
+      || PART == "bdeck_fl" || PART == "bdeck_fr" || PART == "bdeck_bl"
+      || PART == "bdeck_br" || PART == "bdeck"    || PART == "blower_box";
 
 PLATE_TIME  = 12;                       // for PART = "plate"
 PLATE_BATCH = [6, 7, 8, 9, 10, 11];     // for PART = "plates"
@@ -164,6 +203,8 @@ M3_TAP_H = 2.9;     // M3 self-tap, HORIZONTAL printed hole: prints 0.3-0.4
                     // small, lands at ~2.6 effective = normal tap fit
 M3_HEAD_D= 6.5;     // counterbore for an M3 socket head (5.5 mm)
 M3_HEAD_H= 3;
+M4_CLEAR = 4.5;     // M4 passes through (vertical printed hole)
+M4_TAP   = 3.4;     // M4 self-taps into PLA (vertical hole), as M3_TAP
 
 // ---------------------------------------------------------------- the deck
 // Foam board, 12 cm fan hole, 3 x 10 cm nozzle slot.
@@ -197,16 +238,24 @@ DECK_RIB_W  = 0.9;    // two 0.45 lines
 DECK_RIB_FOOT = 0.4;  // extra width per side on the ribs' first 0.6 mm, a
                       // foot that keeps a 10 mm tall 0.9 mm wall on the bed
 DECK_CELL   = 55;     // triangle side of the grid
-DECK_BAND   = 40;     // flat band round the edge, no ribs: the skirt plastic
-                      // and its tape go here
-DECK_BAND_SKIN = 0.84;// the band, no ribs: 3 layers like the skin
+DECK_HALF_RIB_W = 0.45; // half-ribs: one line, along X through the middle of
+                      // every cell (bed to skin, with feet).  The skin's
+                      // longest bridge in a cell drops from ~46 to ~24 mm
+DECK_BAND   = 40;     // band round the edge, outside the grid (the jigsaw
+                      // tabs sit in it).  The skirt cap only needs the lip
+DECK_BAND_RING = DECK_BAND / 2; // a DECK_RIB_W rib ring this far in from the
+                      // edge, so the band's skin bridges ~19 mm, not ~39.
+                      // 0 = none
+DECK_BAND_SKIN = 0.84;// the band: 3 layers like the skin
 DECK_SEAM_W = 1.6;    // seam ribs, one each side of every joint, glued
 DECK_SEAM_H = 10;     // back to back; to the bed plane like the grid ribs.
                       // The dovetail keys (DT_*, fan section) hold them.
 DECK_TAB_D  = 9;      // jigsaw tabs that lock the skin across the joints
-DECK_TAB_CLR= 0.2;    // knob and slot now print as TOP-surface features on
-                      // bridged skin (no elephant's foot), so expect to
-                      // retune DOWN (~0.15) with deck_fit_test's tab pair
+DECK_TAB_CLR= 0.05;   // knob and slot now print as TOP-surface features on
+                      // bridged skin (no elephant's foot), so they run
+                      // loose.  Fit test 2026-10-08 at 0.2: went together
+                      // well but a little XY play; at 0.15 still loose,
+                      // so 0.05 (as tight as a printed slip fit goes)
 DECK_MARKS  = true;   // engraved outlines showing where each part glues on
 DECK_MARK_D = 0.28;   // one layer, recessed into the top surface
 DECK_MARK_W = 0.8;    // a strip under each mark keeps 3 full layers
@@ -279,7 +328,7 @@ LIP_CORD_D   = 4.8;    // hardware-store shock cord: 1/8" (3.2) or 3/16" (4.8),
 SKIRT_HEM    = 20;     // plastic folded over the cord to make the hem
 
 // the print bed plane of the top-face-up quarters: the lip bottom.  Rib
-// feet, the lip and the guard's breakaway supports all land on it.
+// feet, the lip, the duct wall and the guard grid all land on it.
 function deck_bed_z() = -(DECK_BAND_SKIN + LIP_H);
 
 // where things sit on the deck: shared by the assembly preview and the
@@ -331,17 +380,22 @@ TUBE_RIB_TOP= 2;      // the duct's seam keys stop this far below the rim
 DT_NECK     = 4;      // tail width at the joint line
 DT_TIP      = 6;      // tail width at its tip (18 degree flare)
 DT_DEPTH    = 3;      // how far the tail reaches across the joint
-DT_CLR      = 0.2;    // per side, round the tail.  Vertical walls, so this
+DT_CLR      = 0.05;   // per side, round the tail.  Vertical walls, so this
                       // is an XY fit: tune it on deck_fit_test's duct pair
-                      // (slides down by hand, no wobble; CA wicks the gap)
+                      // (slides down by hand, no wobble; CA wicks the gap).
+                      // Fit test 2026-10-08 at 0.2: slid fine, slight XY
+                      // wobble; at 0.15 still loose, so 0.05
 DT_BLOCK    = [10, 10];             // key block: along the joint, across it
 DT_DUCT_R   = TUBE_BORE / 2 + 5;    // duct key centre: its block runs from
                                     // the bore face (68) out to 78
 // keys along each joint: [position, owning side].  Joint x = 0 (V) by y,
 // joint y = 0 (H) by x.  Owners alternate so every quarter has tails and
 // sockets.  +/-DT_DUCT_R are the tall duct keys.  The outer H keys sit in
-// the tray pockets, between the pegs; the tray covers them.
-DT_KEYS_V   = [[DT_DUCT_R, 1], [100, -1], [-DT_DUCT_R, -1], [-91, 1]];
+// the tray pockets, between the pegs; the tray covers them.  The blower
+// deck has no duct (all keys deck depth) and its port is where -DT_DUCT_R
+// would be, so that key moves under the blower.
+DT_KEYS_V   = BLOWER ? [[DT_DUCT_R, 1], [100, -1], [-35, -1], [-91, 1]]
+                     : [[DT_DUCT_R, 1], [100, -1], [-DT_DUCT_R, -1], [-91, 1]];
 DT_KEYS_H   = [[DT_DUCT_R, -1], [118, 1], [-DT_DUCT_R, 1], [-118, -1]];
 NUT_AF      = 5.8;    // M3 nut is 5.5 across flats, 2.4 thick
 NUT_T       = 2.6;    // pocket 0.2 deeper than the nut, so the nut always
@@ -389,15 +443,14 @@ GUARD_OD    = DECK_HOLE_D + 20;   // on the printed deck the 67..75 annulus
                                   // duct lands on; on foam it is glue area
 GUARD_T     = 3;
 GUARD_ZONE  = DECK_HOLE_D + 4;
-GUARD_NUB_H = 4;      // little feet that stop the skirt sealing flat on it
+GUARD_NUB_H = 4;      // foam deck: little feet that stop the skirt sealing
+                      // flat on it.  The printed deck has none: its guard
+                      // prints on the bed, and the fan blows the bag
+                      // plastic off it anyway
 GUARD_HUB_D = 16;     // printed deck: solid disc where all four quarters
                       // meet, instead of four knife-edged slivers
-GUARD_NUB_A = 22.5;   // printed deck: nub angles 22.5 + 45k, off the seams
-GUARD_NUB_R = GUARD_HUB_D / 2 + GRID_RING / 2 + 6 * (GRID_OPEN + GRID_RING);
-                      // and on the 6th ring's centreline (57.4)
-SUP_W       = 0.9;    // breakaway supports under the integral guard grid:
-SUP_GAP     = 0.28;   // ring walls one layer short of the grid, snapped
-                      // out through the bore after printing
+GUARD_NUB_A = 22.5;   // printed deck: the duct gussets' angles, 22.5 + 45k,
+                      // off the seams
 
 // ---------------------------------------------------------------- HS390 cage
 // Optional second motor: HS390 (390 size, 12 V, 22 000 rpm, ~28 mm can,
@@ -416,6 +469,45 @@ M25_SNUG    = 2.8;    // M2.5 located by the hole.  If your motor's screws
                       // is an interference fit on an M2.6 major diameter
 M25_HEAD_D  = 5;      // counterbore for an M2.5 socket head (4.5 mm)
 M25_HEAD_H  = 3.5;    // leaves 2.5 mm under the head: M2.5 x 5 goes 2.5 mm in
+
+// ---------------------------------------------------------------- blower
+// Optional fan instead of the propeller: a Delta BFB1212GH centrifugal
+// blower (120 x 120 x 32, 12 V, 3.96 A, 4 wires).  It makes ~4x the
+// RS-550's pressure but half its flow, so the skirt gets 2 holes, not 6
+// (ENGINEERING_CHECK 8.7).  It stands label side down on the deck, its
+// inlet (the round face) up, its outlet facing the back.  blower_box
+// (with the printed deck, PART 11) is a roof over it and a hood round its outlet that turns the
+// air down through a port in the deck; the bdeck_* quarters have that
+// port, its guard bars, grooves for the hood walls and screw columns.
+// Three Ø4.3 holes on a 105 mm square, at every corner but the outlet's.
+// Measured from the photo and the datasheet outline: CHECK YOURS.
+BLW_SIZE    = 120;
+BLW_H       = 32;
+BLW_HOLE_P  = 105;    // hole pitch (square)
+BLW_HOLE_D  = 4.3;    // the blower's holes, through its full 32 mm (check)
+BLW_HAND    = 1;      // label side down, outlet at the back: +1 if the
+                      // corner WITHOUT a hole is at the back RIGHT, -1 if
+                      // it is at the back LEFT
+BLW_Y       = 17;     // blower centre, ahead of the deck centre: the hood
+                      // behind it has to stop short of the nozzle pocket
+BLW_GAP     = GRID_OPEN; // blower top to the roof's underside, open all
+                      // round: it is the inlet's side opening, so it is a
+                      // guard opening too.  Never above 7
+BLW_ROOF_T  = 3;
+BLW_WALL    = 1.6;    // hood walls (4 lines)
+BLW_CLR     = 0.3;    // hood side walls to the blower's sides
+BLW_GASKET  = 1.5;    // hood frame to the outlet face: 3 mm foam tape,
+                      // squeezed to half
+BLW_SEAL    = 2.5;    // how far the frame overlaps the outlet face: the
+                      // window is the face less this each side and on top
+BLW_SILL_H  = 2.5;    // the window's bottom edge is a sill on the deck: as a
+                      // bar on blower_box it would bridge 115 mm
+HOOD_D      = 32;     // hood depth behind the frame, outlet to far wall.
+                      // Port area ~115 x 27: well over the outlet's
+BLW_TUBE_D  = 9;      // standoffs and hood tubes round the M4 screws
+BLW_COL_D   = 10;     // deck columns under the screws, bed to skin
+BLW_SCREW_L = 50;     // M4 x 50, all five
+BLW_GUARD_ZONE = 116; // ring grid in the roof over the inlet
 
 // ---------------------------------------------------------------- the nozzle
 NZ_WALL     = 2;
@@ -1707,11 +1799,12 @@ module templates() {
    below, duct rising to z = 50.  deck_quarter() prints it AS INSTALLED,
    raised so the lip bottom (deck_bed_z) is the bed: the lip's ridge is
    the adhesion foot, the full-depth ribs reach the bed, the skin bridges
-   the rib cells (light-test it), and the guard grid prints on breakaway
-   support rings that snap out through the bore.  Slicer auto-support OFF.
+   the rib cells (half-ribs and a band ring keep every bridge under ~24
+   mm; light-test it), and the guard grid is the first 3 mm on the bed,
+   under the duct.  Nothing to snap out.  Slicer auto-support OFF.
 
    How the four pieces lock together:
-   - Jigsaw tabs in the skin, out in the rib-free edge band, lock the
+   - Jigsaw tabs in the skin, out in the edge band, lock the
      joints flat.
    - Vertical dovetail keys (DT_*): two on each half-joint, eight in all.
      The four next to the duct run from the bed to just under the rim, so
@@ -1739,17 +1832,14 @@ module templates() {
    ========================================================================== */
 function tray_size()  = [2 * SLOT_ROLL_W + 3 * TRAY_WALL, SLOT_ROLL_L + 2 * TRAY_WALL];
 function bin_size()   = [2 * SLOT_ROLL_W + 3 * TRAY_WALL, SLOT_HALF_L + 2 * TRAY_WALL];
-function deck_fan_clear() = TUBE_BORE / 2;         // ribs run in to the bore edge:
-                                                   // under the duct wall and the
-                                                   // guard's solid annulus they
-                                                   // are its permanent print
-                                                   // support
+function deck_fan_clear() = TUBE_BORE / 2;         // ribs run in to the bore edge,
+                                                   // inside the duct wall
 function slot_centre() = [0, -DECK_Y / 2 + SLOT_BACK];
 
 // jigsaw tabs: position along the joint, and which side (+1 / -1) owns it.
 // A knob can only go into its slot straight down (it is wider than its
 // neck), so a tab must sit where nothing stands over the slot: in the edge
-// band, where there are no ribs and the seam ribs have ended.  With sockets
+// band, where the grid and the seam ribs have ended.  With sockets
 // the band on x = 0 is taken by the stand pocket (front) and the nozzle
 // pocket (back), and those pockets lock that joint better than a tab would,
 // so it has none; the y = 0 pair moves out past the tray pockets.
@@ -1786,7 +1876,8 @@ module deck_outline_2d() {
         deck_edge_2d();
         // the hole IS the duct bore: one straight 136 from prop to bag.
         // (DECK_HOLE_D = 130 stays for the foam path and the templates.)
-        circle(d = TUBE_BORE);
+        // The blower deck has the hood's port instead.
+        if (BLOWER) blw_port_2d(); else circle(d = TUBE_BORE);
         // with sockets the slot is smaller by the lip (see sock_lip_2d)
         translate(slot_centre())
             offset(delta = DECK_SOCKETS ? -(0.3 + SOCK_LIP) : 0)
@@ -1831,16 +1922,18 @@ module deck_side_2d(axis, s) {
 }
 
 // the solid blocks the keys are cut in, straddling the joints: bed to the
-// skin, or bed to just under the rim for the duct keys
+// skin, or bed to just under the rim for the duct keys (none on the
+// blower deck)
 module dt_blocks() {
     zb = deck_bed_z();
+    function top(k) = (!BLOWER && abs(k[0]) == DT_DUCT_R) ? TUBE_H - TUBE_RIB_TOP : 0.01 - DECK_SKIN;
     for (k = DT_KEYS_V)
         translate([0, k[0], zb])
-            linear_extrude((abs(k[0]) == DT_DUCT_R ? TUBE_H - TUBE_RIB_TOP : 0.01 - DECK_SKIN) - zb)
+            linear_extrude(top(k) - zb)
                 square([DT_BLOCK[1], DT_BLOCK[0]], center = true);
     for (k = DT_KEYS_H)
         translate([k[0], 0, zb])
-            linear_extrude((abs(k[0]) == DT_DUCT_R ? TUBE_H - TUBE_RIB_TOP : 0.01 - DECK_SKIN) - zb)
+            linear_extrude(top(k) - zb)
                 square([DT_BLOCK[0], DT_BLOCK[1]], center = true);
 }
 
@@ -1856,7 +1949,7 @@ module deck_quarter_2d(sx, sy) {
 module deck_rib_zone_2d() {
     difference() {
         offset(delta = -DECK_BAND) deck_edge_2d();
-        circle(r = deck_fan_clear());
+        if (BLOWER) blw_port_2d(); else circle(r = deck_fan_clear());
         translate(slot_centre()) rrect([SLOT_X, SLOT_Y], 2, center = true);
     }
 }
@@ -1869,10 +1962,28 @@ module deck_grid_2d() {
         union() {
             for (a = [0, 60, 120]) rotate(a)
                 for (k = [-n : n]) translate([-500, k * h - DECK_RIB_W / 2]) square([1000, DECK_RIB_W]);
+            // half-ribs, one line, through the middle of every cell along X
+            for (k = [-n : n]) translate([-500, (k + 0.5) * h - DECK_HALF_RIB_W / 2])
+                square([1000, DECK_HALF_RIB_W]);
             // rim round every edge of the rib zone, closing the cells
             difference() { deck_rib_zone_2d(); offset(delta = -DECK_RIB_W) deck_rib_zone_2d(); }
         }
     }
+    // the band's rib ring.  With sockets the jigsaw tabs sit outside it (10
+    // mm in); without, they sit on it, so it stops short of each tab (a knob
+    // only goes in straight down, with nothing standing over its slot)
+    if (DECK_BAND_RING > 0)
+        intersection() {
+            deck_outline_2d();
+            difference() {
+                offset(delta = -(DECK_BAND_RING - DECK_RIB_W / 2)) deck_edge_2d();
+                offset(delta = -(DECK_BAND_RING + DECK_RIB_W / 2)) deck_edge_2d();
+                for (t = DECK_TABS_H) translate([t[0], 0])
+                    square([DECK_TAB_D + 4, 2 * (DECK_TAB_D + 3)], center = true);
+                for (t = DECK_TABS_V) translate([0, t[0]])
+                    square([2 * (DECK_TAB_D + 3), DECK_TAB_D + 4], center = true);
+            }
+        }
 }
 
 module deck_mark_box_2d(c, size) {
@@ -1983,17 +2094,16 @@ module sock_cuts() {
 
 // ---- the integral fan duct.  Full rings, drawn in installed coordinates;
 // deck_quarter_installed() clips them to its 90 degrees.  The shroud is the
-// old fan_tube without the flange, rooted straight into the skin; the guard
-// grid is the old fan_guard fused to the skin's underside; the supports are
-// breakaway print scaffolding under the grid, snapped out through the bore.
+// old fan_tube without the flange, running from the bed (where the guard
+// grid is) up through the skin to the rim.  Nothing to snap out.
 
 module duct_tube_full() {
     od = TUBE_BORE + 2 * TUBE_WALL;
     difference() {
         union() {
-            // shroud, rooted into the skin
-            translate([0, 0, -DECK_SKIN])
-                linear_extrude(TUBE_H + DECK_SKIN, convexity = 4)
+            // shroud, from the guard on the bed up through the skin
+            translate([0, 0, deck_bed_z()])
+                linear_extrude(TUBE_H - deck_bed_z(), convexity = 4)
                     difference() { circle(d = od); circle(d = TUBE_BORE); }
             // cage lugs: pad, cone, rib down to the deck (phased off the seams)
             for (i = [0 : LUG_N - 1]) rotate(LUG_PHASE + i * 360 / LUG_N) {
@@ -2020,44 +2130,130 @@ module duct_tube_full() {
     }
 }
 
-// the guard grid, fused to the skin's underside.  The solid 67..75 annulus
-// sits right under the shroud wall; GRID_SPOKES = 8 puts a spoke along each
-// half-axis, so every quarter carries a 1.2 mm half-bar on each straight
-// edge and the joined deck has full 2.4 mm bars across the seams.
+// the guard grid, on the bed: it prints as the quarter's first layers, so
+// it needs no support.  The solid 67..75 annulus sits under the shroud
+// wall and the rib rim; GRID_SPOKES = 8 puts a spoke along each half-axis,
+// so every quarter carries a 1.2 mm half-bar on each straight edge and the
+// joined deck has full 2.4 mm bars across the seams.  No standoff nubs: the
+// fan's flow blows the bag plastic off the grid.
 module duct_guard_full() {
-    translate([0, 0, -DECK_SKIN - GUARD_T])
+    translate([0, 0, deck_bed_z()])
         difference() {
-            cylinder(d = GUARD_OD, h = GUARD_T + EPS);
-            ring_grid_cut(GUARD_ZONE, GUARD_HUB_D, GUARD_T + EPS);
+            cylinder(d = GUARD_OD, h = GUARD_T);
+            ring_grid_cut(GUARD_ZONE, GUARD_HUB_D, GUARD_T);
         }
-    for (a = [GUARD_NUB_A : 45 : 359])                 // standoff nubs, off the seams
-        rotate(a) translate([GUARD_NUB_R, 0, -DECK_SKIN - GUARD_T - GUARD_NUB_H + EPS])
-            cylinder(d = 5, h = GUARD_NUB_H);
 }
 
-// breakaway supports for the grid: a SUP_W ring-wall from the bed up to one
-// layer below each circular bar (plus one under the hub's rim and a post
-// under each nub), stopping SUP_GAP short so they snap out through the bore
-// after printing.  The outermost opening and the annulus bridge to the rib
-// rim at r = 68, which is permanent.  Slicer auto-support stays OFF.
-module duct_support_full() {
-    zb = deck_bed_z();
-    h  = -zb - DECK_SKIN - GUARD_T - SUP_GAP;          // bed to grid, less the gap
-    rings = concat([GUARD_HUB_D / 2 - 0.5],
-                   [for (r = grid_ring_starts(GUARD_ZONE, GUARD_HUB_D))
-                        if (r + GRID_OPEN + GRID_RING / 2 < GUARD_ZONE / 2 - 1)
-                            r + GRID_OPEN + GRID_RING / 2]);
+// ---- the blower (bdeck_* and blower_box).  Installed coordinates, deck top
+// at z = 0.  The blower stands on the deck centred at (0, BLW_Y), outlet
+// face towards -y.  Going back from that face: the foam gasket, the hood's
+// frame wall (posts either side of a window, a dam over it), the hood
+// itself (HOOD_D deep), its far wall.  The roof covers blower and hood.
+function blw_b()      = BLW_SIZE / 2;
+function blw_y_f()    = BLW_Y - blw_b() - BLW_GASKET;    // frame, blower side
+function blw_y_ff()   = blw_y_f() - BLW_WALL;            // frame, hood side
+function blw_y_in()   = blw_y_ff() - HOOD_D;             // far wall, inside
+function blw_y_out()  = blw_y_in() - BLW_WALL;           // far wall, outside
+function blw_y_back() = BLW_Y + blw_b() + BLW_CLR + BLW_WALL; // roof's front edge
+function blw_x_in()   = blw_b() + BLW_CLR;               // side walls, inside
+function blw_x_out()  = blw_x_in() + BLW_WALL;
+function blw_win()    = blw_b() - BLW_SEAL;              // window half width
+function blw_z_r()    = BLW_H + BLW_GAP;                 // roof underside
+function blw_z_t()    = blw_z_r() + BLW_ROOF_T;          // roof top
+// the blower's three holes (no hole at the outlet's +x corner when
+// BLW_HAND = 1), and the hood's two screw tubes, outside its side walls
+// half way along them, overlapping the wall so they leave the inside clear
+function blw_holes() = [for (p = [[-1, -1], [-1, 1], [1, 1]])
+                        [BLW_HAND * p[0] * BLW_HOLE_P / 2, BLW_Y + p[1] * BLW_HOLE_P / 2]];
+function blw_tubes() = [for (s = [-1, 1])
+                        [s * (blw_x_out() + BLW_TUBE_D / 2 - BLW_WALL), (blw_y_ff() + blw_y_in()) / 2]];
+function blw_screws() = concat(blw_holes(), blw_tubes());
+
+module blw_interior_2d() {
+    translate([-blw_x_in(), blw_y_in()]) square([2 * blw_x_in(), blw_y_ff() - blw_y_in()]);
+}
+// the hole in the deck under the hood: the inside less a pocket rim, so the
+// groove pads close round it
+module blw_port_2d() { offset(delta = -(SOCK_FIT + SOCK_RIM)) blw_interior_2d(); }
+
+// the hood's walls in plan: sides, far wall and the frame's two posts
+module blw_walls_2d() {
     difference() {
-        translate([0, 0, zb]) linear_extrude(h, convexity = 10)
-            for (rc = rings)
-                difference() { circle(r = rc + SUP_W / 2); circle(r = rc - SUP_W / 2); }
-        for (a = [GUARD_NUB_A : 45 : 359])             // keep clear of the nubs
-            rotate(a) translate([GUARD_NUB_R, 0, zb - EPS])
-                cylinder(d = 6.5, h = h + 2 * EPS);
+        translate([-blw_x_out(), blw_y_out()])
+            rrect([2 * blw_x_out(), blw_y_f() - blw_y_out()], BLW_WALL);
+        blw_interior_2d();
+        translate([-blw_win(), blw_y_ff() - 1]) square([2 * blw_win(), BLW_WALL + 2]);
     }
-    for (a = [GUARD_NUB_A : 45 : 359])                 // posts under the nubs
-        rotate(a) translate([GUARD_NUB_R, 0, zb])
-            cylinder(d = 4, h = -zb - DECK_SKIN - GUARD_T - GUARD_NUB_H - SUP_GAP);
+}
+// what stands in the deck's grooves: the walls and the two hood tubes
+module blw_foot_2d() {
+    blw_walls_2d();
+    for (p = blw_tubes()) translate(p) circle(d = BLW_TUBE_D);
+}
+module blw_roof_2d() {
+    translate([-blw_x_out(), blw_y_out()])
+        rrect([2 * blw_x_out(), blw_y_back() - blw_y_out()], BLW_WALL);
+    for (p = blw_tubes()) translate(p) circle(d = BLW_TUBE_D);
+}
+
+module blower_box_installed() {
+    zb = -SOCK_D;                                       // groove floor
+    difference() {
+        union() {
+            translate([0, 0, blw_z_r()]) linear_extrude(BLW_ROOF_T, convexity = 4) blw_roof_2d();
+            translate([0, 0, zb]) linear_extrude(blw_z_r() - zb + EPS, convexity = 4) blw_walls_2d();
+            // the dam over the window, from the outlet face's top less
+            // BLW_SEAL up to the roof
+            translate([-blw_x_out(), blw_y_ff(), BLW_H - BLW_SEAL])
+                cube([2 * blw_x_out(), BLW_WALL, blw_z_r() - BLW_H + BLW_SEAL + EPS]);
+            for (p = blw_holes())                       // standoffs on the blower
+                translate([p[0], p[1], BLW_H]) cylinder(d = BLW_TUBE_D, h = blw_z_r() - BLW_H + EPS);
+            for (p = blw_tubes())                       // hood tubes, full height
+                translate([p[0], p[1], zb]) cylinder(d = BLW_TUBE_D, h = blw_z_t() - zb);
+        }
+        translate([0, BLW_Y, blw_z_r()]) ring_grid_cut(BLW_GUARD_ZONE, GUARD_HUB_D, BLW_ROOF_T);
+        for (p = blw_screws()) translate([p[0], p[1], 0]) bore(M4_CLEAR, blw_z_t() - zb + 2, zb - 1);
+    }
+}
+
+// print orientation: roof on the bed (turned over about X, not mirrored).
+// Walls, posts and tubes all rise straight off it: no bridges, no supports.
+module blower_box() {
+    cy = (blw_y_out() + blw_y_back()) / 2;
+    translate([0, 0, blw_z_t()]) rotate([180, 0, 0]) translate([0, -cy, 0])
+        blower_box_installed();
+}
+
+// what the blower adds to a quarter: pads under the grooves (as round the
+// pockets), screw columns, the window's sill, and guard bars across the
+// port on the bed.  The rib zone stops at the port, so its rim rib frames
+// the port and carries the bars' ends.
+module blw_deck_add() {
+    zb = deck_bed_z();
+    translate([0, 0, -(SOCK_D + SOCK_FLOOR)])
+        linear_extrude(SOCK_D + SOCK_FLOOR, convexity = 6)
+            difference() { offset(delta = SOCK_FIT + SOCK_RIM) blw_foot_2d(); blw_port_2d(); }
+    for (p = blw_screws())
+        translate([p[0], p[1], zb]) cylinder(d = BLW_COL_D, h = 0.01 - DECK_SKIN - zb);
+    translate([-(blw_win() - SOCK_FIT), blw_y_ff(), -EPS])
+        cube([2 * (blw_win() - SOCK_FIT), BLW_WALL, BLW_SILL_H + EPS]);
+    // bars along y, one centred on x = 0 so each quarter keeps a half bar
+    // on the seam (as the round guard's spokes); GRID_OPEN between them
+    pitch = GRID_OPEN + GRID_BAR;
+    translate([0, 0, zb]) linear_extrude(GUARD_T, convexity = 6)
+        intersection() {
+            offset(delta = DECK_RIB_W / 2) blw_port_2d();
+            for (k = [-ceil(blw_x_in() / pitch) : ceil(blw_x_in() / pitch)])
+                translate([k * pitch - GRID_BAR / 2, -500]) square([GRID_BAR, 1000]);
+        }
+}
+
+// what the blower cuts: the grooves, and self-tap pilots down the columns
+module blw_deck_cuts() {
+    translate([0, 0, -SOCK_D]) linear_extrude(SOCK_D + 1, convexity = 6)
+        offset(delta = SOCK_FIT) blw_foot_2d();
+    for (p = blw_screws())
+        translate([p[0], p[1], deck_bed_z() + 1]) cylinder(d = M4_TAP, h = -deck_bed_z() + 1);
 }
 
 // the two DECK_SEAM_W strips along this quarter's joints (2D, unclipped)
@@ -2076,7 +2272,7 @@ module deck_quarter_installed(sx, sy) {
     difference() {
       intersection() {
         union() {
-            // skin, thicker in the rib-free edge band
+            // skin, thicker in the edge band
             translate([0, 0, -DECK_SKIN]) linear_extrude(DECK_SKIN) deck_quarter_2d(sx, sy);
             if (DECK_BAND_SKIN > DECK_SKIN)
                 translate([0, 0, -DECK_BAND_SKIN]) linear_extrude(DECK_BAND_SKIN - DECK_SKIN + 0.01)
@@ -2107,8 +2303,9 @@ module deck_quarter_installed(sx, sy) {
                         deck_grid_2d();
                         intersection() { deck_rib_zone_2d(); deck_seam_strips_2d(sx, sy); }
                     }
-            // the fan duct, the guard grid and its breakaway supports
-            duct_tube_full(); duct_guard_full(); duct_support_full();
+            // the fan duct and the guard grid on the bed under it, or the
+            // blower's pads, columns, sill and port bars
+            if (BLOWER) blw_deck_add(); else { duct_tube_full(); duct_guard_full(); }
             // the dovetail key blocks
             dt_blocks();
             // a fourth layer either side of the tape groove, so its floor is 3
@@ -2140,6 +2337,7 @@ module deck_quarter_installed(sx, sy) {
             intersection() { deck_side_2d("V", sx); deck_side_2d("H", sy); }
       }
         if (DECK_SOCKETS) sock_cuts();
+        if (BLOWER) blw_deck_cuts();
         // skirt tape line: a groove in the strip under the band (legacy, lip off)
         if (!DECK_LIP)
             translate([0, 0, -DECK_BAND_SKIN - DECK_TAPE_D - EPS])
@@ -2179,9 +2377,7 @@ module deck_whole_installed() {
                 }
             translate([0, 0, -DECK_SKIN - DECK_RIB_H])
                 linear_extrude(DECK_RIB_H + 0.01, convexity = 10) deck_grid_2d();
-            duct_tube_full();
-            duct_guard_full();
-            duct_support_full();
+            if (BLOWER) blw_deck_add(); else { duct_tube_full(); duct_guard_full(); }
             dt_blocks();
             if (DECK_SOCKETS) sock_pads();
             if (DECK_LIP) deck_lip();
@@ -2190,6 +2386,7 @@ module deck_whole_installed() {
                     linear_extrude(DECK_TAPE_D + 0.01, convexity = 6) offset(delta = 1.5) deck_tape_line_2d();
         }
         if (DECK_SOCKETS) sock_cuts();
+        if (BLOWER) blw_deck_cuts();
         if (!DECK_LIP)
             translate([0, 0, -DECK_BAND_SKIN - DECK_TAPE_D - EPS])
                 linear_extrude(DECK_TAPE_D + EPS) deck_tape_line_2d();
@@ -2244,12 +2441,11 @@ module deck_fit_test() {
         translate([x[i], 0]) fit_riser(c[i][0], c[i][1]);
     }
     // the duct seam: both halves of the y = 0 joint crossing the shroud at
-    // +X — lug with its nut trap, the full-height dovetail key, butt faces,
-    // the guard's half-bars and a sample of the breakaway support rings.
-    // The crop reaches DT_DEPTH + 1 past the joint so the tail (which sticks
-    // across it) is kept; the halves sit DT_DEPTH + 3 apart so it clears
-    // the socket.  Snap the supports out, then lower one half onto the
-    // other.  The tail should slide all the way down by hand with no
+    // +X — lug with its nut trap, the full-height dovetail key, butt faces
+    // and the guard's half-bars on the bed.  The crop reaches DT_DEPTH + 1
+    // past the joint so the tail (which sticks across it) is kept; the
+    // halves sit DT_DEPTH + 3 apart so it clears the socket.  Lower one
+    // half onto the other.  The tail should slide all the way down by hand with no
     // wobble: tune DT_CLR (tight: up 0.05; wobbly: down 0.05).
     dxp = tot / 2 + gap + 20;
     dsp = (DT_DEPTH + 3) / 2;
@@ -2272,10 +2468,14 @@ module deck_fit_test() {
                     cube([DT_DEPTH + 7, 12, 14]);
             }
     // and a jigsaw tab: both halves of the one at the end of the side joint,
-    // band thickness, 2 mm apart.  Push them together on the table.
-    tx = DECK_TABS_H[1][0];
+    // band thickness.  The knob reaches DECK_TAB_D + 1.5 past the joint, so
+    // the halves are pulled apart by that plus a 3 mm gap: any less and the
+    // knob overlaps its socket half and the two print fused.  Push them
+    // together on the table.
+    tx  = DECK_TABS_H[1][0];
+    tsp = (DECK_TAB_D + 1.5 + 3) / 2;                  // each half's offset
     for (s = [-1, 1])
-        translate([-tx, -44 + s * 2, 0])
+        translate([-tx, -47 + s * tsp, 0])
             linear_extrude(DECK_BAND_SKIN)
                 intersection() {
                     deck_side_2d("H", s);
@@ -2335,6 +2535,28 @@ module assembly(skirt = true) {
              LUG_R * sin(LUG_PHASE) - LUG_D / 2 - DT_BLOCK[1] / 2,
              " mm;  quarter print height: ", TUBE_H + DECK_BAND_SKIN + LIP_H, " mm"));
 
+    // ---- blower checks (always run: the bdeck parts use these numbers)
+    nz_top = slot_centre()[1] + nz_out_y() / 2 + NZ_FLANGE;      // nozzle pocket's front edge
+    hood_gap = (blw_y_out() - SOCK_FIT) - (nz_top + SOCK_FIT);
+    assert(BLW_GAP <= 7, "blower inlet gap over 7 mm (3/8\" dowel rule)");
+    assert(hood_gap >= SOCK_RIM, "blower hood groove runs into the nozzle pocket");
+    assert(BLW_SCREW_L - blw_z_t() >= 6, "blower screws reach under 6 mm into the deck");
+    assert(BLW_SCREW_L - blw_z_t() < -deck_bed_z() - 1, "blower screws poke out under the deck");
+    assert(blw_win() + SOCK_FIT < blw_x_in(), "hood window wider than the hood");
+    for (p = blw_holes())
+        assert(norm(p - [0, BLW_Y]) - BLW_TUBE_D / 2 > BLW_GUARD_ZONE / 2 + 1,
+               "a blower standoff sits in the roof's grid");
+    // every key on the x = 0 joint (which crosses the port) stays out of it;
+    // the list is the blower's own whenever BLOWER is set
+    for (k = DT_KEYS_V)
+        assert(!BLOWER || k[0] - DT_BLOCK[0] / 2 > blw_y_ff() || k[0] + DT_BLOCK[0] / 2 < blw_y_in() - SOCK_RIM,
+               "a dovetail key lands in the blower port");
+    echo(str("BLOWER   hood groove to nozzle pocket: ", hood_gap,
+             " mm;  screws into the deck: ", BLW_SCREW_L - blw_z_t(), " mm (hood tubes ",
+             BLW_SCREW_L - blw_z_t() - SOCK_D, ");  blower_box height ", blw_z_t(),
+             " mm;  port ", 2 * (blw_x_in() - SOCK_FIT - SOCK_RIM), " x ",
+             HOOD_D - 2 * (SOCK_FIT + SOCK_RIM), " mm"));
+
     if (DECK_PRINTED) color("WhiteSmoke") deck_printed(); else deck_preview();
     under = !DECK_PRINTED ? DECK_T                      // where the guard's face sits
           : DECK_SOCKETS ? SOCK_D + SOCK_FLOOR : DECK_SKIN;
@@ -2351,17 +2573,26 @@ module assembly(skirt = true) {
         color("DimGray")   translate([0, 0, -under]) mirror([0, 0, 1]) fan_guard();
         color("SteelBlue") fan_tube();
     }
-    color("Teal") translate([0, 0, TUBE_H])
-        if (MOTOR_TYPE == "HS390") fan_cage_hs390(); else fan_cage();
+    if (BLOWER) {
+        // the blower (preview only: a block with its inlet ring) and its box
+        color("DimGray") translate([0, BLW_Y, 0]) difference() {
+            translate([-blw_b(), -blw_b(), 0]) cube([BLW_SIZE, BLW_SIZE, BLW_H]);
+            translate([0, 0, BLW_H - 1]) cylinder(d = 90, h = 2);
+        }
+        color("Teal") blower_box_installed();
+    } else {
+        color("Teal") translate([0, 0, TUBE_H])
+            if (MOTOR_TYPE == "HS390") fan_cage_hs390(); else fan_cage();
 
-    // motor and propeller, preview only
-    color("Gray", 0.8) translate([0, 0, face])
-        if (MOTOR_TYPE == "HS390") cylinder(d = HS_CAN_D, h = HS_LEN);
-        else cylinder(d = MOTOR_CAN_D, h = MOTOR_LEN);
-    color("Black", 0.6) {
-        translate([0, 0, prop_top - PROP_HUB_T]) cylinder(d = 20, h = PROP_HUB_T);
-        translate([0, 0, prop_top - PROP_HUB_T / 2])
-            cylinder(d = PROP_D, h = 2, center = true);
+        // motor and propeller, preview only
+        color("Gray", 0.8) translate([0, 0, face])
+            if (MOTOR_TYPE == "HS390") cylinder(d = HS_CAN_D, h = HS_LEN);
+            else cylinder(d = MOTOR_CAN_D, h = MOTOR_LEN);
+        color("Black", 0.6) {
+            translate([0, 0, prop_top - PROP_HUB_T]) cylinder(d = 20, h = PROP_HUB_T);
+            translate([0, 0, prop_top - PROP_HUB_T / 2])
+                cylinder(d = PROP_D, h = 2, center = true);
+        }
     }
 
     // nozzle, over the slot, blowing backwards, with a "12" in it
@@ -2460,6 +2691,12 @@ else if (PART == "deck_bl")     deck_quarter(-1, -1);     // back left
 else if (PART == "deck_br")     deck_quarter( 1, -1);     // back right
 else if (PART == "deck")        deck_printed();           // all four, preview
 else if (PART == "deck_fit_test") deck_fit_test();
+else if (PART == "bdeck_fl")    deck_quarter(-1,  1);     // blower deck (BLOWER is set
+else if (PART == "bdeck_fr")    deck_quarter( 1,  1);     // by these PART names)
+else if (PART == "bdeck_bl")    deck_quarter(-1, -1);
+else if (PART == "bdeck_br")    deck_quarter( 1, -1);
+else if (PART == "bdeck")       deck_printed();
+else if (PART == "blower_box")  blower_box();
 else if (PART == "templates")   templates();
 else if (PART == "wear_pad")    wear_pad();
 else echo(str("Unknown PART: ", PART));

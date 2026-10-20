@@ -7,7 +7,7 @@
 # Fast pass:
 #   1. node tools\check_parts.js: the seven hand-kept part lists agree.
 #   2. PART = "assembly" evaluated to an .echo file: prints the RULE / FIT /
-#      DUCT lines and fails on any assert, ERROR or WARNING.
+#      DUCT / BLOWER lines and fails on any assert, ERROR or WARNING.
 #   3. every dispatched part evaluated the same way (asserts inside the part
 #      modules fire at evaluation, no geometry needed, so this is quick).
 # -Stl renders the named parts to throwaway STLs (nothing in stl\ changes)
@@ -53,7 +53,7 @@ Write-Host "== assembly (rule checks)" -ForegroundColor Cyan
 $log = Invoke-Part "assembly" (Join-Path $tmp "assembly.echo")
 if ($null -eq $log) { $failed += "assembly" }
 else {
-    Get-Content (Join-Path $tmp "assembly.echo") | Where-Object { $_ -match "RULE|FIT|DUCT" } |
+    Get-Content (Join-Path $tmp "assembly.echo") | Where-Object { $_ -match "RULE|FIT|DUCT|BLOWER" } |
         ForEach-Object { $_ -replace '^ECHO: "?', '' -replace '"$', '' }
 }
 

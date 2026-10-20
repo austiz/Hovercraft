@@ -90,8 +90,9 @@ Flip the craft and check, in this order:
   and sits there.
 - **Wear pad** taped to the centre of the bag's outside face, chamfer
   toward the track, not covering any hole.
-- **Guard nubs down** (toward the bag): they stop the plastic sealing
-  flat against the grid and choking the flow.
+- **Foam deck only: guard nubs down** (toward the bag): they stop the
+  plastic sealing flat against the grid.  The printed deck's guard has
+  no nubs: the fan's flow blows the plastic off it.
 - **Seams and pocket floors taped** underneath; tube and nozzle pockets
   glued airtight; hold the deck to a light — no glowing pinholes.
 - **Zero card in** the nozzle guide (or any card — never an open slot

@@ -25,7 +25,8 @@ $parts = "fan_cage", "fan_cage_hs390", "nozzle",
          "nickel_tray", "tray_bar", "coin_bin", "bin_lid",
          "stick_stand", "switch_bracket", "templates", "wear_pad", "deck_fit_test",
          "aa4_mount", "aa2_tray", "aa2_fences", "wire_clips",
-         "deck_fl", "deck_fr", "deck_bl", "deck_br"
+         "deck_fl", "deck_fr", "deck_bl", "deck_br",
+         "bdeck_fl", "bdeck_fr", "bdeck_bl", "bdeck_br", "blower_box"
 
 # Windows PowerShell mangles quotes inside native arguments, so instead of
 # -D PART="..." each part gets a one-line wrapper (the last assignment wins).

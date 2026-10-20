@@ -21,7 +21,7 @@ const read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
 const NOT_EXPORTED = new Set([
     "assembly", "mockup",            // rule check / view-only
     "nozzle_v1", "nozzle_v2", "plate", // "nozzle" and "plates" are the exported forms
-    "deck",                          // preview of the four quarters
+    "deck", "bdeck",                 // previews of the four quarters
     "fan_tube", "fan_guard",         // foam-board deck only
 ]);
 // largest $fn that counts as a deliberate polygon, not a resolution override

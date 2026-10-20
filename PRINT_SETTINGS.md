@@ -40,8 +40,11 @@ at normal speeds; a fast printer halves them.
 | templates | 1 | 2 | 15 % | none | flat | 144 × 194 × 2 | 12 | ¾ h | Optional. Trace the inside edges. |
 
 | **Printed deck** (optional, replaces the foam board; ENGINEERING_CHECK §9) | | | | | | | | | |
-| deck_fit_test | 1 | 3 | 15 % | **none** (modeled risers) | top face UP (as exported) | 200 × 107 × 61 | 36 (sliced) | 1 h 6 | **Print this first.** Pocket coupons (press a nickel tray and the nozzle in; drop the stick stand into its corner and push it forward — the shoulder must stop it), the two halves of a jigsaw tab (push them together flat on the table: `DECK_TAB_CLR`), the skirt lip on the stand coupon, both halves of an **outer dovetail key** (deck depth only — lower one onto the other), and **both halves of the duct seam** — snap the support rings out, **lower one half straight down onto the other** (the dovetail key: it should slide down by hand with no wobble; tight → raise `DT_CLR` 0.05, wobbly → lower it), and drop an M3 nut in the lug. The flip moved every fit from the tight first layer to the loose top surface, so fits run LOOSE now: if a part rattles, **lower** `SOCK_FIT` by 0.05 (expect ~0.1) and reprint; if it will not go in, raise it. Each coupon stands on a throwaway 0.84 plate + 1.2 mm riser walls — snap them off. Then print the quarters. |
-| deck_fl, deck_fr, deck_bl, deck_br | 1 each | **3** | 15 % (none is used) | **NONE — auto support must stay OFF** | **top face UP, as installed** (as exported) | 170 × 172 × 61 (fl, br) / 170 × 165 × 61 (fr, bl) | 73–76 each (fl 73.9 / fr 76.2 / bl 74.5 / br 72.8 sliced) | 1 h 48 – 1 h 54 each (P1S, 0.28) | The fan duct and bottom guard are **built in**: the quarter prints as installed, duct rising 50 mm, the skirt lip's ridge on the bed as the adhesion foot, ribs full-depth to the bed. **0.20 mm first layer**, elephant's-foot comp on (0.15) — the lip ridge, rib feet and breakaway support rings are the first layer. **3 walls**: the 2.4 mm duct wall slices as solid perimeters. **No brim — mandatory**: it would web the guard grid openings and the support rings shut. **Thick bridges on**: the whole skin is now a bridged surface over the rib cells (3 × 0.28, worst span ≈ 40 mm in the edge band), as are the pocket floors. After printing: snap the guard's support rings and nub posts out through the bore, then hold the quarter up to a light — tape any pinhole on the underside. Probe the grid with a pencil (~7 mm): nothing may reach through (rule: 3/8" dowel must not reach the prop). Pockets and tabs are top-surface features now and run **loose**: tune `SOCK_FIT` / `DECK_TAB_CLR` DOWN on the fit test, never up. **No screws**: the quarters lock with 8 vertical dovetail keys (10 × 10 blocks across the joints) — lower each quarter straight down onto its neighbour, then wick thin CA in. |
+| deck_fit_test | 1 | 3 | 15 % | **none** (modeled risers) | top face UP (as exported) | 200 × 115 × 61 | 37 (sliced) | 1 h 7 | **Print this first.** Pocket coupons (press a nickel tray and the nozzle in; drop the stick stand into its corner and push it forward — the shoulder must stop it), the two halves of a jigsaw tab (push them together flat on the table: `DECK_TAB_CLR`), the skirt lip on the stand coupon, both halves of an **outer dovetail key** (deck depth only — lower one onto the other), and **both halves of the duct seam** — **lower one half straight down onto the other** (the dovetail key: it should slide down by hand with no wobble; tight → raise `DT_CLR` 0.05, wobbly → lower it), and drop an M3 nut in the lug. The flip moved every fit from the tight first layer to the loose top surface, so fits run LOOSE now: if a part rattles, **lower** `SOCK_FIT` by 0.05 (expect ~0.1) and reprint; if it will not go in, raise it. Each coupon stands on a throwaway 0.84 plate + 1.2 mm riser walls — snap them off. Then print the quarters. |
+| deck_fl, deck_fr, deck_bl, deck_br | 1 each | **3** | 15 % (none is used) | **NONE — auto support must stay OFF** | **top face UP, as installed** (as exported) | 170 × 172 × 61 (fl, br) / 170 × 165 × 61 (fr, bl) | 75–79 each (fl 76.4 / fr 78.6 / bl 76.7 / br 75.1 sliced) | 1 h 46 – 1 h 52 each (P1S, 0.28) | The fan duct and bottom guard are **built in**: the quarter prints as installed, duct rising 50 mm, the skirt lip's ridge on the bed as the adhesion foot, ribs full-depth to the bed. **0.20 mm first layer**, elephant's-foot comp on (0.15) — the lip ridge, rib feet and the guard grid (its first 3 mm, on the bed under the duct) are the first layers. **3 walls**: the 2.4 mm duct wall slices as solid perimeters. **No brim — mandatory**: it would web the guard grid openings shut. **Thick bridges on**: the whole skin is now a bridged surface over the rib cells (3 × 0.28; a one-line half-rib through every cell and a rib ring at mid-band keep the worst span ≈ 24 mm), as are the pocket floors. Nothing to snap out. After printing, hold the quarter up to a light — tape any pinhole on the underside. Probe the grid with a pencil (~7 mm): nothing may reach through (rule: 3/8" dowel must not reach the prop). Pockets and tabs are top-surface features now and run **loose**: tune `SOCK_FIT` / `DECK_TAB_CLR` DOWN on the fit test, never up. **No screws**: the quarters lock with 8 vertical dovetail keys (10 × 10 blocks across the joints) — lower each quarter straight down onto its neighbour, then wick thin CA in. |
+| **Blower deck** (instead of the propeller deck: Delta BFB1212GH; ENGINEERING_CHECK §8.7) | | | | | | | | | |
+| bdeck_fl, bdeck_fr, bdeck_bl, bdeck_br | 1 each | **3** | 15 % | **NONE — auto support OFF** | **top face UP, as installed** (as exported) | 170 × 172 × 10.8 (fl) / 170 × 165 × 10.8 (fr) / 170 × 165 × 13.3 (bl) / 170 × 172 × 13.3 (br) | 56–57 each (fl 56.9 / fr 57.2 / bl 56.6 / br 56.2 sliced) | 1 h 22 – 1 h 27 each (P1S, 0.28) | Same slicer settings as the deck quarters (no brim — the port's guard bars are on the bed; thick bridges on; 0.20 first layer). Every pocket, key and the lip are the same; the duct and round guard are replaced by a guarded 115 × 27 mm port, grooves for blower_box's walls, a 2.5 mm sill (the back quarters' extra height) and five Ø10 screw columns with M4 pilots. Same fit test (`deck_fit_test`) applies. |
+| blower_box | 1 | 3 | 15 % | none | **roof down** (as exported) | 139 × 159 × 43 | 56.8 (sliced) | 1 h 20 | The blower's lid: roof grid over its inlet (on the bed), standoffs on its three holes, and the hood round its outlet. Everything rises straight off the roof, no bridges. **No brim**: the roof grid is on the bed. Stick 3 mm foam tape on the frame face that meets the blower's outlet side. 5 × M4 × 50 hold blower and box to the deck. |
 
 **Do not print** `mockup_assembly.stl`: it is the whole craft as one view-only
 model.
@@ -54,15 +57,19 @@ model.
   fan_guard are separate glued-on parts (≈ 348 g printed).
 - Whole set with 13 cards, test cards, both racks, two chart plates, spares
   and templates ≈ **600 g**, so budget most of a 1 kg spool.
-- Printed deck, if you use it: four quarters ≈ **297 g** (deck_fr slices
-  at 76.2 g / 1 h 52; duct, guard and dovetail keys included — the
-  separate 85 g tube and 28 g guard are not printed at all), ~7½ h in all
-  on the P1S, plus the 1 h / 36 g fit test; about
-  10 g of that is breakaway support that never flies.  Hardware: **no
+- Printed deck, if you use it: four quarters ≈ **306 g** (deck_fr slices
+  at 78.6 g / 1 h 53; duct, guard and dovetail keys included — the
+  separate 85 g tube and 28 g guard are not printed at all), ~7¼ h in all
+  on the P1S, plus the 1 h / 37 g fit test.  No
+  breakaway support: every gram flies.  Hardware: **no
   screws** in the deck (dovetail keys), thin CA for the dovetails and
   seams plus gel CA for the duct seams inside the bore, 5 ft of 1/8" or
   3/16" shock cord with a cord lock for the skirt, and packing tape.
   Every other part presses into it.
+- Blower deck instead: four bdeck quarters ≈ **227 g** + blower_box
+  57 g ≈ **284 g**, ~7 h in all, against ≈ 366 g for the prop deck and
+  cage.  Add the blower itself (weigh it) and 5 × M4 × 50; drop the
+  RS-550, prop and cage hardware.
 - Bed: everything fits 220 × 220 except the deck quarters (170 × 172 ×
   61 mm: fine on the P1S's 256).  The 164 mm fan parts need at least 180.
 
@@ -76,8 +83,8 @@ model.
   the 44 mm hub, and the whole disc is the top safety guard.
 - **Deck quarters at 3 walls, no brim, no auto support**: the 2.4 mm duct
   wall is exactly solid perimeters at 3 walls; a brim would web the guard
-  grid and the breakaway rings shut; auto support would fill the duct and
-  the rib cells with scaffolding the modeled supports already provide.
+  grid shut (it is the first layers, on the bed); auto support would fill
+  the duct and the rib cells, which the ribs and half-ribs already carry.
 - **No supports anywhere** (nozzle v2 was designed around that; the old
   nozzle_v1 needed supports everywhere, which is one of the reasons it was
   replaced).

@@ -28,11 +28,11 @@ piece of plastic with no glued flange anywhere.  Only the cage bolts on.
    ╭─   ─╮  fan_cage bellmouth, R 12 flare from the bore (r 68) to r 80,
             2 mm shell, 45° underside (z 54 → 66)
    ═══════  fan_cage rings + rim, 4 mm thick (z 50 → 54), 164 mm dia
-   ║     ║  integral duct, 136 mm bore, 2.4 mm wall (z 0 → 50), PART OF
+   ║     ║  integral duct, 136 mm bore, 2.4 mm wall (z −10.84 → 50), PART OF
    ║  ▬  ║    the quarters; propeller 127 mm, top at z 46, bottom at z 39
    ▓▓▓▓▓▓▓  deck skin (z 0 → −0.84), ribs below to −10.84
-   ═══════  guard grid, fused to the skin's underside (z −0.84 → −3.84),
-            standoff nubs to −7.84; skirt lip bottom at −10.84; bag below
+   ═══════  guard grid at the bottom of the duct, level with the skirt lip
+            bottom (z −10.84 → −7.84; the bed when printing), no nubs; bag below
 ```
 
 Foam-board deck instead: separate `fan_tube` (glued over a 130 mm hole,
@@ -48,7 +48,7 @@ z 0 → 50) and `fan_guard` (glued under it, nubs down) — the old stack.
 | Motor → cage hub | M3 × 6 socket-head from **below**, through the hub into the motor's own threaded holes (25 mm apart). Heads sit in 6.5 × 3 mm counterbores, flush with the hub underside. | 2 | 6 − 3 (plate under head) = **3 mm into the motor**. Mabuchi datasheet: max 4 mm, or the screw hits the windings. 6 mm, never longer. |
 | Cage → tube | M3 × 10 down through the cage rim into an **M3 nut trapped in the top of each lug** (the cage covers the nut, so it cannot fall out) | 6 + 6 nuts | 10 − 4 (rim) − 2.6 (nut) = 3.4 mm spare in the lug's clearance hole. Steel threads: the cage comes off for every prop change without wearing anything; self-tapped PLA would strip after a few cycles. Lugs and cage holes are generated from `LUG_N`/`LUG_R`, so they cannot mis-align. |
 | Tube → deck (FOAM ONLY) | Hot glue or silicone, all the way round the 14 mm wide flange ring (r 68 → 82) | – | Any gap here leaks bag pressure. Bead inside and out. The printed deck has no such joint. |
-| Guard → deck underside (FOAM ONLY) | Hot glue round the 10 mm overlap ring (r 65 → 75) | – | Nubs face the skirt so the bag cannot seal flat against the grid. Printed deck: nubs are printed in. |
+| Guard → deck underside (FOAM ONLY) | Hot glue round the 10 mm overlap ring (r 65 → 75) | – | Nubs face the skirt so the bag cannot seal flat against the grid. Printed deck: no nubs; its guard is printed in and the fan's flow blows the plastic off it. |
 | Propeller → motor | Collet adapter on the 3.17 mm shaft, prop on its 5 mm stub. **Thrust pushes the adapter onto the shaft**, the safe direction. | – | **measure** shaft protrusion and `PROP_DROP` (§2). |
 
 Build order (forced by geometry: the 127 mm prop will not pass the 136 mm
@@ -584,6 +584,65 @@ before racing on it: if it floats the full load after 5 minutes of fan-on
 with margin to spare, it is a fair pick.  Its speed cards need their own
 calibration (holes ~1.2× A's for the same time).
 
+### 8.7 Blower instead of the propeller (`bdeck_*` + `blower_box`)
+
+**The fan:** Delta BFB1212GH (also sold as BFB1212GH-6A21R): a 120 × 120 ×
+32 mm centrifugal blower, 12 V, 3.96 A max, 4 wires (reseller pinout:
+yellow +12 V, black −, blue PWM, the fourth is the tach, unused).  Delta's
+curve for it is close to a straight line from **1020 Pa shut-off** to
+**60.4 CFM (28.5 L/s) free air**.  A propeller is the opposite kind of fan:
+lots of flow, little pressure.  Its integrated driver IC is part of a
+commercial fan, so rule 3b allows it like the RS-550's brushes.
+
+**Layout:** label side down, inlet up, centred 17 mm ahead of the deck
+centre, outlet facing the back.  `blower_box` is a roof with the ring grid
+over the inlet, 6.5 mm above the blower (`BLW_GAP`, open all round, so it
+is a guard opening: ≤ 7 mm), and a hood round the outlet that turns the air
+down through a 115 × 27 mm port in the deck.  The port has bars along y,
+6.5 mm apart, on the bed.  Five M4 × 50 screws: three through the box's
+standoffs and the blower's own holes, two through the hood's tubes.  They
+self-tap 8.5 mm (blower) and 7 mm (hood) into Ø10 columns in the deck.
+The `assembly` BLOWER line checks these numbers, plus the 5.9 mm from the
+hood groove to the nozzle pocket.  The hood frame seals on the outlet face
+with 3 mm foam tape; a sill on the deck closes the window's bottom edge,
+because a bar there on `blower_box` would be a 115 mm bridge.
+
+**Operating point:** solve the fan line against the skirt holes (Ø24 each)
+plus the 22 mm card, Cd 0.62.  Use the §8.5 batteries (13 / 12 / 11 V open
+circuit through 0.25 / 0.35 / 0.50 Ω), with pressure ∝ V² and flow ∝ V:
+
+| Skirt holes | 0 | 1 | **2** | 3 | 4 | 6 |
+|---|---|---|---|---|---|---|
+| fresh (12.2 V at the fan, 3.4 A): Pa | 745 | 504 | **349** | 250 | 184 | 109 |
+| nominal (11.0 V, 2.8 A): Pa | 613 | 415 | **288** | 206 | 152 | 90 |
+| tired (9.9 V, 2.2 A): Pa | 493 | 333 | **231** | 165 | 122 | 72 |
+| flow, nominal (L/s) | 7.5 | 13.6 | **17.4** | 19.9 | 21.6 | 23.5 |
+
+The RS-550 deck gives 169–268 Pa at ~34–38 L/s.  With six holes the blower
+falls below the 136–190 Pa this craft needs (§8.1).  **Cut two holes**
+(three only if it floats on tired cells with three).  The bag pressure is
+then higher than the RS-550's, but the cushion flow is half of it, so the
+hover gap is lower: expect it to need a smooth floor, and run the §8.2
+float test before trusting it.  The battery draw is lower (2–3.4 A), and
+the box stands 41.5 mm above the deck, against ~113 mm to the top of the
+RS-550 on its cage.
+
+**PWM:** on Delta's 4-wire fans an open PWM input normally means full
+speed.  **Check it on the bench** before the deck goes on: power it with
+blue open and listen.  If it idles slow, it needs a PWM signal (25 kHz, 5 V
+logic).  Do not tie blue to +12 V: the PWM input is not rated for it.
+
+**Fit risks (from a photo and listings, not a drawing):** the holes are
+Ø4.3 on a 105 mm square at the three corners away from the outlet, and
+are assumed to run through the full 32 mm.  If the hole-less corner is at
+the back LEFT (label side down, outlet at the back), set `BLW_HAND = -1`.
+If the holes are only in thin ears, the standoffs need lengthening.  If
+the outlet is narrower than ~86 mm, it still fits: the window is 115 mm
+and the foam seals on the face.
+
+Sources: DigiKey BFB1212GH-A listing; Delta BFB1212H manual (ManualsLib);
+the BFB1212GH-6A21R reseller listings (IndiaMART, Amazon); delta-fan.com.
+
 ---
 
 ## 9. Printed deck (optional, PART 11)
@@ -599,20 +658,20 @@ screws: the quarters lock together with vertical dovetails.
 
 | Piece | Where | Print size (mm) | Sliced g |
 |---|---|---|---|
-| `deck_fit_test` | – | 192 × 88 × 61 | 34 |
-| `deck_fl` | front left | 170 × 172 × 61 | ~77 |
-| `deck_fr` | front right | 170 × 165 × 61 | 77 |
-| `deck_bl` | back left | 170 × 165 × 61 | ~77 |
-| `deck_br` | back right | 170 × 172 × 61 | ~77 |
+| `deck_fit_test` | – | 200 × 115 × 61 | 37 |
+| `deck_fl` | front left | 170 × 172 × 61 | 76.4 |
+| `deck_fr` | front right | 170 × 165 × 61 | 78.6 |
+| `deck_bl` | back left | 170 × 165 × 61 | 76.7 |
+| `deck_br` | back right | 170 × 172 × 61 | 75.1 |
 
 Each quarter fits the P1S bed (256 × 256) and prints **top face up, as
 installed**: the skirt lip's ridge is the first layer (a built-in adhesion
 foot), the ribs run full depth to the bed, the quarter-duct rises 50 mm
 up, and the skin is **bridged** across the rib cells 10 mm above the bed.
-Print height 60.84 mm.  The guard grid hangs under the skin on modeled
-breakaway support rings that snap out through the bore after printing
-(§1.1); slicer auto-support stays OFF and brim stays OFF — both are
-mandatory, a brim would web the grid openings to the support rings.
+Print height 60.84 mm.  The guard grid is the bottom 3 mm of the duct,
+on the bed, so it prints first and needs no support (§1.1); slicer
+auto-support stays OFF and brim stays OFF — both are mandatory, a brim
+would web the grid openings shut.  Nothing to snap out.
 
 ### 9.1 The sockets
 
@@ -635,7 +694,7 @@ the pocket walls and rims printed upward from it.
   features and come out at or slightly **over** size.  If a part rattles in
   its coupon, tune `SOCK_FIT` **down** (expect ~0.1); never pre-tighten
   without the coupon.  Same for `DECK_TAB_CLR` (expect ~0.15).  The
-  dovetails (`DT_CLR`, 0.2 per side) are cut the same way through every
+  dovetails (`DT_CLR`, 0.05 per side after two fit tests) are cut the same way through every
   layer; tune them on the duct-seam coupon pair.
 - **Rim**: 2.4 mm of solid at deck-top height round every pocket.
 - **Floors are 3 layers (0.84 mm) — and so is the whole skin now.**  Every
@@ -732,31 +791,31 @@ is bridged; the thin features, checked on that grid:
 | Feature | Model | Printed | Note |
 |---|---|---|---|
 | main skin | 0.84 | **3 layers** | all bridged across the rib cells; the first is a bridge layer with gaps, the next two close it.  Light-test every quarter |
-| edge band | 0.84 | 3 | the 40 mm rib-free band is the worst bridge span on the part (thick bridges ON); a mid-band rib ring is held in reserve if the first quarter sags |
+| edge band | 0.84 | 3 | a rib ring at mid-band (`DECK_BAND_RING`, 20 mm in) splits the 40 mm band into two ~19 mm bridges (thick bridges ON) |
 | under the battery-holder marks | 0.84 − 0.28 + a strip | 3 | the mark takes the top layer; a strip under each mark puts one back |
 | skirt lip wall | 1.35 wide | 3 lines | 10 mm tall; the 1.6 × 1.2 ridge is the first layer on the bed |
 | pocket floors (all) | 0.84 | **3** | same bridged skin |
 | duct wall | 2.4 | 5 lines | 3 wall loops: slices as solid perimeters, airtight by construction |
-| guard grid rings | 1.6 wide × 3 thick, top edges chamfered 0.4 | 4 lines / 11 layers | hang under the skin on the breakaway rings while printing; spokes stay 2.4 |
+| guard grid rings | 1.6 wide × 3 thick, top edges chamfered 0.4 | 4 lines / 11 layers | the first layers, on the bed; spokes stay 2.4 |
 | guard half-bars at the seams | 1.2 per quarter | 3 lines | joined pairs make 2.4 bars; worst assembled opening 6.7 ≤ 7 mm (probe rule) |
-| breakaway support rings | 0.9 wide | 2 lines | not flown: snapped out through the bore (~10 g) |
 | rims, lips, slot lip | 2.34 tall; 2.4 / 1.35 wide | 9 | 5 / 3 lines wide |
 | tray pegs | Ø11.2 × 1.5 | 6 | on the top surface |
 | grid ribs | 0.9 wide × 10 tall | 2 lines | a 0.6 mm foot, 0.4 wider each side, anchors them to the bed |
+| half-ribs | 0.45 wide × 10 tall | **1 line** | along X through the middle of every cell, cutting the skin's worst bridge from ~46 to ~24 mm; same foot (1.25 wide).  Scaffolding for the skin, not structure: a sagged or broken one costs nothing once the skin is on |
 | seam ribs | 1.6 wide × 10 tall | 3 lines (arachne) | same foot |
 | dovetail sockets | 1.8 mm walls round the tail | 4 lines | 10 × 10 blocks, bed up; the tail neck is 4 mm |
 | jigsaw tabs | 0.84 | 3 | in the band |
 
-Nothing flown on the deck is thinner than three layers or narrower than
-two lines; the only two-line walls are the breakaway rings, which are
-scrap.
+Nothing on the deck is thinner than three layers.  The only one-line
+walls are the half-ribs, which only have to hold the skin up while it
+bridges.
 
 ### 9.2 How it is built
 
 ```
   section through a joint (deck as installed — and as printed)
 
-   skin 0.84 (3 bridged layers)  band 0.84 (3 layers), no ribs, 40 mm wide
+   skin 0.84 (3 bridged layers)  band 0.84 (3 layers), 40 mm wide, one rib ring
   ════════════════╤╤══════════════════════════  ← jigsaw tab locks the skin
        ┃     ┃    ││    ┃     ┃                    across the joint
        ┃grid ┃    ││    ┃     ┃  grid ribs 0.9 × 10, 55 mm triangles,
@@ -775,12 +834,14 @@ scrap.
 ```
 
 - **Skin**: 0.84 mm (3 × 0.28, all bridged).  A 40 mm band round the edge
-  has no ribs: the skirt plastic goes there.
+  is outside the grid (the jigsaw tabs are in it); one rib ring at mid-band
+  halves its bridge.
 - **Ribs**: 0.9 × 10 mm triangle grid (two 0.45 lines), closed by a rim
   round every edge of the rib zone, each rib on a 0.6 mm bed foot.  The
-  grid now runs all the way in to the bore edge (r = 68): those inner
-  ribs are the duct wall's and the guard annulus's permanent print
-  support.  No ribs round the nozzle slot.
+  grid now runs all the way in to the bore edge (r = 68), inside the duct
+  wall, which itself runs down to the guard on the bed.  One-line
+  half-ribs along X split every cell (worst bridge ~24 mm).  No ribs
+  round the nozzle slot.
 - **Deck joints — no screws.**  The first deck's seam screws sat under
   the deck between the ribs, where a driver could barely reach them, and
   the horizontal holes printed small.  They are gone.  Every joint is now
@@ -795,7 +856,7 @@ scrap.
   the duct seams too; the outer four (y = 100, y = −91, x = ±118) are deck
   depth.  Owners alternate, so every quarter has both tails and sockets.
   The 1.6 × 10 mm seam ribs still run along each inner edge and sit back
-  to back; they are glued.  Jigsaw tabs in the skin (0.2 mm clearance)
+  to back; they are glued.  Jigsaw tabs in the skin (0.05 mm clearance)
   keep the edge band in line out past the trays; a knob is wider than its
   neck, so like the dovetails it only enters straight down.  The centre
   joint has no free band (stand pocket at the front, nozzle pocket at the
@@ -820,18 +881,16 @@ scrap.
 ### 9.3 Build order
 
 1. **Print `deck_fit_test`** (~1 h).  Press a tray and the nozzle into
-   their coupons, snap the supports out of the two duct-seam halves and
+   their coupons, take the two duct-seam halves and
    **lower one onto the other**: the dovetail should slide all the way
    down by hand with no wobble (too tight: `DT_CLR` **up** 0.05; wobbly:
    **down** 0.05).  Try an M3 nut in the lug trap, fit the tab pair.  The pocket fits run **loose**, not tight:
    tune `SOCK_FIT` / `DECK_TAB_CLR` **down** until parts go in with a firm
    push and stay.  Reprint the coupons, not the quarters.
 2. **Print** the four quarters (top face up, no brim, no auto support —
-   both mandatory).  **Snap the breakaway support rings out** through the
-   open bore: grip with long-nose pliers, twist; the rings part at the
-   0.28 mm gap under the grid.  Check the Ø4 posts under the eight nubs
-   came away too.  Then hold each quarter up to a bright light: no
-   pinholes in the skin, pocket floors included.
+   both mandatory).  Nothing to snap out: the guard grid printed on the
+   bed.  Hold each quarter up to a bright light: no pinholes in the skin,
+   pocket floors included.
 3. **Dry-fit — no glue yet.**  On a flat table, top side up: hold
    front-left still and **lower front-right straight down** onto it until
    the skins are flush.  Same for the back pair.  Then lower the front
@@ -842,7 +901,7 @@ scrap.
    traps): it holds the duct round and the four duct edges flush.
 4. **Glue, in place.**  With the deck assembled and the cage on, wick
    **thin CA** into every dovetail and down every seam from the top: it
-   runs into the 0.2 mm gaps by itself.  Run a **bead of gel CA down each
+   runs into the 0.05 mm gaps by itself.  Run a **bead of gel CA down each
    of the four duct seams inside the bore** and smooth it flat.  Press the
    deck flat on the table while it cures, then take the cage off again (it
    goes back on last).
@@ -875,11 +934,10 @@ scrap.
 | Check | How | If it fails |
 |---|---|---|
 | Parts fit | the coupons, before the quarters | `SOCK_FIT` / `DECK_TAB_CLR` **down** in 0.05 steps; dovetail too tight → `DT_CLR` **up** 0.05, wobbly → **down** 0.05 |
-| Supports all out | look up the bore with a light behind the grid: six clean ring scars, no wall stubs; all eight nub posts gone | pliers; a stub that won't snap gets a flush cutter |
 | Skin airtight | hold each quarter up to a bright light before assembly: no pinholes (the whole skin is bridged now, not just pocket floors) | tape the spot underneath, inside the bag |
 | Duct seams airtight | after gluing: shine a light inside the bore, look for glow through the four seams | another CA bead inside the bore |
 | Deck joints airtight | float the craft and run a damp finger along the seams; the fan note changes if a joint is open | more tape underneath |
 | Probe rule | a 7 mm dowel must not pass any guard opening, probing the assembled deck from below — worst case is a half-bar pair at a seam (6.7 mm with 0.2 misalignment) | check before gluing: lift the quarter, re-lower it with the cage on; after gluing, a strip of tape across the gap underneath |
-| Startup inflation | craft on the track, fan on: the bag must inflate and the craft lift within ~2 s with the grid 3 mm proud on its nubs (the craft must never rest bore-flat and dead-head the fan) | check the nubs survived support removal; check the six skirt holes exist |
+| Startup inflation | craft on the track, fan on: the bag must inflate and the craft lift within ~2 s.  The guard has no nubs (the fan's flow blows the plastic off it), so watch that the plastic does not suck flat onto the grid | check the six skirt holes exist; if the plastic seals on the grid, add four hot-glue dots (~4 mm) on the grid's underside as standoffs |
 | Flat | the assembled deck lies flat on a table with no rocking | check during the dry fit; glue with the deck pressed flat on the table |
 | Size | 330 × 320 mm assembled; 393.2 × 383.2 with the skirt ridge | rule 3a margin is there, ±1 mm is irrelevant |
